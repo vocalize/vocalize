@@ -12,5 +12,9 @@ module.exports = {
     } catch(err) {
     	return false;
     }
+  },
+  
+  handleError: function(err){
+  	console.error('Blew it! ' + err);
   }
 };

@@ -20,8 +20,6 @@ module.exports = function(videoId) {
       process.stderr.write(data);
     });
 
-    // Install ffmpeg locally
-    // brew install ffmpeg
     youtube_dl.on('exit', function() {
       fs.readFile(inputPath + '/file.mp3', function(err, data) {
         ffmpeg(inputPath + '/file.mp3')

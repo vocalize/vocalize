@@ -26,7 +26,8 @@ module.exports = function(audioFilename) {
     var params = {
       audio: fs.createReadStream(audioFilename),
       content_type: 'audio/flac',
-      timestamps: true
+      timestamps: true,
+      continuous: true
     };
 
     speech_to_text.recognize(params, function(err, transcript) {
