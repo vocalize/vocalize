@@ -38,7 +38,7 @@ def main(**kwargs):
   infile = kwargs['infile']
   print "Filtering %s to %s" % (infile, outfile)
   rate, sound_samples = wavread(infile)
-  sound_samples = [item[0] for item in sound_samples]
+  # sound_samples = [item[0] for item in sound_samples]
 
   fs = 44100.0
   lowcut = 100.0
@@ -53,15 +53,6 @@ def main(**kwargs):
   filtered = butter_bandpass_filter_two(sound_samples, lowcut, highcut, fs, 5)
 
   wavwrite(outfile, rate, filtered)
-  textOutput = ''
-  textOutput += outfile
-  textOutput += '.txt'
-  print textOutput
-  for item in filtered:
-    with open(textOutput, 'a') as textOutputFile:
-      textOutputFile.write(str(item))
-      textOutputFile.write(',')
-
 
 
 if __name__ == '__main__':
