@@ -38,7 +38,7 @@ def main(**kwargs):
   infile = kwargs['infile']
   print "Filtering %s to %s" % (infile, outfile)
   rate, sound_samples = wavread(infile)
-  # sound_samples = [item[0] for item in sound_samples]
+  sound_samples = [item[0] for item in sound_samples]
 
   fs = 44100.0
   lowcut = 100.0
