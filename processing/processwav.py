@@ -22,6 +22,16 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     y = lfilter(b, a, data)
     return y
 
+from scipy.signal import butter, lfilter
+
+def butter_bandpass_filter_two(data, lowcut, highcut, fs, order=5):
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    high = highcut / nyq
+
+    b, a = butter(order, [low, high], btype='band')
+    y = lfilter(b, a, data)
+    return y
 
 def main(**kwargs):
   outfile = kwargs['outfile'][0]
@@ -31,11 +41,16 @@ def main(**kwargs):
   sound_samples = [item[0] for item in sound_samples]
 
   fs = 44100.0
-  lowcut = 300.0
-  highcut = 4000.0
+  lowcut = 100.0
+  highcut = 3000.0
 
-  b,a = butter_bandpass(lowcut, highcut, fs, 5)
-  filtered = lfilter(b, a, sound_samples)
+  # b,a = butter_bandpass(lowcut, highcut, fs, 5)
+
+  # filtered = lfilter(b, a, sound_samples)
+
+  # filtered = butter_bandpass_filter(sound_samples, lowcut, highcut, fs, 5)
+
+  filtered = butter_bandpass_filter_two(sound_samples, lowcut, highcut, fs, 5)
 
   wavwrite(outfile, rate, filtered)
   textOutput = ''
