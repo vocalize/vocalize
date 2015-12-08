@@ -5,6 +5,8 @@ import math
 import pylab
 import numpy as np
 from scikits.audiolab import Format, Sndfile
+from scipy.io.wavfile import write as wavwrite
+from scipy.io.wavfile import read as wavread
 
 DEFAULT_DISPLAY_SAMPLE_RATE = 1000 #Hz
 num_channels = 1
@@ -20,10 +22,18 @@ def get_component_frequencies(samples):
     num_frequencies = num_samples/2
     get_freq_amplitude = lambda z: math.sqrt(np.real(z)**2 + np.imag(z)**2) / num_frequencies
     F = np.fft.rfft(samples)
-
+    save = open('umbrellathree.txt', 'w')
+    np.savetxt(save, F, fmt='%.4f%+.4fj')
+    save.close()
+    # np.savetxt('data.txt', F)
+    # with open('data.txt', 'w') as f:
+    #     for s in F:
+    #         print type(s)
+    #         f.write(str(s) + '\n')    
 
     frequencies = range(num_frequencies)
     freq_amplitudes = [get_freq_amplitude(z) for z in F][0:-1] # Remove last
+
     return (frequencies, freq_amplitudes)
 
 if __name__ == "__main__":
@@ -43,31 +53,35 @@ if __name__ == "__main__":
     else:
         usage()
 
-    f = Sndfile(infile, 'r')
+    # f = Sndfile(infile, 'r')
 
-    if display_sample_rate > f.samplerate:
-        print "Using sample rate of file:", f.samplerate
-        display_sample_rate = f.samplerate
+    # if display_sample_rate > f.samplerate:
+    #     print "Using sample rate of file:", f.samplerate
+    #     display_sample_rate = f.samplerate
 
-    sound_time = f.nframes*1.0/f.samplerate
-    sound_data = f.read_frames(f.nframes)
-    samples_to_take = int(math.floor(sound_time * display_sample_rate))
-    time_step_for_samples = f.samplerate*1.0/display_sample_rate
+    # sound_time = f.nframes*1.0/f.samplerate
+    # sound_data = f.read_frames(f.nframes)
+    # samples_to_take = int(math.floor(sound_time * display_sample_rate))
+    # time_step_for_samples = f.samplerate*1.0/display_sample_rate
 
-    wave = []
+    # wave = []
 
-    for i in xrange(samples_to_take):
-        frame_offset = i * time_step_for_samples
-        if num_channels == 1:
-            wave.append(sound_data[frame_offset])
-        else:
-            wave.append(sound_data[frame_offset][0])
+    # for i in xrange(samples_to_take):
+    #     frame_offset = i * time_step_for_samples
+    #     if num_channels == 1:
+    #         wave.append(sound_data[frame_offset])
+    #     else:
+    #         wave.append(sound_data[frame_offset][0])
+    rate, wave = wavread(infile)
 
+    wavwrite('test.wav', rate, wave)
     (freq, amp) = get_component_frequencies(wave)
-    with open('data.txt', 'a') as textOutputFile:
-        for line in amp:
-            textOutputFile.write(str(line))
-            textOutputFile.write(',')
+
+            # print type(s)
+    # with open('data.txt', 'a') as textOutputFile:
+    #     for line in amp:
+    #         textOutputFile.write(str(line))
+    #         textOutputFile.write(',')
 
     # Only plot first 4000 Hz
 

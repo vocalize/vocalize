@@ -20,9 +20,9 @@ def plotSpectru(y,Fs):
 
 Fs = 44100;  # sampling rate
 
-rate,data=read('andrewhello.wav')
-y=data[:,1]
-# y=data
+rate,data=read('umbrellaonefiltered.wav')
+# y=data[:,1]
+y=data
 
 lungime=len(y)
 timp=len(y)/44100.
