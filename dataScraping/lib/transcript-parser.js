@@ -19,28 +19,59 @@ var speech_to_text = watson.speech_to_text({
  * @param  {[string]} audioFilepath [(optional) filepath - defaults to config.inputDir]
  * @return {[Promise]}              [Resolves with transcript file path]
  */
+
 module.exports = function(audioFilename) {
-  console.log(path.join(__dirname, '..', audioFilename))
+
+  var filename = path.basename(audioFilename, '.flac');
+
   return new promise(function(resolve, reject) {
 
     var params = {
-      audio: fs.createReadStream(path.join(__dirname, '..', audioFilename)),
       content_type: 'audio/flac',
       timestamps: true,
       continuous: true
     };
 
-    speech_to_text.recognize(params, function(err, transcript) {
-      if (err) {
-        reject(err);
-      } else
-        fs.writeFile(path.join(__dirname, '..', 'input', 'transcript.json'), JSON.stringify(transcript, null, 2), function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(path.join(__dirname, '..', 'input', 'transcript.json'));
-          }
-        });
+    var results = [];
+
+    // create the stream
+    var recognizeStream = speech_to_text.createRecognizeStream(params);
+
+    // pipe in some audio
+    fs.createReadStream(path.join(__dirname, '..', 'input', audioFilename)).pipe(recognizeStream);
+
+    // listen for 'data' events for just the final text
+    // listen for 'results' events to get the raw JSON with interim results, timings, etc.
+
+    recognizeStream.setEncoding('utf8'); // to get strings instead of Buffers from `data` events
+
+    recognizeStream.on('results', function(e){
+      //console.log('Results: ' + e.results[0].alternatives[0].transcript);
+      if(e.results[0].final){
+        results.push(e);
+      }
     });
-  })
+
+    ['data', 'results', 'error', 'connection-close'].forEach(function(eventName) {
+      recognizeStream.on(eventName, console.log.bind(console, eventName + ' event: '));
+    });
+  
+    recognizeStream.on('error', function(err){
+      util.handleError('Error writing to transcript.json: ' + err);
+    });
+
+    recognizeStream.on('connection-close', function() {
+      fs.writeFile('./input/transcripts/' + filename + 'transcript.json', JSON.stringify(results), function(err){
+        if(err){
+          util.handleError(err);
+        }
+        console.log('Transcript Sucessfully Written to ' + '/input/transcript.json');
+      });
+    });
+  });
 };
+
+
+
+
+

@@ -1,4 +1,5 @@
 /node_modules
 /app/config/config.js
 /input
+/input-old
 /output
