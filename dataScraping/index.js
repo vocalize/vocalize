@@ -13,31 +13,20 @@ if (!util.exists(path.join(__dirname, 'output'))) {
   fs.mkdirSync(path.join(__dirname, 'output'));
 }
 
-// Transcript File
-var transcriptFile = path.join(__dirname, 'input', 'transcript.json');
+var flags = process.argv.slice(2);
 
-var scrapeTheTube = function() {
-  // Download Youtube Audio with passed videoId
-  youtubeScraper('IONyLZn0pLI')
-    .then(function(audioPath) {
-      // Check if there's a Watson transcript (Watson takes a while)
-      if (!util.exists(transcriptFile)) {
-        transcriptParser(audioPath)
-          .then(function() {
-            // Parse the audio file according to the transcript
-            return audioParser(audioPath);
-          })
-          .then(function(outputDir) {
-            console.log('Parsed files waiting in ' + outputDir);
-          });
-      } else {
-        // Parse the audio file with existing transcript
-        audioParser(audioPath)
-          .then(function(outputDir) {
-            console.log('Parsed files waiting in ' + outputDir);
-          });
-      }
-    });
+switch(flags[0]){
+  // pass in youtube video id
+  case 'youtube':
+    youtubeScraper(flags[1]);
+    break;
+  // Pass in audio file path
+  case 'watson':
+    transcriptParser(flags[1]);
+    break;
+  // Pass in audio file path
+  // Requires a transcript file
+  case 'parse':
+    audioParser(flags[1]);
+    break;
 }
-
-scrapeTheTube();

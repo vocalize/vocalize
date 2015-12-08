@@ -20,11 +20,11 @@ var speech_to_text = watson.speech_to_text({
  * @return {[Promise]}              [Resolves with transcript file path]
  */
 module.exports = function(audioFilename) {
-
+  console.log(path.join(__dirname, '..', audioFilename))
   return new promise(function(resolve, reject) {
 
     var params = {
-      audio: fs.createReadStream(audioFilename),
+      audio: fs.createReadStream(path.join(__dirname, '..', audioFilename)),
       content_type: 'audio/flac',
       timestamps: true,
       continuous: true

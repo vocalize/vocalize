@@ -70,6 +70,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, outputDir) {
       .setStartTime(ts.start)
       // Add a buffer so audio file doesn't get cut off too early
       .setDuration(+ts.duration + 0.1)
+      .audioChannels(1)
       .output(path.join(outputDir, ts.word + '.wav'))
       .on('end', function(err) {
         if (err) {
@@ -91,6 +92,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, outputDir) {
  */
 module.exports = function(audioFilePath) {
 
+  var audioFilePath = path.join(__dirname, '..', audioFilePath);
   var transcriptFile = path.join(__dirname, '..', 'input', 'transcript.json');
 
   return new promise(function(resolve, reject) {

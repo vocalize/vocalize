@@ -10,7 +10,7 @@ module.exports = function(videoId) {
   
   return new promise(function(resolve, reject) {
     var inputPath = path.join(__dirname, '..', 'input');
-    youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-o', inputPath + '/file.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
+    youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-o', inputPath + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
 
     youtube_dl.stdout.on('data', function(data) {
       console.log(data.toString());
