@@ -1,8 +1,4 @@
 #!/usr/bin/python
-
-
-## OLD FILE use filterwav.py
-
 import sys
 import argparse
 # from scipy.io.wavfile import read, write as wavread, wavwrite
@@ -13,7 +9,6 @@ from scipy.signal import lfilter, lfiltic
 import numpy as np
 import subprocess as sp
 
-# load_audio can not detect the input type
 def ffmpeg_load_audio(filename, sr=44100, mono=True, dtype=np.float32):
     channels = 1 if mono else 2
     format_strings = {
@@ -47,23 +42,7 @@ def ffmpeg_load_audio(filename, sr=44100, mono=True, dtype=np.float32):
         audio = audio.reshape((-1, channels)).transpose()
     return(audio, sr)
 
-
-def butter_bandpass(lowcut, highcut, fs, order=9):
-    nyq = 0.5 * fs
-    low = lowcut / nyq
-    high = highcut / nyq
-    b, a = butter(order, [low, high], btype='band')
-    return b, a
-
-
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
-    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-from scipy.signal import butter, lfilter
-
-def butter_bandpass_filter_two(data, lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
@@ -75,26 +54,12 @@ def main(**kwargs):
   outfile = kwargs['outfile'][0]
   infile = kwargs['infile']
   print "Filtering %s to %s" % (infile, outfile)
-  rate, sound_samples = wavread(infile)
-  mono = True
-  if 'ndarray' in str(type(sound_samples[0])):
-    mono = False
-  # data,r = ffmpeg_load_audio('32but.wav', 44100, True, dtype=np.float32)
-  rate, sound_samples = ffmpeg_load_audio(infile, rate, mono, dtype=np.float32)
 
-  fs = 44100.0
-  lowcut = 100.0
-  highcut = 3000.0
+  data, rate = ffmpeg_load_audio(infile, 44100, True, dtype=np.float32)
+  wavwrite('test.wav', 44100, data)
+  filtered_data = butter_bandpass_filter(data, 100.0, 3000.0, 44100)
+  wavwrite(outfile, 44100, filtered_data)
 
-  # b,a = butter_bandpass(lowcut, highcut, fs, 5)
-
-  # filtered = lfilter(b, a, sound_samples)
-
-  # filtered = butter_bandpass_filter(sound_samples, lowcut, highcut, fs, 5)
-
-  # filtered = butter_bandpass_filter_two(sound_samples, lowcut, highcut, fs, 5)
-
-  wavwrite(outfile, rate, sound_samples)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Process and filter wav file', version='%(prog)s 1.0')
