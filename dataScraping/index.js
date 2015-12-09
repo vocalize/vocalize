@@ -1,3 +1,5 @@
+'use strict';
+
 var audioParser = require('./lib/audio-parser');
 var transcriptParser = require('./lib/transcript-parser');
 var youtubeScraper = require('./lib/youtube-scraper');
@@ -8,31 +10,43 @@ var fs = require('fs');
 var util = require('./lib/util');
 
 // Initialize folders
-if (!util.exists(path.join(__dirname, 'input'))) {
-  fs.mkdirSync(path.join(__dirname, 'input'));
-  fs.mkdirSync(path.join(__dirname, 'input', 'transcripts'));
-}
-if (!util.exists(path.join(__dirname, 'output'))) {
-  fs.mkdirSync(path.join(__dirname, 'output'));
-}
+util.mkdir(path.join(__dirname, 'input'));
+util.mkdir(path.join(__dirname, 'output'));
+
+var scrape = function(videoId){
+  youtubeScraper(videoId)
+    .then(transcriptParser.bind(this, videoId))
+    .then(audioParser.bind(this, videoId))
+    .then(standardiseWordLength);
+};
 
 var flags = process.argv.slice(2);
-  
+
 switch(flags[0]){
+  // Driver Function
+  // Downloads video from youtube and breaks into 10 minute chunks
+  // Gets transcript from watson
+  // Splits video by transcript
+  // Standardizes all audio file lengths
+  case 'scrape':
+    scrape(flags[1]);
+    break;
   // pass in youtube video id as argument
-  // downloads to input folder <video-id>.flac
+  // Downloads to input subdirectory named for videoId
   // ie. node index.js youtube VKUyezKHNXk
   case 'youtube':
     youtubeScraper(flags[1]);
     break;
-  // Pass in flac file path to get the timestamped transcript from watson
-  // ie. node index.js watson VKUyezKHNXk.flac
+  // Gets an audiotranscript from watson for an audio file
+  // Pass in a videoId
+  // Looks for all audio files in input directory for a subdirectory named for videoId
+  // ie. node index.js watson VKUyezKHNXk
   case 'watson':
     transcriptParser(flags[1]);
     break;
-  // Pass in audio file path
+  // Pass a videoId
   // Looks for transcript.json file prefixed with same name as audiofile
-  // ie. node index.js parse VKUyezKHNXk.flac
+  // ie. node index.js parse VKUyezKHNXk
   case 'parse':
     audioParser(flags[1]);
     break;
@@ -41,10 +55,9 @@ switch(flags[0]){
   case 'wordlist':
     wordlistParser.textToJson(flags[1]);
     break;
-  // Will standardize the time length of all audio files in an output subdirectory
-  // Pass a directory in the output folder
-  // ie. node index.js tempo but
+  // Will standardize the time length of all sub directories in the output directory
+  // ie. node index.js standardize
   case 'standardize':
-    standardiseWordLength(flags[1]);
+    standardiseWordLength();
     break;
 }

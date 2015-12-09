@@ -15,6 +15,74 @@ var util = require('./util');
 var _filterByWordList = true;
 
 /**
+ * Splits all of the flac files in the directory by their transcript
+ * @param  {[string]} audioFilePath [audio file to parse]
+ * @return {[BbPromise]}            [resolves when parsing is complete]
+ */
+module.exports = function(videoId) {
+  console.log('parsing audio into words...');
+  // Get directory
+  var audioDir = path.join(__dirname, '..', 'input', videoId);
+
+  // Read all the files in the directory
+  return util.readdir(audioDir)
+    .then(function(files) {
+
+      // Associated each audio file with its transcript file
+      return _getTranscriptsForAudioDirectory(files, videoId);
+
+    }).then(function(map) {
+      return BbPromise.map(map, function(audio) {
+        // Parse each audio file according to its transcript file
+        return _doIt(audio.audioFile, audio.transcript);
+      });
+    });
+};
+
+/**
+ * Driver Function.  Parses and individual audio file according to its transcript
+ * @param  {[string]} audioFilePath  [audio file to parse]
+ * @param  {[string]} transcriptFile [watson transcript with timestamps]
+ * @return {[promise]}               [resolves when file is done parsing]
+ */
+var _doIt = function(audioFilePath, transcriptFile) {
+  if(util.exists(transcriptFile)){
+    return readFile(transcriptFile)
+    .then(function(transcript) {
+
+      var timestamps = _parseTimeStamps(transcript);
+
+      // Create an ffmpeg command for each timestamp and push them into the ffmpegCommand array
+      // Each command is bound with the correct arguments
+      // Each command will be saved as a promise so that they can be executed serially
+      // If they are done all at once, too many child processes are spawned and ffmpeg explodes
+
+      var ffmpegCommands = timestamps.map(function(ts, idx) {
+        return _splitAudioFileByTimeStamp.bind(this, audioFilePath, ts, idx);
+      });
+
+      // Run Bluebird each function on ffmpegCommands
+      // Each element is a promise wrapped around an ffmpeg command
+      // each will run every command after the previous one resolved
+
+      return BbPromise.each(ffmpegCommands, function(command) {
+        return command();
+      });
+
+    })
+    .then(function() {
+      console.log('Done parsing ' + path.parse(audioFilePath).base);
+    })
+    .catch(function(err) {
+      util.handleError(err);
+    });
+  } else {
+    console.log('Could not find transcript: ' + transcriptFile);
+    return false;
+  }
+};
+
+/**
  * Returns an array of timestamp objects denoting each word and its beginning, end, and duration
  * Filters out words not present in word list by default
  * @param  {[buffer]} buffer [buffer of the watson transcript object to parse timestamps from]
@@ -22,31 +90,31 @@ var _filterByWordList = true;
  */
 var _parseTimeStamps = function(buffer) {
 
-    var transcript = JSON.parse(buffer.toString());
+  var transcript = JSON.parse(buffer.toString());
 
-    var ts = {};
-    var timestamps = [];
+  var ts = {};
+  var timestamps = [];
 
-    transcript.forEach(function(section) {
-      var tsList = section.results[0].alternatives[0].timestamps;
+  transcript.forEach(function(section) {
+    var tsList = section.results[0].alternatives[0].timestamps;
 
-      tsList.forEach(function(timestamp) {
-        ts = {
-          word: timestamp[0],
-          start: timestamp[1],
-          end: timestamp[2],
-          duration: timestamp[2] - timestamp[1]
-        }
+    tsList.forEach(function(timestamp) {
+      ts = {
+        word: timestamp[0],
+        start: timestamp[1],
+        end: timestamp[2],
+        duration: timestamp[2] - timestamp[1]
+      }
 
-        // Check if filtering by wordlist and a wordList is present
-        // Discard all words that aren't on the list 
-        if (_filterByWordList && wordList && wordList[ts.word]) {
-          timestamps.push(ts);
-        }
-      });
+      // Check if filtering by wordlist and a wordList is present
+      // Discard all words that aren't on the list 
+      if (_filterByWordList && wordList && wordList[ts.word]) {
+        timestamps.push(ts);
+      }
     });
+  });
 
-    return timestamps;
+  return timestamps;
 };
 
 /**
@@ -56,16 +124,16 @@ var _parseTimeStamps = function(buffer) {
  * @return {[promise]}          [resolves on completion]
  */
 var _createWordDir = function(outputDir, word) {
-  console.log(outputDir);
+
   return new BbPromise(function(resolve, reject) {
-    
+
     // Check if directory already exists
     if (!util.exists(outputDir)) {
-      
+
       // Create new directory
-      fs.mkdirSync(outputDir);
-      fs.mkdirSync(path.join(outputDir, 'standard'));
-      
+      util.mkdir(outputDir);
+      util.mkdir(path.join(outputDir, 'standard'));
+
       //Create a text file containing the word stored in that directory
       fs.writeFile(path.join(outputDir, 'word.txt'), word, function(err) {
         if (err) {
@@ -74,7 +142,7 @@ var _createWordDir = function(outputDir, word) {
           resolve();
         }
       });
-    // Directory already exists
+      // Directory already exists
     } else {
       resolve();
     }
@@ -90,101 +158,65 @@ var _createWordDir = function(outputDir, word) {
  * @return {[BbPromise]}              [resolves on successful split]
  */
 var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
-
+  console.log('Splitting ' + path.basename(audioFilePath));
   var outputDir = path.join(__dirname, '..', 'output', ts.word);
 
   return new BbPromise(function(resolve, reject) {
-    
-    console.log('Parsing: ' + ts.word);
 
     _createWordDir(outputDir, ts.word)
-    .then(function(){
+      .then(function() {
 
-      ffmpeg(audioFilePath)
-      .audioCodec('pcm_f32le')
-      // Time to begin parsing
-      .setStartTime(ts.start)
-      // Duration of snippet
-      // Add a buffer so audio file doesn't get cut off too early
-      .setDuration(+ts.duration)
-      // set the number of channels
-      .audioChannels(1)
-      // Output file location
-      .output(path.join(outputDir, idx + ts.word + '.wav'))
-      // Success
-      .on('end', function(err) {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      })
-      //Failure
-      .on('error', function(err) {
-        reject(err);
-      })
-      //Run ffmpeg command
-      .run();
+        ffmpeg(audioFilePath)
+          .audioCodec('pcm_f32le')
+          // Time to begin parsing
+          .setStartTime(ts.start)
+          // Duration of snippet
+          // Add a buffer so audio file doesn't get cut off too early
+          .setDuration(+ts.duration)
+          // set the number of channels
+          .audioChannels(1)
+          // Output file location
+          .output(path.join(outputDir, idx + ts.word + '.wav'))
+          .on('progress', function(progress){
+            console.log('Splitting: ' + progress.percent.toFixed(2));
+          })
+          // Success
+          .on('end', function(err) {
+            if (err) {
+              reject(err);
+            }
+            resolve();
+          })
+          //Failure
+          .on('error', function(err) {
+            reject(err);
+          })
+          //Run ffmpeg command
+          .run();
 
-    });
-
+      });
   });
 };
 
 /**
- * Splits the passed audio file into individual wav files
- * @param  {[string]} audioFilePath [audio file to parse]
- * @return {[BbPromise]}            [resolves when parsing is complete]
+ * Associates audio files with their transcript files
+ * @param  {[array]} files    [list of files in a directory]
+ * @param  {[string]} videoId [videoId used to find the right directory]
+ * @return {[object]}         [{audioFile:<path to audiofile>, transcript:<path to transcript>}]
  */
-module.exports = function(audioFilePath) {
+var _getTranscriptsForAudioDirectory = function(files, videoId) {
 
-  var audioFilePath = path.join(__dirname, '..', 'input', audioFilePath);
-  var filename = path.basename(audioFilePath, '.flac');
-  var transcriptFile = path.join(__dirname, '..', 'input', 'transcripts',  filename + 'transcript.json');
+  var audioDir = path.join(__dirname, '..', 'input', videoId);
+  var transcriptDir = path.join(audioDir, 'transcripts');
 
-  // Get buffer fron transcript file
-  return readFile(transcriptFile)
-    .then(function(transcript){
-      // Parse out time stamp information from the transcript file
-      return new BbPromise(function(resolve, reject){
-        resolve(_parseTimeStamps(transcript));
-      });
-
+  return files.filter(function(file) {
+      return path.parse(file).ext === '.flac';
     })
-    .then(function(timestamps){
+    .map(function(file) {
 
-      // Initialize array of ffmpeg commands
-      var ffmpegCommands = [];
-
-      return new BbPromise(function(resolve, reject){
-        
-        // Create an ffmpeg command for each timestamp and push them into the ffmpegCommand array
-        // Each command is bound with the correct arguments
-        // Each command will be saved as a promise so that they can be executed serially
-        // If they are done all at once, too many child processes are spawned and ffmpeg explodes
-        
-        timestamps.forEach(function(ts, idx){
-          ffmpegCommands.push(_splitAudioFileByTimeStamp.bind(this, audioFilePath, ts, idx));
-        });
-        resolve(ffmpegCommands);
-      });
-
-    })
-    .then(function(ffmpegCommands){
-
-      // Run Bluebird each function on ffmpegCommands
-      // Each element is a promise wrapped around an ffmpeg command
-      // each will run every command after the previous one resolved
-      
-      BbPromise.each(ffmpegCommands, function(command){
-        return command();
-      });
-
-    })
-    .then(function(){
-      console.log('Done parsing ' + audioFilePath);
-    })
-    .catch(function(err){
-      util.handleError(err);
+      return {
+        audioFile: path.join(audioDir, file),
+        transcript: path.join(transcriptDir, path.parse(file).name + '-transcript.json')
+      };
     });
 };
-

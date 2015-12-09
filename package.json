@@ -1,0 +1,24 @@
+{
+  "name": "vocalize",
+  "version": "1.0.0",
+  "description": "## Dependencies",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vocalize/vocalize.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vocalize/vocalize/issues"
+  },
+  "homepage": "https://github.com/vocalize/vocalize#readme",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "mongoose": "^4.2.10"
+  }
+}

@@ -6,8 +6,8 @@ var util = require('./util');
 
 module.exports = {
 
-  textToJson: function(filepath) {
-    var textFile = path.join(__dirname, '..', filepath);
+  textToJson: function(filename) {
+    var textFile = path.join(__dirname, '..', 'word-lists', filename);
     var fileName = path.basename(textFile, '.txt');
 
     fs.readFile(textFile, function(err, data) {
