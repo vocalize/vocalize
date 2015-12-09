@@ -11,7 +11,7 @@ from scipy.io.wavfile import write as wavwrite
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)
-f, data = wavread('umbrellaonefiltered.wav')
+f, data = wavread('test.wav')
 
 ps = np.abs(np.fft.fft(data))**2
 

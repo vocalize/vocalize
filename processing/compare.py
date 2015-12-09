@@ -3,6 +3,7 @@ from __future__ import division
 import cv2
 import numpy as np
 import sys
+import os
 from scipy.io.wavfile import read,write
 from pylab import plot,show,subplot,specgram,savefig
 import pylab
@@ -39,24 +40,36 @@ if __name__ == '__main__':
   native_wav_path = sys.argv[1]
   user_wav_path = sys.argv[2]
 
-native_rate, native_wav = read(native_wav_path)
-pylab.figure(figsize=(10,10))
-specgram(native_wav, NFFT=1024, noverlap=0)
-pylab.axis('off')
-savefig('native.png')
+  native_rate, native_wav = read(native_wav_path)
+  pylab.figure(figsize=(10,10))
+  specgram(native_wav, NFFT=1024, noverlap=0)
+  pylab.axis('off')
+  savefig('native.png')
 
-user_rate, user_wav = read(user_wav_path)
-pylab.figure(figsize=(10,10))
-specgram(user_wav, NFFT=1024, noverlap=0)
-pylab.axis('off')
-savefig('user.png')
+  user_rate, user_wav = read(user_wav_path)
+  pylab.figure(figsize=(10,10))
+  specgram(user_wav, NFFT=1024, noverlap=0)
+  pylab.axis('off')
+  savefig('user.png')
 
-native = cv2.imread('native.png')
-user = cv2.imread('user.png')
-diff = native - user
-cv2.imwrite('diff.png', diff)
-thresh = get_threshold('diff.png')
+  # THRESHOLD THEN DIFFERENCE
+  native_thresh = get_threshold('native.png')
+  user_thresh = get_threshold('user.png')
 
-non_zeros = np.count_nonzero(thresh.flatten(0))
 
-print non_zeros/len(thresh.flatten(0))*100
+  diff_thresh = native_thresh - user_thresh
+
+  # Images for debugging purposes
+  # cv2.imwrite('nativethresh.png', native_thresh)
+  # cv2.imwrite('userthresh.png', user_thresh)
+  # cv2.imwrite('diffthresh.png', diff_thresh)
+  
+  non_zeros = np.count_nonzero(diff_thresh.flatten(0))
+  print non_zeros/len(diff_thresh.flatten(0))
+  
+  # CLEANUP
+  try:
+    os.remove('native.png')
+    os.remove('user.png')
+  except OSError:
+    pass
