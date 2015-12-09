@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Vocalize</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <p>hello world</p>
+    <div id="content"></div>
+    <script>
+      $.ajax({
+        url: '/api',
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+          console.log(data);
+        },
+        error: function(xhr, status, err) {
+          console.error(status, err.toString());
+        }
+      });
+
+      $.ajax({
+        url: '/api',
+        dataType: 'json',
+        type: 'POST',
+        data: {test: 'hello world'},
+        success: function(data) {
+          console.log(data);
+        },
+        error: function(xhr, status, err) {
+          console.error(status, err.toString());
+        }
+      });
+    </script>
+  </body>
+</html>
