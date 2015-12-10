@@ -11,10 +11,17 @@ React Component Hierarchy
 */
 
 var NextWord = React.createClass({
+
   render: function(){
     return (
       <div className="next">
-        <button type="button" className="btn btn-full">Next Word</button>
+        <button 
+          type='button'
+          className="btn btn-full" 
+          onClick={this.props.onClick}
+        >
+          Next Word
+        </button>
       </div>
     );
   }
@@ -25,7 +32,9 @@ var PercentCorrect = React.createClass({
     return (
       <div>
         <h2>Score:</h2>
-        <h2 className="score">87%</h2>
+        <h2 className="score">
+          {this.props.percentCorrect}%
+        </h2>
       </div>
     );
   }
@@ -46,23 +55,56 @@ var TargetWord = React.createClass({
   render: function(){
     return (
       <div>
-        <h2>Target Word</h2>
+        <h2>
+          {this.props.targetWord}
+        </h2>
       </div>
     );
   }
 });
 
 var PronunciationTest = React.createClass({
+  
+  loadWordFromServer: function() {
+    $.ajax({
+      url: '/api/next',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState(data);
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/api/next', status, err.toString());
+      }.bind(this)
+    });
+  },
+
+  sendAudioFileToServer: function() {
+    // TODO: ajax call to send audio file up to the server
+  },
+
+  getInitialState: function() {
+    return {
+      targetWord: null,
+      targetWordAudio: null,
+      percentCorrect: null
+    };
+  },
+
+  componentDidMount: function() {
+    this.loadWordFromServer();
+  },
+
   render: function(){
     return (
       <div>
         <div>
-          <TargetWord />
+          <TargetWord targetWord={this.state.targetWord} />
         </div>
-        <OptionButtons />
-        <PercentCorrect />
+        <OptionButtons targetWordAudio={this.state.targetWordAudio} />
+        <PercentCorrect percentCorrect={this.state.percentCorrect} />
         <div>
-          <NextWord />
+          <NextWord onClick={this.loadWordFromServer} />
         </div>
       </div>
     );

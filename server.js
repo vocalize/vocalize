@@ -10,13 +10,12 @@ var app = express();
 
 app.set('port', (process.env.PORT || 3000));
 
-// Client Route
-// repsonde with all files in the public directory on requests to the home page
+// Client Route - serve up all files in the public directory on requests to the home page
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 
 // Routing
-app.use('/api', routes);
+app.use('/', routes);
 
 // Start Server
 app.listen(app.get('port'), function() {
