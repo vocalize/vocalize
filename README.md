@@ -23,6 +23,9 @@ In the processing directory you will find a few python files for processing user
 * trim.py - Trims a wav file of silence
   * Usage: `trim.py <inputfilepath> <outputfilepath>`
 
+* matchlength.py - Changes the length of a file to match another
+  * Usage: `matchlength.py <match_file_path> <input_file_path> <output_path>`
+
 * filterwav.py - Takes in a wav file and runs a butterworth band pass filter to get rid of any sound that is far outside of human speech frequencies.
   * Usage: `filterwav.py <input wav path> <output wav path>`
 
