@@ -2,19 +2,17 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var router = express.Router();
 
-// Middleware
+var helpers = require('./request-handler');
 
-// automatically parses the body of all POST requests
-router.use(bodyParser.json());
-// only accept url encoded requests
-router.use(bodyParser.urlencoded({extended: true}));
+// MIDDLEWARE
+router.use(bodyParser.json()); // automatically parses the body of all POST requests
+router.use(bodyParser.urlencoded({extended: true})); // only accept url encoded requests
 
 
-router.get('/', function(req, res) {
-  res.json('hello world');
-});
+// ROUTES
+router.get('/api/next', helpers.retrieveNextWord);
 
-router.post('/', function(req, res) {
+router.post('/api/audio', function(req, res) {
   res.json('hello world');
 });
 
