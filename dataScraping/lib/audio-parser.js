@@ -189,7 +189,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
           })
           //Failure
           .on('error', function(err) {
-            reject(err);
+            util.handleError('Problem splitting ' + path.basename(audioFilePath) + ' ' + err.message);
           })
           //Run ffmpeg command
           .run();
