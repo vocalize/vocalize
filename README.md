@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/vocalize/vocalize.png?label=ready&title=Ready)](https://waffle.io/vocalize/vocalize)
 # vocalize
 
 ## Dependencies
