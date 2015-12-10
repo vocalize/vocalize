@@ -31,8 +31,15 @@ module.exports = {
     });
   },
 
-  getWordList: function(listTitle) {
+  getWordList: function(listTitle, syllables) {
+    syllables = syllables || 1;
     var jsonFile = path.join(__dirname, '..', 'word-lists', listTitle + '.json');
-    return JSON.parse(fs.readFileSync(jsonFile));
+    var data = JSON.parse(fs.readFileSync(jsonFile));
+    for (var word in data) {
+      if (util.countSyllables(word) < syllables) {
+        delete data[word]
+      }
+    }
+    return data;
   }
 };

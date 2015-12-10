@@ -6,7 +6,7 @@ var _ = require('underscore');
 var path = require('path');
 var BbPromise = require('bluebird');
 var readFile = BbPromise.promisify(fs.readFile);
-var wordList = require('./wordlist-parser').getWordList('eng-1000mostcommon');
+var wordList = require('./wordlist-parser').getWordList('eng-1000mostcommon', 1);
 var config = require('./config/config');
 var util = require('./util');
 
