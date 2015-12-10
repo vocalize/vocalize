@@ -16,6 +16,17 @@
 
 ## About
 
+### Data Scraping
+
+In the data scraping directory you will find node js files that scrape youtube videos (audio books) for wav files of words.
+
+```
+npm install
+node index.js scrape <youtube id>
+```
+
+There is also a file that runs the python scripts to average the words and outputs them into a 'averaged' folder called average.sh
+
 ### Processing
 
 In the processing directory you will find a few python files for processing user input as well as scraped data.
