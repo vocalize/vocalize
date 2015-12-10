@@ -17,7 +17,8 @@ var scrape = function(videoId){
   youtubeScraper(videoId)
     .then(transcriptParser.bind(this, videoId))
     .then(audioParser.bind(this, videoId))
-    .then(standardiseWordLength);
+    .then(standardiseWordLength)
+    .catch(util.handleError);
 };
 
 var flags = process.argv.slice(2);

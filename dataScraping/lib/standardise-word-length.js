@@ -3,7 +3,8 @@ var ffmpeg = require('fluent-ffmpeg');
 var path = require('path');
 var BbPromise = require('bluebird');
 var readdir = BbPromise.promisify(fs.readdir);
-var stat = BbPromise.promisify(fs.stat)
+var stat = BbPromise.promisify(fs.stat);
+var util = require('./util');
 
 module.exports = function() {
   console.log('standardizing...');
@@ -116,18 +117,15 @@ var _modifyTempo = function(file, avg) {
 
   return new BbPromise(function(resolve, reject) {
 
-    ffmpeg(file.file)
+      ffmpeg(file.file)
       .audioCodec('pcm_f32le')
       .audioFilters('atempo=' + tempo)
       .output(newFile)
-      .on('end', function(err) {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      })
       .on('error', function(err) {
-        reject(err);
+        util.handleError('Error standardizing ' + filename + ' ' + err.message);
+      })
+      .on('end', function(err) {
+        resolve();
       })
       .run();
   });

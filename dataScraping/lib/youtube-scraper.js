@@ -106,7 +106,7 @@ var _slice = function(file, start, interval, idx) {
       })
       //Failure
       .on('error', function(err) {
-        reject(err);
+        util.handleError()
       })
       //Run ffmpeg command
       .run();
