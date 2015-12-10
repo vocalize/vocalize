@@ -3,16 +3,13 @@ from __future__ import division
 from pydub import AudioSegment
 import subprocess as sp
 import sys
-# ffmpeg -i WesternEngergy.wav -filter:a atempo="1.27455485353" -acodec pcm_f32le WesternEngergysync.wav
+
 FFMPEG_BIN = 'ffmpeg'
 
-# TODO: INPUTS
-input_path = 'WesternEngergy.wav'
-output_path = 'WesternEngergysync.wav'
-match_path = 'energy.wav'
 def usage():
     print "USAGE: matchlength.py <match_file_path> <input_file_path> <output_path>"
-    sys.exit(0) 
+    sys.exit(0)
+
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         usage()

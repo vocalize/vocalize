@@ -2,7 +2,7 @@
 import sys
 from pydub import AudioSegment
 
-def detect_leading_silence(sound, silence_threshold=-50.0, chunk_size=10):
+def detect_leading_silence(sound, silence_threshold=-40.0, chunk_size=10):
     trim_ms = 0 # ms
     while sound[trim_ms:trim_ms+chunk_size].dBFS < silence_threshold:
         trim_ms += chunk_size
@@ -10,6 +10,7 @@ def detect_leading_silence(sound, silence_threshold=-50.0, chunk_size=10):
     return trim_ms
 def usage():
     print "USAGE: trim.py <inputfilepath> <outputfilepath>"
+    sys.exit(1)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
