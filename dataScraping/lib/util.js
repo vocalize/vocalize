@@ -49,3 +49,4 @@ exports.countSyllables = function(word) {
   word = word.replace(/^y/, '');
   return word.match(/[aeiouy]{1,2}/g).length;
 };
+

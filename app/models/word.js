@@ -5,7 +5,11 @@ var Schema = mongoose.Schema;
 // TODO: figure out word schema
 var wordSchema = new Schema({
   id: Number,
-  word: String
+  word: String,
+  s3: {
+  	Bucket: {type: String, required: true},
+  	Key: {type: String, required: true}
+  }
 });
 
 // compile schema into a Model

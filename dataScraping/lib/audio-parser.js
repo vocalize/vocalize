@@ -46,10 +46,10 @@ module.exports = function(videoId) {
  * @return {[promise]}               [resolves when file is done parsing]
  */
 var _doIt = function(audioFilePath, transcriptFile) {
+
   if(util.exists(transcriptFile)){
     return readFile(transcriptFile)
     .then(function(transcript) {
-
       var timestamps = _parseTimeStamps(transcript);
 
       // Create an ffmpeg command for each timestamp and push them into the ffmpegCommand array

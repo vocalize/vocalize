@@ -27,6 +27,22 @@ var NextWord = React.createClass({
   }
 });
 
+var PlayWord = React.createClass({
+
+  render: function() {
+    return ( 
+      < div className = "play" >
+        <button type = 'button'
+          className = "btn btn-full"
+          onClick = {this.props.onClick} 
+        >
+        Play Word 
+        </button> 
+      </div>
+    );
+  }
+});
+
 var PercentCorrect = React.createClass({
   render: function(){
     return (
@@ -77,6 +93,37 @@ var PronunciationTest = React.createClass({
         console.error('/api/next', status, err.toString());
       }.bind(this)
     });
+  },
+
+  playWord: function() {
+    console.log('play word');
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    var context = new AudioContext();
+
+    function loadSound() {
+      var request = new XMLHttpRequest();
+      request.open("GET", "http://localhost:3000/api/audio/eugenehello.wav", true);
+      request.responseType = "arraybuffer";
+
+      request.onload = function() {
+        console.log(request.response);
+        var Data = request.response;
+        process(Data);
+      };
+
+      request.send();
+    }
+
+    function process(Data) {
+      var source = context.createBufferSource(); // Create Sound Source
+      context.decodeAudioData(Data, function(buffer) {
+        source.buffer = buffer;
+        source.connect(context.destination);
+        source.start(context.currentTime);
+      });
+    }
+
+    loadSound();
   },
 
   sendAudioFileToServer: function() {
