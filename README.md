@@ -11,6 +11,8 @@
 * numpy
 * scipy
 * scikits.audiolab sndfile `brew install libsndfile`
+* pydub
+* pylab
 
 ## About
 

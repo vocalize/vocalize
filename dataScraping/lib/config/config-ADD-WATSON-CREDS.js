@@ -1,4 +1,6 @@
 module.exports = {
-	username: ADDCREDS,
-	password: ADDCREDS
+    username:'',
+    password: '',
+    inputDir: '',
+    outputDir: ''
 };
