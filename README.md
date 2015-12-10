@@ -13,6 +13,7 @@
 * scikits.audiolab sndfile `brew install libsndfile`
 * pydub
 * pylab
+* opencv python bindings
 
 ## About
 
@@ -32,6 +33,9 @@ There is also a file that runs the python scripts to average the words and outpu
 In the processing directory you will find a few python files for processing user input as well as scraped data.
 
 #### Main Files
+
+* compareuser.sh - This runs it all in order and compares against the file in ../dataScraping/averaged/<word>.wav
+  * Usage: `compareuser.sh <inputfile> <word>`
 
 * trim.py - Trims a wav file of silence
   * Usage: `trim.py <inputfilepath> <outputfilepath>`
