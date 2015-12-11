@@ -60,8 +60,17 @@ var OptionButtons = React.createClass({
    render: function(){
     return (
       <div className="options">
-        <button type="button" className="choices sound"><i className="icon ion-volume-high"></i></button>
-        <button type="button" className="choices mircophone"><i className="icon ion-mic-a"></i></button>
+        <button type="button" className="choices sound" onClick={this.props.playWord}>
+          <i className="icon ion-volume-high"></i>
+        </button>
+        <button 
+          type="button" 
+          className="choices mircophone" 
+          onMouseDown={this.props.startRecording}
+          onMouseUp={this.props.stopRecording}
+        >
+          <i className="icon ion-mic-a"></i>
+        </button>
       </div>
     );
   }
@@ -80,7 +89,8 @@ var TargetWord = React.createClass({
 });
 
 var PronunciationTest = React.createClass({
-  
+  recordRTC: null,
+
   loadWordFromServer: function() {
     $.ajax({
       url: '/api/next',
@@ -126,20 +136,65 @@ var PronunciationTest = React.createClass({
     loadSound();
   },
 
-  sendAudioFileToServer: function() {
-    // TODO: ajax call to send audio file up to the server
+  requestUserAudioPermission: function() {
+    var mediaConstraints = {
+      audio: true,
+      video: false
+    };
+
+    var successCallback = function (mediaStream) {
+      var config = {
+        type: 'audio',
+        numberOfAudioChannels: 1
+      };
+
+      this.recordRTC = RecordRTC(mediaStream, config);
+    };
+
+    var errorCallback = function(err) {
+      console.log(err);
+    };
+
+    // TODO: check for browser compatability with navigator.mediaDevices.getUserMedia()
+    // navigator.getUserMedia is deprecated and should be avoided if possible
+    navigator.getUserMedia(mediaConstraints, successCallback.bind(this), errorCallback);
+  },
+
+  startRecordingUserAudio: function() {
+    this.recordRTC.startRecording();
+  },
+
+  stopRecordingUserAudio: function() {
+    this.recordRTC.stopRecording(function(audioURL) {
+      var soundBlob = this.recordRTC.blob;
+      this.sendAudioFileToServer(soundBlob);
+    }.bind(this));
+  },
+
+  sendAudioFileToServer: function(soundBlob) {
+    var formData = new FormData();
+    formData.append('userAudio', soundBlob);
+    $.ajax({
+      type: 'POST',
+      url: '/api/audio',
+      data: formData,
+      contentType: false,
+      cache: false,
+      processData: false,
+    });
   },
 
   getInitialState: function() {
     return {
       targetWord: null,
       targetWordAudio: null,
-      percentCorrect: null
+      percentCorrect: null,
     };
   },
 
   componentDidMount: function() {
     this.loadWordFromServer();
+    this.requestUserAudioPermission();
   },
 
   render: function(){
@@ -148,7 +203,12 @@ var PronunciationTest = React.createClass({
         <div>
           <TargetWord targetWord={this.state.targetWord} />
         </div>
-        <OptionButtons targetWordAudio={this.state.targetWordAudio} />
+        <OptionButtons 
+          targetWordAudio={this.state.targetWordAudio}
+          startRecording={this.startRecordingUserAudio}
+          stopRecording={this.stopRecordingUserAudio}
+          playWord={this.playWord}
+        />
         <PercentCorrect percentCorrect={this.state.percentCorrect} />
         <div>
           <NextWord onClick={this.loadWordFromServer} />
@@ -162,7 +222,9 @@ var Instructions = React.createClass({
   render: function(){
     return (
       <div>
-        <h3>Click the mircophone button and pronounce the word shown below</h3>
+        <h3>
+          Click and hold the microphone button, while pronouncing the word shown below
+        </h3>
       </div>
     );
   }
