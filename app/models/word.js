@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+
 var Counter = require('./counter');
 
 // TODO: figure out word schema
@@ -45,19 +46,25 @@ wordSchema.pre('save', function(next) {
     this.created_at = new Date();
   }
 
+  this.s3.Key = this._id + '-' + this.s3.Key;
+
   Counter.findByIdAndUpdate('word_list', {$inc: {seq: 1}}, {upsert: true}, function(err, counter){
-    console.log(counter);
-    if(err){
-      return next(err);
-    }
-    if(!counter){
-      this.word_index = 0;
-    } else {
-      this.word_index = counter.seq;
-    }
-    next();
+
+  	if(err){
+  		return next(err);
+  	}
+  	if(!counter){
+  		this.word_index = 0;
+  	} else {
+	  	this.word_index = counter.seq;
+  	}
+	  next();
+
   }.bind(this));
 });
+
+// Ensure that words are unique to language, gender, and accent.
+wordSchema.index({word: 1, language: 1, gender: 1, accent: 1}, {unique: true});
 
 // compile schema into a Model
 module.exports = mongoose.model('Word', wordSchema);
