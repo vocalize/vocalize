@@ -46,16 +46,16 @@ wordSchema.pre('save', function(next) {
   }
 
   Counter.findByIdAndUpdate('word_list', {$inc: {seq: 1}}, {upsert: true}, function(err, counter){
-  	console.log(counter);
-  	if(err){
-  		return next(err);
-  	}
-  	if(!counter){
-  		this.word_index = 0;
-  	} else {
-	  	this.word_index = counter.seq;
-  	}
-	  next();
+    console.log(counter);
+    if(err){
+      return next(err);
+    }
+    if(!counter){
+      this.word_index = 0;
+    } else {
+      this.word_index = counter.seq;
+    }
+    next();
   }.bind(this));
 });
 
@@ -64,39 +64,31 @@ module.exports = mongoose.model('Word', wordSchema);
 
 /*
 // insert fake data into the database - this only needs to be run once
-
 // create word instances
 var word1 = new Word({
-	id: 1,
-	word: 'umbrella'
+  id: 1,
+  word: 'umbrella'
 });
-
 var word2 = new Word({
-	id: 2,
-	word: 'turtle'
+  id: 2,
+  word: 'turtle'
 });
-
 var word3 = new Word({
-	id: 3,
-	word: 'waffle'
+  id: 3,
+  word: 'waffle'
 });
-
 var word4 = new Word({
-	id: 4,
-	word: 'peanut'
+  id: 4,
+  word: 'peanut'
 });
-
 var words = [word1, word2, word3, word4];
-
 // save the word instances
 words.forEach(function(word) {
-	word.save(function(err, saved) {
-		if (err) {
-			return console.error(err);
-		}
-
-		console.log(saved);
-	});
+  word.save(function(err, saved) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log(saved);
+  });
 });
-
 */

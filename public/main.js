@@ -163,13 +163,14 @@ var PronunciationTest = React.createClass({
   stopRecordingUserAudio: function() {
     this.recordRTC.stopRecording(function(audioURL) {
       var soundBlob = this.recordRTC.blob;
-      this.sendAudioFileToServer(soundBlob);
+      this.sendAudioFileToServer(soundBlob, this.state.targetWord);
     }.bind(this));
   },
 
-  sendAudioFileToServer: function(soundBlob) {
+  sendAudioFileToServer: function(soundBlob, targetWord) {
     var formData = new FormData();
     formData.append('userAudio', soundBlob);
+    formData.append('targetWord', targetWord);
     $.ajax({
       type: 'POST',
       url: '/api/audio',
