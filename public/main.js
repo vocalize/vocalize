@@ -91,14 +91,14 @@ var PronunciationTest = React.createClass({
 
   loadWordFromServer: function() {
     $.ajax({
-      url: '/api/next',
+      url: '/api/word/index/',
       dataType: 'json',
       cache: false,
       success: function(data) {
         this.setState(data);
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('/api/next', status, err.toString());
+        console.error('/api/word/index/', status, err.toString());
       }.bind(this)
     });
   },

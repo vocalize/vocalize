@@ -3,7 +3,6 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 
 var aws = require('./aws/aws');
-var helpers = require('./request-handler');
 var wordController = require('./controllers/words');
 
 // MIDDLEWARE
