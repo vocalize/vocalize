@@ -60,7 +60,7 @@ var OptionButtons = React.createClass({
    render: function(){
     return (
       <div className="options">
-        <button type="button" className="choices sound">
+        <button type="button" className="choices sound" onClick={this.props.playWord}>
           <i className="icon ion-volume-high"></i>
         </button>
         <button 
@@ -207,6 +207,7 @@ var PronunciationTest = React.createClass({
           targetWordAudio={this.state.targetWordAudio}
           startRecording={this.startRecordingUserAudio}
           stopRecording={this.stopRecordingUserAudio}
+          playWord={this.playWord}
         />
         <PercentCorrect percentCorrect={this.state.percentCorrect} />
         <div>
