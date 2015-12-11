@@ -5,12 +5,13 @@ React Component Hierarchy
     -Instructions
     -PronunciationTest
       -TargetWord
-      -OptionButtons
+      -PlayWordBtn
+      -RecordAudioBtn
       -PercentCorrect
-      -NextWord
+      -NextWordBtn
 */
 
-var NextWord = React.createClass({
+var NextWordBtn = React.createClass({
 
   render: function(){
     return (
@@ -22,22 +23,6 @@ var NextWord = React.createClass({
         >
           Next Word
         </button>
-      </div>
-    );
-  }
-});
-
-var PlayWord = React.createClass({
-
-  render: function() {
-    return ( 
-      < div className = "play" >
-        <button type = 'button'
-          className = "btn btn-full"
-          onClick = {this.props.onClick} 
-        >
-        Play Word 
-        </button> 
       </div>
     );
   }
@@ -56,22 +41,35 @@ var PercentCorrect = React.createClass({
   }
 });
 
-var OptionButtons = React.createClass({
-   render: function(){
-    return (
-      <div className="options">
-        <button type="button" className="choices sound" onClick={this.props.playWord}>
+var PlayWordBtn = React.createClass({
+
+  render: function() {
+    return ( 
+      < div className = "usr-options" >
+        <button type = "button"
+          className = "sound"
+          onClick = {this.props.playWord} 
+        >
           <i className="icon ion-volume-high"></i>
-        </button>
+        </button> 
+      </div>
+    );
+  }
+});
+
+var RecordAudioBtn = React.createClass({
+  render: function() {
+    return (
+      <div className="usr-options">
         <button 
           type="button" 
-          className="choices mircophone" 
+          className="microphone" 
           onMouseDown={this.props.startRecording}
           onMouseUp={this.props.stopRecording}
         >
           <i className="icon ion-mic-a"></i>
         </button>
-      </div>
+      </div>    
     );
   }
 });
@@ -80,7 +78,7 @@ var TargetWord = React.createClass({
   render: function(){
     return (
       <div>
-        <h2>
+        <h2 className="target-word">
           {this.props.targetWord}
         </h2>
       </div>
@@ -106,7 +104,6 @@ var PronunciationTest = React.createClass({
   },
 
   playWord: function() {
-    console.log('play word');
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     var context = new AudioContext();
 
@@ -116,7 +113,6 @@ var PronunciationTest = React.createClass({
       request.responseType = "arraybuffer";
 
       request.onload = function() {
-        console.log(request.response);
         var Data = request.response;
         process(Data);
       };
@@ -200,19 +196,14 @@ var PronunciationTest = React.createClass({
   render: function(){
     return (
       <div>
-        <div>
-          <TargetWord targetWord={this.state.targetWord} />
-        </div>
-        <OptionButtons 
-          targetWordAudio={this.state.targetWordAudio}
+        <TargetWord targetWord={this.state.targetWord} />
+        <PlayWordBtn playWord={this.playWord} />
+        <RecordAudioBtn 
           startRecording={this.startRecordingUserAudio}
           stopRecording={this.stopRecordingUserAudio}
-          playWord={this.playWord}
         />
         <PercentCorrect percentCorrect={this.state.percentCorrect} />
-        <div>
-          <NextWord onClick={this.loadWordFromServer} />
-        </div>
+        <NextWordBtn onClick={this.loadWordFromServer} />
       </div>
     );
   }
@@ -245,12 +236,8 @@ var VocalizeApp = React.createClass({
     return (
       <div>
         <Title />
-        <div>
-          <Instructions />
-        </div>
-        <div>
-          <PronunciationTest />
-        </div>
+        <Instructions />
+        <PronunciationTest />
       </div>
     );
   }

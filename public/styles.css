@@ -82,6 +82,12 @@ h3 {
   margin-left: 10px;
 }
 
+/* -------------------------TARGET WORD--------------------------*/
+.target-word {
+  position: relative;
+  top: 20px;
+}
+
 /* -------------------------INSTRUCTIONS--------------------------*/
 h1:after {
   display: block;
@@ -111,25 +117,6 @@ h3:after {
 
 /* -------------------------BUTTONS-----------------------------*/
 
-.options {
-  text-align: center;
-}
-
-.choices {
-  padding-right: 20px;
-  font-size: 325%;
-  display: inline;
-  color: #E12839;
-  margin-bottom: 10px;
-  text-align: center;
-  transition: background-color 0.2s, border 0.2s, color 0.2s;
-}
-
-.next {
-  margin-top: 30px;
-  text-align: center;
-}
-
 .btn {
   display: inline-block;
   padding: 10px 30px;
@@ -146,12 +133,27 @@ h3:after {
   margin-right: 15px;
 }
 
-.sound {
-  margin-right: 20px;
+.usr-options {
+  text-align: center;
 }
 
-.mircophone {
- padding-left: 20px;
- padding-right: 20px;
- margin-left: 30px;
+.next {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.sound {
+  position: relative;
+  top: 30px;
+  margin-right: 75px;
+  font-size: 325%;
+  color: #E12839;
+}
+
+.microphone {
+  position: relative;
+  bottom: 33px;
+  margin-left: 75px;
+  font-size: 325%;
+  color: #E12839;
 }
