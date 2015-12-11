@@ -1,20 +1,25 @@
 #!/bin/bash
 
+
+## Example: ./compareuser.sh testfiles/energyracist.wav ../dataScraping/averaged/against.wav
 if [ "$#" -ne 2 ]; then
-    echo "Usage: compareuser.sh <user input wav> <word>"
+    echo "Usage: compareuser.sh <user input wav> <control input wav>"
     exit 1
 fi
 
 input_file=$1
-word=$2
-echo "Word: $word"
-echo "File: $input_file"
+control_file=$2
+echo "User File: $input_file"
+echo "Control File: $control_file"
 
-word_path="../dataScraping/averaged/$word.wav"
-echo "Word Path: $word_path"
 
-if [ ! -f "$word_path" ]; then
-  echo "File: $word_path does not exist"
+if [ ! -f "$control_file" ]; then
+  echo "File: $control_file does not exist"
+  exit 1
+fi
+
+if [ ! -f "$input_file" ]; then
+  echo "File: $input_file does not exist"
   exit 1
 fi
 
@@ -23,7 +28,7 @@ trim_command="trim.py $input_file trimmed.wav"
 python $trim_command
 
 # Match Length
-match_length_command="matchlength.py $word_path trimmed.wav matched.wav"
+match_length_command="matchlength.py $control_file trimmed.wav matched.wav"
 python $match_length_command
 
 # Filter
@@ -31,7 +36,7 @@ filter_command="filterwav.py matched.wav filtered.wav"
 python $filter_command
 
 # Compare
-compare_command="compare.py $word_path filtered.wav"
+compare_command="compare.py $control_file filtered.wav"
 python $compare_command
 
 rm filtered.wav
