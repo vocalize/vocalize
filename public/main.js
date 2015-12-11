@@ -163,22 +163,42 @@ var PronunciationTest = React.createClass({
   stopRecordingUserAudio: function() {
     this.recordRTC.stopRecording(function(audioURL) {
       var soundBlob = this.recordRTC.blob;
-      this.sendAudioFileToServer(soundBlob, this.state.targetWord);
+      this.postAudioFile(soundBlob);
     }.bind(this));
   },
 
-  sendAudioFileToServer: function(soundBlob, targetWord) {
+  postAudioFile: function(soundBlob) {
     var formData = new FormData();
     formData.append('userAudio', soundBlob);
     formData.append('targetWord', targetWord);
     $.ajax({
       type: 'POST',
-      url: '/api/audio',
+      url: '/api/audio/',
       data: formData,
-      contentType: false,
-      cache: false,
       processData: false,
+      contentType: 'audio/wav',
+      success: function(data) {
+        this.postTargetWord();
+        this.recordRTC.clearRecordedData();
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/api/audio', status, err.toString());
+      }.bind(this)
     });
+  },
+
+  postTargetWord: function() {
+    $.ajax({
+      type: 'POST',
+      url: '/api/word/',
+      data: {'word': this.state.targetWord},
+      success: function(data) {
+        // TODO: update state with comparison results
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/api/word/', status, err.toString());
+      }.bind(this)
+    });  
   },
 
   getInitialState: function() {
