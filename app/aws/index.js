@@ -27,13 +27,24 @@ switch(flags[0]){
 				console.log('Error reading ' + flags[1]);
 			} else {
 				var content = JSON.parse(data);
-				aws.addWord(content.file, content.params);
+				aws.addWord(content.file, content.params)
+				.then(console.log.bind(this, 'Added word', content.word));
 			}
 		});
 		break;
 
-	// WORK IN PROGRESS
+	// Add directory of audio files to s3 and DB
+	// Assumes params.json file is present with language, accent and gender info
+	// Sets the word as the filename
+	// node index.js addDir testwords
 	case 'addDir':
 		aws.addWordsByDir(path.join(__dirname, flags[1]));
+		break;
+
+	// Removes all words matching query from s3 and DB
+	// Query needs to be an object
+	// node index.js remove {} - will get rid of everything!
+	case 'remove':
+		aws.removeWordsByQuery(flags[1]);
 		break;
 }

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+// Set Bluebird as Mongoose Promise provider
 mongoose.Promise = require('bluebird');
 
 mongoURI = process.env.CUSTOMCONNSTR_MONGOLAB_URI || 'mongodb://localhost/vocalize';
