@@ -4,7 +4,7 @@
   "description": "## Dependencies",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/unit/* && mocha test/integration/*"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,11 @@
     "express": "^4.13.3",
     "mongoose": "^4.2.10",
     "s3": "^4.4.0"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4",
+    "sinon": "^1.17.2",
+    "supertest": "^1.1.0"
   }
 }
