@@ -90,17 +90,32 @@ var PronunciationTest = React.createClass({
   recordRTC: null,
 
   loadWordFromServer: function() {
+    var url = this.compileNextWordUrl();
+
     $.ajax({
-      url: '/api/word/index/',
+      url: url,
       dataType: 'json',
       cache: false,
       success: function(data) {
         this.setState(data);
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('/api/word/index/', status, err.toString());
+        console.error(url, status, err.toString());
       }.bind(this)
     });
+  },
+
+  compileNextWordUrl : function() {
+    /*
+      Example: /api/words/index/?word_index=0&language=english&gender=male
+    */
+    var language = 'language=' + this.state.language;
+    var gender = 'gender=' + this.state.gender;
+    var word_index = document.cookie.slice();
+    var url = '/api/words/index/?' + word_index + '&' + language + '&' + gender;
+    
+    console.log(url);
+    return url;
   },
 
   playWord: function() {
@@ -203,8 +218,9 @@ var PronunciationTest = React.createClass({
 
   getInitialState: function() {
     return {
+      language: 'english',
+      gender: 'male',
       targetWord: null,
-      targetWordAudio: null,
       percentCorrect: null,
     };
   },

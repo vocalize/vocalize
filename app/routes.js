@@ -1,6 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+
 var router = express.Router();
+router.use(cookieParser());
 
 var aws = require('./aws/aws');
 var wordController = require('./controllers/words');
