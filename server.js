@@ -15,7 +15,7 @@ app.set('port', (process.env.PORT || 3000));
 app.use(function(req, res, next) {
   var cookie = req.cookies.word_index;
   if ( !cookie ) {
-  	res.cookie("word_index" , 1);
+  	res.cookie("word_index" , 0);
   }
   next();
 });

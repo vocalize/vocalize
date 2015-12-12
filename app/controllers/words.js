@@ -37,8 +37,8 @@ exports.getWordByNextIndex = function(req, res) {
   
   // increment word_index cookie, which will be used in the next request
   var word_index = parseInt(req.cookies.word_index);
-  //res.cookie("word_index", word_index + 1);
-
+  res.cookie("word_index", word_index + 1);
+  
   if (req.query.word_index) {
     req.query.word_index = {
       $gt: req.query.word_index
@@ -85,7 +85,7 @@ var _findRootWord = function(req, res) {
         res.status(404).send('No Words Found');
       } else {
         var word_index = parseInt(req.cookies.word_index);
-        res.cookie("word_index", 1);
+        res.cookie("word_index", 0);
         res.status(200).send(word[0]);
       }
     }).catch(function(err) {
