@@ -78,6 +78,6 @@ if __name__ == '__main__':
   try:
     os.remove('native.png')
     os.remove('user.png')
-    os.remove('difference.png')
+    # os.remove('difference.png')
   except OSError:
     pass
