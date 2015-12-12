@@ -178,10 +178,10 @@ var PronunciationTest = React.createClass({
   stopRecordingUserAudio: function() {
     this.recordRTC.stopRecording(function(audioURL) {
       var soundBlob = this.recordRTC.blob;
+      this.postTargetWord();
       this.postAudioFile(soundBlob);
     }.bind(this));
   },
-
   postAudioFile: function(soundBlob) {
     var formData = new FormData();
     formData.append('userAudio', soundBlob);
@@ -192,7 +192,6 @@ var PronunciationTest = React.createClass({
       processData: false,
       contentType: 'audio/wav',
       success: function(data) {
-        this.postTargetWord();
         this.recordRTC.clearRecordedData();
       }.bind(this),
       error: function(xhr, status, err) {

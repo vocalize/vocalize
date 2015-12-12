@@ -36,21 +36,18 @@ router.get('/api/audio/:filename', aws.downloadStream);
 * Compare the user audio to archetype audio 
 * curl -X POST -H "Content-Type: audio/wav" --data-binary @"some/audio/file.wav" http://localhost:3000/api/audio
 **/
-router.post('/api/audio/', function(req,res) {
-  // TODO: audio comparative analysis and refactor into a controller file
-  var audioFile = req.body;
-  console.log(audioFile);
-  res.json('ok');
-});
+router.post('/api/audio/', wordController.compareAudio);
 
 /**
 * Post the text version of the user audio
 * To be used in the lookup of the archetype audio
 **/
-router.post('/api/word/', function(req, res) {
-  var word = req.body.word;
-  console.log(req.body);
-  res.json('ok')
-});
+// router.post('/api/word/', function(req, res) {
+//   var word = req.body.word;
+//   console.log(req.body);
+//   res.json('ok')
+// });
+
+router.post('/api/word/', wordController.setWord);
 
 module.exports = router;

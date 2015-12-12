@@ -17,12 +17,15 @@
   },
   "homepage": "https://github.com/vocalize/vocalize#readme",
   "dependencies": {
+    "binaryjs": "^0.2.1",
     "bluebird": "^3.0.6",
     "body-parser": "^1.14.1",
     "cookie-parser": "^1.4.0",
     "express": "^4.13.3",
     "mongoose": "^4.2.10",
-    "s3": "^4.4.0"
+    "s3": "^4.4.0",
+    "streamws": "^0.1.1",
+    "wav": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.4.1",

@@ -1,6 +1,28 @@
 var Word = require('../models/word');
 var util = require('../util');
+var fs = require('fs');
+var binaryServer = require('binaryjs').BinaryServer;
+var wav = require('wav');
 
+var currentWords = {};
+
+exports.compareAudio = function(req, res) {
+  var sound = req.body;
+  var ip = util.getIp(req);
+  var word = currentWords[ip];
+  delete currentWords[ip];
+
+  console.log('comparing to:', sound);
+  var wavWriter = new wav.Writer({channels: 1});
+
+  res.json('ok');
+}
+
+exports.setWord = function(req, res) {
+  var ip = util.getIp(req);
+  currentWords[ip] = req.body.word;
+  res.json('ok');
+}
 
 /**
  * Gets one word based on the passed query string
@@ -9,7 +31,6 @@ var util = require('../util');
  * @return {[object]}     [word object from db]
  */
 exports.getWord = function(req, res) {
-
   Word.findOne(req.query)
     .then(function(word) {
       if (!word) {

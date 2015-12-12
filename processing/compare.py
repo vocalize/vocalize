@@ -53,8 +53,8 @@ if __name__ == '__main__':
   savefig('user.png')
 
   # THRESHOLD THEN DIFFERENCE
-  # native_thresh = get_threshold('native.png')
-  # user_thresh = get_threshold('user.png')
+  native_thresh = get_threshold('native.png')
+  user_thresh = get_threshold('user.png')
 
 
   # diff_thresh = native_thresh - user_thresh
@@ -66,9 +66,10 @@ if __name__ == '__main__':
   cv2.imwrite('difference.png', difference)
   diff_thresh = get_threshold('difference.png')
 
+  
   # Images for debugging purposes
-  # cv2.imwrite('nativethresh.png', native_thresh)
-  # cv2.imwrite('userthresh.png', user_thresh)
+  cv2.imwrite('nativethresh.png', native_thresh)
+  cv2.imwrite('userthresh.png', user_thresh)
   # cv2.imwrite('diffthresh.png', diff_thresh)
   
   non_zeros = np.count_nonzero(diff_thresh.flatten(0))
@@ -76,8 +77,8 @@ if __name__ == '__main__':
   
   # CLEANUP
   try:
-    os.remove('native.png')
-    os.remove('user.png')
-    # os.remove('difference.png')
+    # os.remove('native.png')
+    # os.remove('user.png')
+    os.remove('difference.png')
   except OSError:
     pass
