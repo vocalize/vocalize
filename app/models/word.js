@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var aws = require('../aws/aws');
 
 var Counter = require('./counter');
 
@@ -62,6 +63,13 @@ wordSchema.pre('save', function(next) {
 
   }.bind(this));
 });
+
+wordSchema.methods.downloadAudioFile = function(filepath){
+  return aws.downloadAudioFile(filepath, this)
+    .then(function(){
+      console.log(this.s3.key + ' downloaded to ' + filepath);
+    });
+};
 
 // Ensure that words are unique to language, gender, and accent.
 wordSchema.index({word: 1, language: 1, gender: 1, accent: 1}, {unique: true});

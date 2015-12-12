@@ -3,7 +3,16 @@ var mongoose = require('mongoose');
 // Set Bluebird as Mongoose Promise provider
 mongoose.Promise = require('bluebird');
 
-mongoURI = process.env.CUSTOMCONNSTR_MONGOLAB_URI || 'mongodb://localhost/vocalize';
+var mongoURI;
+
+if (process.env.MONGOLAB_URI) {
+  mongoURI = process.env.MONGOLAB_URI;
+} else if (process.env.NODE_ENV === 'test') {
+  mongoURI = 'mongodb://localhost/doozytest';
+} else {
+  mongoURI = 'mongodb://localhost/doozy';
+}
+
 mongoose.connect(mongoURI);
 
 // we have pending connection to the db

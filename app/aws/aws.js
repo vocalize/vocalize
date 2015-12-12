@@ -48,7 +48,7 @@ exports.addWordsByDir = function(directory) {
       // Filter for wav files
       files = files.filter(function(file) {
         return path.parse(file).ext === '.wav';
-      // Bind upload/save commands for each file
+        // Bind upload/save commands for each file
       }).map(function(file) {
         return _uploadWordAndSave.bind(this, path.join(directory, file), params);
       });
@@ -123,31 +123,61 @@ exports.uploadFile = function(filepath, word) {
 };
 
 /**
+ * Downloads a file from S3 to server FileSystem
+ * @param  {[string]} filepath [path to save file]
+ * @return {[promise]}         [resolves on successful download]
+ */
+exports.downloadFile = function(filepath, word) {
+  return new BbPromise(function(resolve, reject) {
+
+    var params = {
+      localFile: filepath,
+
+      s3Params: {
+        Bucket: word.s3.bucket,
+        Key: word.s3.Key
+      }
+    };
+    var downloader = client.downloadFile(params);
+    downloader.on('error', function(err) {
+      console.error("unable to download:", err.stack);
+    });
+    downloader.on('progress', function() {
+      console.log("progress", downloader.progressAmount, downloader.progressTotal);
+    });
+    downloader.on('end', function() {
+      console.log("done downloading");
+      resolve();
+    });
+  });
+};
+
+/**
  * Removes all words matching the query from DB
  * AND from s3
  * @param  {[object]} query [mongoDB query]
  * @return {[promise]}      [promise object]
  */
-exports.removeWordsByQuery = function(query){
+exports.removeWordsByQuery = function(query) {
   return _openDbConnection()
-    .then(function(){
+    .then(function() {
       // Find matching words
       return Word.find(query);
     })
-    .then(function(words){
+    .then(function(words) {
       // Remove words from S3
       return _removeS3File(words);
     })
-    .then(function(){
+    .then(function() {
       // Delete words from DB
-      return Word.remove(query, function(){
+      return Word.remove(query, function() {
         console.log('words deleted from db');
       });
     })
-    .catch(function(err){
+    .catch(function(err) {
       console.log(err);
     })
-    .finally(function(){
+    .finally(function() {
       mongoose.connection.close();
     });
 };
@@ -185,12 +215,14 @@ exports.downloadStream = function(req, res, next) {
  * @param  {[array]} words [list of words to remove]
  * @return {[promise]}     [resolves on successful removal]
  */
-var _removeS3File = function(words){
-  return new BbPromise(function(resolve, reject){
-    
+var _removeS3File = function(words) {
+  return new BbPromise(function(resolve, reject) {
+
     // Map word keys
-    var objects = words.map(function(word){
-      return {Key: word.s3.Key};
+    var objects = words.map(function(word) {
+      return {
+        Key: word.s3.Key
+      };
     });
 
     // Set up s3 object
@@ -203,14 +235,14 @@ var _removeS3File = function(words){
 
     var deleter = client.deleteObjects(params);
 
-      deleter.on('end', function(){
-        console.log(words.length + ' words deleted from s3');
-        resolve();
-      })
-      deleter.on('error', function(err){
-        console.log('error');
-        reject(err);
-      });
+    deleter.on('end', function() {
+      console.log(words.length + ' words deleted from s3');
+      resolve();
+    })
+    deleter.on('error', function(err) {
+      console.log('error');
+      reject(err);
+    });
   });
 };
 
@@ -260,10 +292,3 @@ var _uploadWordAndSave = function(file, params) {
       return exports.uploadFile(file, word);
     });
 };
-
-
-
-
-
-
-
