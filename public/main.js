@@ -96,7 +96,7 @@ var PronunciationTest = React.createClass({
       url: url,
       dataType: 'json',
       success: function(data) {
-        this.setState({targetWord: data.word});
+        this.setState({targetWord: data.word, s3key: data.s3.Key});
       }.bind(this)
     });
   },
@@ -116,11 +116,11 @@ var PronunciationTest = React.createClass({
   playWord: function() {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     var context = new AudioContext();
-    var word = this.state.targetWord;
+    var s3key = this.state.s3key;
 
     function loadSound() {
       var request = new XMLHttpRequest();
-      request.open("GET", "http://localhost:3000/api/audio/" + word + ".wav", true);
+      request.open("GET", "http://localhost:3000/api/audio/" + s3key, true);
       request.responseType = "arraybuffer";
 
       request.onload = function() {
@@ -137,6 +137,10 @@ var PronunciationTest = React.createClass({
         source.buffer = buffer;
         source.connect(context.destination);
         source.start(context.currentTime);
+        // Close audio context when file is done
+        source.onended = function(){
+          context.close();
+        }
       });
     }
 
