@@ -23,6 +23,7 @@ var wordSchema = new Schema({
     type: String,
     required: true
   },
+  acceptable_score: Number,
   level: String,
   s3: {
     Bucket: {
