@@ -90,26 +90,37 @@ var PronunciationTest = React.createClass({
   recordRTC: null,
 
   loadWordFromServer: function() {
+    var url = this.compileNextWordUrl();
+
     $.ajax({
-      url: '/api/word/index/',
+      url: url,
       dataType: 'json',
-      cache: false,
       success: function(data) {
-        this.setState(data);
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/api/word/index/', status, err.toString());
+        this.setState({targetWord: data.word});
       }.bind(this)
     });
+  },
+
+  compileNextWordUrl : function() {
+    /*
+      Example: /api/words/index/?word_index=0&language=english&gender=male
+    */
+    var language = 'language=' + this.state.language;
+    var gender = 'gender=' + this.state.gender;
+    var word_index = document.cookie.slice();
+    var url = '/api/words/index/?' + word_index + '&' + language + '&' + gender;
+    
+    return url;
   },
 
   playWord: function() {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     var context = new AudioContext();
+    var word = this.state.targetWord;
 
     function loadSound() {
       var request = new XMLHttpRequest();
-      request.open("GET", "http://localhost:3000/api/audio/eugenehello.wav", true);
+      request.open("GET", "http://localhost:3000/api/audio/" + word + ".wav", true);
       request.responseType = "arraybuffer";
 
       request.onload = function() {
@@ -163,28 +174,48 @@ var PronunciationTest = React.createClass({
   stopRecordingUserAudio: function() {
     this.recordRTC.stopRecording(function(audioURL) {
       var soundBlob = this.recordRTC.blob;
-      this.sendAudioFileToServer(soundBlob, this.state.targetWord);
+      this.postAudioFile(soundBlob);
     }.bind(this));
   },
 
-  sendAudioFileToServer: function(soundBlob, targetWord) {
+  postAudioFile: function(soundBlob) {
     var formData = new FormData();
     formData.append('userAudio', soundBlob);
-    formData.append('targetWord', targetWord);
     $.ajax({
       type: 'POST',
-      url: '/api/audio',
+      url: '/api/audio/',
       data: formData,
-      contentType: false,
-      cache: false,
       processData: false,
+      contentType: 'audio/wav',
+      success: function(data) {
+        this.postTargetWord();
+        this.recordRTC.clearRecordedData();
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/api/audio', status, err.toString());
+      }.bind(this)
     });
+  },
+
+  postTargetWord: function() {
+    $.ajax({
+      type: 'POST',
+      url: '/api/word/',
+      data: {'word': this.state.targetWord},
+      success: function(data) {
+        // TODO: update state with comparison results
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/api/word/', status, err.toString());
+      }.bind(this)
+    });  
   },
 
   getInitialState: function() {
     return {
+      language: 'english',
+      gender: 'male',
       targetWord: null,
-      targetWordAudio: null,
       percentCorrect: null,
     };
   },
