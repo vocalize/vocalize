@@ -65,10 +65,7 @@ wordSchema.pre('save', function(next) {
 });
 
 wordSchema.methods.downloadAudioFile = function(filepath){
-  return aws.downloadAudioFile(filepath, this)
-    .then(function(){
-      console.log(this.s3.key + ' downloaded to ' + filepath);
-    });
+  return aws.downloadFile(filepath, this);
 };
 
 // Ensure that words are unique to language, gender, and accent.

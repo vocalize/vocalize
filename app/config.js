@@ -8,9 +8,9 @@ var mongoURI;
 if (process.env.MONGOLAB_URI) {
   mongoURI = process.env.MONGOLAB_URI;
 } else if (process.env.NODE_ENV === 'test') {
-  mongoURI = 'mongodb://localhost/doozytest';
+  mongoURI = 'mongodb://localhost/vocalizetest';
 } else {
-  mongoURI = 'mongodb://localhost/doozy';
+  mongoURI = 'mongodb://localhost/vocalize';
 }
 
 mongoose.connect(mongoURI);

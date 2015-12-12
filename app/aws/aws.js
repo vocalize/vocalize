@@ -131,10 +131,10 @@ exports.downloadFile = function(filepath, word) {
   return new BbPromise(function(resolve, reject) {
 
     var params = {
-      localFile: filepath,
+      localFile: path.join(filepath, word.word + '.wav'),
 
       s3Params: {
-        Bucket: word.s3.bucket,
+        Bucket: word.s3.Bucket,
         Key: word.s3.Key
       }
     };
