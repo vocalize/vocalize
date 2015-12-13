@@ -103,12 +103,11 @@ var PronunciationTest = React.createClass({
 
   compileNextWordUrl : function() {
     /*
-      Example: /api/words/index/?word_index=0&language=english&gender=male
+      Example: /api/words/index/?language=english&gender=male
     */
     var language = 'language=' + this.state.language;
     var gender = 'gender=' + this.state.gender;
-    var word_index = document.cookie.slice();
-    var url = '/api/words/index/?' + word_index + '&' + language + '&' + gender;
+    var url = '/api/words/index/?' + language + '&' + gender;
     
     return url;
   },

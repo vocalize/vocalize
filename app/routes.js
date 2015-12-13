@@ -38,16 +38,5 @@ router.get('/api/audio/:filename', aws.downloadStream);
 **/
 router.post('/api/audio/', wordController.compareAudio);
 
-/**
-* Post the text version of the user audio
-* To be used in the lookup of the archetype audio
-**/
-// router.post('/api/word/', function(req, res) {
-//   var word = req.body.word;
-//   console.log(req.body);
-//   res.json('ok')
-// });
-
-router.post('/api/word/', wordController.setWord);
 
 module.exports = router;
