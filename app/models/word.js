@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var aws = require('../aws/aws');
-
+var Promise = require('bluebird');
 var Counter = require('./counter');
 
 // TODO: figure out word schema
@@ -66,7 +66,12 @@ wordSchema.pre('save', function(next) {
 });
 
 wordSchema.methods.downloadAudioFile = function(filepath){
-  return aws.downloadFile(filepath, this);
+  var that = this;
+  return new Promise(function(fulfill, reject) {
+    aws.downloadFile(filepath, that).then(function() {
+      fulfill(filepath);
+    });
+  });
 };
 
 // Ensure that words are unique to language, gender, and accent.

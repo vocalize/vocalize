@@ -30,6 +30,7 @@ if __name__ == '__main__':
               atempo,
               '-acodec', 'pcm_f32le',
               '-y', #overwrite
+              '-loglevel', 'quiet',
               output_path
               ]
     sp.call(command, shell=False)

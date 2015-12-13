@@ -4,15 +4,13 @@ var fs = require('fs');
 var binaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
 var stream = require('stream');
-
+var child_process = require('child_process');
 var currentWords = {};
 
 exports.compareAudio = function(req, res) {
   
   var sound = req.body;
-  var ip = util.getIp(req);
-  var word = currentWords[ip];
-  delete currentWords[ip];
+  var word = req.cookies.word
 
   // Create a new stream
   var bufferStream = new stream.PassThrough();
@@ -20,15 +18,30 @@ exports.compareAudio = function(req, res) {
   // Pass the buffer into the stream
   bufferStream.end(sound);
 
-  console.log('comparing to:', sound);
+  console.log('comparing to:', word);
   
-  // Create a new wav writer
-  var wavWriter = new wav.FileWriter(__dirname + '/test.wav', {channels: 1});
-  
-  // Pipe the stream into wav writer
-  bufferStream.pipe(wavWriter);
-  
-  res.json('ok');
+  Word.findOne({'word': word})
+    .then(function(word) {
+      // Create a new wav writer
+      var wavWriter = new wav.FileWriter('processing/user.wav', {channels: 1});
+
+      // Pipe the stream into wav writer
+      bufferStream.pipe(wavWriter);
+
+      word.downloadAudioFile('processing/control.wav').then(function() {
+        child_process.exec('bash compareuser.sh user.wav control.wav', {
+          cwd: 'processing'
+        }, function (error, stdout, stderr) {
+          console.log('stdout: ' + stdout);
+          if (error !== null) {
+            console.log('stderr: ' + stderr);
+            console.log('exec error: ' + error);
+
+          }
+          res.status(200).send(stdout);
+        });
+      });
+    });
 }
 
 exports.setWord = function(req, res) {
