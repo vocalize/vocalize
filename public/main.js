@@ -1,4 +1,4 @@
-/*
+ /*
 React Component Hierarchy
   -VocalizeApp
     -Title
