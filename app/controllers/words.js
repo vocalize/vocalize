@@ -56,20 +56,7 @@ exports.getWord = function(req, res) {
  */
 exports.getWordByNextIndex = function(req, res) {
   
-  // set cookie if none exists
-  var cookie = req.cookies.word_index;
-  var word_index;
-  if ( !cookie ) {
-    word_index = 0;
-    res.cookie("word_index" , word_index);
-    word_index = word_index.toString();
-  } else {
-    // increment word_index cookie, which will be used in the next request
-    word_index = parseInt(cookie);
-    res.cookie("word_index", word_index + 1);
-    word_index = word_index.toString();
-  }
-  
+  var word_index = _setWordIndexCookie(res, req.cookies.word_index);
 
   if (word_index) {
     req.query.word_index = {
@@ -84,6 +71,7 @@ exports.getWordByNextIndex = function(req, res) {
         if (!word.length) {
           _findRootWord(req, res);
         } else {
+          res.cookie("word" , word[0].word);
           res.status(200).send(word[0]);
         }
       })
@@ -117,9 +105,33 @@ var _findRootWord = function(req, res) {
         res.status(404).send('No Words Found');
       } else {
         res.cookie("word_index", 0);
+        res.cookie("word" , word[0].word);
         res.status(200).send(word[0]);
       }
     }).catch(function(err) {
       res.status(500).send('Error finding word');
     });
+};
+
+/**
+ * Increment the word_index cookie
+ * If word_index cookie does not exists, create it and set it to 0
+ * @param  {[object]} res    [response]
+ * @param  {[string]} cookie [current value of word_index]
+ * @return {[string]}        [new value of word_index]
+ */
+
+var _setWordIndexCookie = function(res, cookie) {
+  var word_index;
+
+  if ( !cookie ) {
+    word_index = 0;
+    res.cookie("word_index" , word_index);
+    return word_index.toString();
+  } else {
+    // increment word_index cookie, which will be used in the next request
+    word_index = parseInt(cookie);
+    res.cookie("word_index", word_index + 1);
+    return word_index.toString();
+  }
 };
