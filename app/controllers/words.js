@@ -155,7 +155,6 @@ var _setWordIndexCookie = function(res, cookie) {
     res.cookie("word_index" , word_index);
     return word_index.toString();
   } else {
-    // increment word_index cookie, which will be used in the next request
     word_index = parseInt(cookie);
     res.cookie("word_index", word_index + 1);
     return word_index.toString();
