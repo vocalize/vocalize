@@ -1,0 +1,9 @@
+export const SET_STATE = 'SET_STATE';
+export const NEXT = 'NEXT';
+export const RECORD = 'RECORD';
+export const STOP = 'STOP';
+export const PLAY = 'PLAY';
+export const SEND = 'SEND';
+export const REQUEST_NEW_WORD = 'REQUEST_NEW_WORD';
+export const RECEIVE_NEW_WORD = 'RECEIVE_NEW_WORD';
+export const FETCH = 'FETCH';
