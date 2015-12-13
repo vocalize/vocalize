@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 # from __future__ import division
 # import cv2
 # import numpy as np
@@ -14,25 +13,25 @@ from features import logfbank
 import scipy.io.wavfile as wav
 from sklearn.metrics import mean_squared_error
 
-def get_threshold(filename):
-  image = cv2.imread(filename)
-  blurred = cv2.blur(image, (3,3))
+# def get_threshold(filename):
+#   image = cv2.imread(filename)
+#   blurred = cv2.blur(image, (3,3))
 
-  hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-  thresh = cv2.inRange(hsv,np.array((0, 80, 80)), np.array((20, 255, 255)))
-  thresh2 = thresh.copy()
-  contours,hierarchy = cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+#   hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+#   thresh = cv2.inRange(hsv,np.array((0, 80, 80)), np.array((20, 255, 255)))
+#   thresh2 = thresh.copy()
+#   contours,hierarchy = cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
 
-  max_area = 0
-  for cnt in contours:
-    area = cv2.contourArea(cnt)
-    if area > max_area:
-      max_area = area
-      best_cnt = cnt
-  M = cv2.moments(best_cnt)
-  cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
-  cv2.circle(blurred,(cx,cy),5,255,-1)
-  return thresh2
+#   max_area = 0
+#   for cnt in contours:
+#     area = cv2.contourArea(cnt)
+#     if area > max_area:
+#       max_area = area
+#       best_cnt = cnt
+#   M = cv2.moments(best_cnt)
+#   cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+#   cv2.circle(blurred,(cx,cy),5,255,-1)
+#   return thresh2
 
 
 def usage():
@@ -100,7 +99,7 @@ if __name__ == '__main__':
 
   if len(mfcc_feat)<len(mfcc_feat2):
     print mean_squared_error(mfcc_feat, mfcc_feat2[:len(mfcc_feat)])
-  if len(mfcc_feat)>len(mfcc_feat2):
+  elif len(mfcc_feat)>len(mfcc_feat2):
     print mean_squared_error(mfcc_feat[:len(mfcc_feat2)], mfcc_feat2)
   else:
     print mean_squared_error(mfcc_feat, mfcc_feat2)
