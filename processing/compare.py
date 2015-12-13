@@ -7,7 +7,10 @@ import os
 from scipy.io.wavfile import read,write
 from pylab import plot,show,subplot,specgram,savefig
 import pylab
-
+from features import mfcc
+from features import logfbank
+import scipy.io.wavfile as wav
+from sklearn.metrics import mean_squared_error
 
 def get_threshold(filename):
   image = cv2.imread(filename)
@@ -40,45 +43,66 @@ if __name__ == '__main__':
   native_wav_path = sys.argv[1]
   user_wav_path = sys.argv[2]
 
-  native_rate, native_wav = read(native_wav_path)
-  pylab.figure(figsize=(10,10))
-  specgram(native_wav, NFFT=1024, noverlap=0)
-  pylab.axis('off')
-  savefig('native.png')
+  # native_rate, native_wav = read(native_wav_path)
+  # pylab.figure(figsize=(10,10))
+  # specgram(native_wav, NFFT=1024, noverlap=0)
+  # pylab.axis('off')
+  # savefig('native.png')
 
-  user_rate, user_wav = read(user_wav_path)
-  pylab.figure(figsize=(10,10))
-  specgram(user_wav, NFFT=1024, noverlap=0)
-  pylab.axis('off')
-  savefig('user.png')
+  # user_rate, user_wav = read(user_wav_path)
+  # pylab.figure(figsize=(10,10))
+  # specgram(user_wav, NFFT=1024, noverlap=0)
+  # pylab.axis('off')
+  # savefig('user.png')
 
-  # THRESHOLD THEN DIFFERENCE
-  native_thresh = get_threshold('native.png')
-  user_thresh = get_threshold('user.png')
+  # # THRESHOLD THEN DIFFERENCE
+  # native_thresh = get_threshold('native.png')
+  # user_thresh = get_threshold('user.png')
 
 
-  # diff_thresh = native_thresh - user_thresh
+  # # diff_thresh = native_thresh - user_thresh
 
-  # DIFFERENCE THEN TRESHOLD
-  native_image = cv2.imread('native.png')
-  user_image = cv2.imread('user.png')
-  difference = native_image - user_image
-  cv2.imwrite('difference.png', difference)
-  diff_thresh = get_threshold('difference.png')
+  # # DIFFERENCE THEN TRESHOLD
+  # native_image = cv2.imread('native.png')
+  # user_image = cv2.imread('user.png')
+  # difference = native_image - user_image
+  # cv2.imwrite('difference.png', difference)
+  # diff_thresh = get_threshold('difference.png')
 
   
-  # Images for debugging purposes
-  cv2.imwrite('nativethresh.png', native_thresh)
-  cv2.imwrite('userthresh.png', user_thresh)
-  # cv2.imwrite('diffthresh.png', diff_thresh)
+  # # Images for debugging purposes
+  # cv2.imwrite('nativethresh.png', native_thresh)
+  # cv2.imwrite('userthresh.png', user_thresh)
+  # # cv2.imwrite('diffthresh.png', diff_thresh)
   
-  non_zeros = np.count_nonzero(diff_thresh.flatten(0))
-  print non_zeros/len(diff_thresh.flatten(0))
+  # non_zeros = np.count_nonzero(diff_thresh.flatten(0))
+  # print non_zeros/len(diff_thresh.flatten(0))
   
-  # CLEANUP
-  try:
-    # os.remove('native.png')
-    # os.remove('user.png')
-    os.remove('difference.png')
-  except OSError:
-    pass
+  # # CLEANUP
+  # try:
+  #   # os.remove('native.png')
+  #   # os.remove('user.png')
+  #   os.remove('difference.png')
+  # except OSError:
+  #   pass
+
+
+
+  (rate,sig) = wav.read(native_wav_path)
+  mfcc_feat = mfcc(sig,rate)
+  fbank_feat = logfbank(sig,rate)
+​
+  (rate2,sig2) = wav.read(user_wav_path)
+  mfcc_feat2 = mfcc(sig2,rate2)
+  fbank_feat2 = logfbank(sig2,rate2)
+
+  if len(mfcc_feat)<len(mfcc_feat2):
+    print mean_squared_error(mfcc_feat, mfcc_feat2[:len(mfcc_feat)])
+  if len(mfcc_feat)>len(mfcc_feat2):
+    print mean_squared_error(mfcc_feat[:len(mfcc_feat2)], mfcc_feat2)
+​
+​
+​
+
+
+
