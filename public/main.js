@@ -191,6 +191,10 @@ var PronunciationTest = React.createClass({
       contentType: 'audio/wav',
       success: function(data) {
         this.recordRTC.clearRecordedData();
+        var percentCorrect = Math.floor(data);
+        this.setState({
+          percentCorrect: percentCorrect
+        });
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/api/audio', status, err.toString());
