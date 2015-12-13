@@ -25,6 +25,7 @@ def ffmpeg_load_audio(filename, sr=44100, mono=True, dtype=np.float32):
         '-acodec', 'pcm_' + format_string,
         '-ar', str(sr),
         '-ac', str(channels),
+        '-loglevel', 'quiet',
         '-']
     p = sp.Popen(command, stdout=sp.PIPE, bufsize=10**8)
     bytes_per_sample = np.dtype(dtype).itemsize
@@ -53,7 +54,7 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 def main(**kwargs):
   outfile = kwargs['outfile'][0]
   infile = kwargs['infile']
-  print "Filtering %s to %s" % (infile, outfile)
+  # print "Filtering %s to %s" % (infile, outfile)
 
   data, rate = ffmpeg_load_audio(infile, 44100, True, dtype=np.float32)
   wavwrite('test.wav', 44100, data)

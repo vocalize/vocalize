@@ -24,6 +24,7 @@ def ffmpeg_load_audio(filename, sr=44100, mono=True, dtype=np.float32):
         '-acodec', 'pcm_' + format_string,
         '-ar', str(sr),
         '-ac', str(channels),
+        '-loglevel', 'quiet',
         '-']
     p = sp.Popen(command, stdout=sp.PIPE, bufsize=10**8)
     bytes_per_sample = np.dtype(dtype).itemsize

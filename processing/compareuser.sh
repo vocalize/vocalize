@@ -9,8 +9,8 @@ fi
 
 input_file=$1
 control_file=$2
-echo "User File: $input_file"
-echo "Control File: $control_file"
+# echo "User File: $input_file"
+# echo "Control File: $control_file"
 
 
 if [ ! -f "$control_file" ]; then
@@ -23,8 +23,12 @@ if [ ! -f "$input_file" ]; then
   exit 1
 fi
 
+# Chop
+chop_command="chop.py $input_file chopped.wav"
+python $chop_command
+
 # Trim
-trim_command="trim.py $input_file trimmed.wav"
+trim_command="trim.py chopped.wav trimmed.wav"
 python $trim_command
 
 # Match Length
