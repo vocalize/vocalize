@@ -3,18 +3,31 @@ var util = require('../util');
 var fs = require('fs');
 var binaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
+var stream = require('stream');
 
 var currentWords = {};
 
 exports.compareAudio = function(req, res) {
+  
   var sound = req.body;
   var ip = util.getIp(req);
   var word = currentWords[ip];
   delete currentWords[ip];
 
-  console.log('comparing to:', sound);
-  var wavWriter = new wav.Writer({channels: 1});
+  // Create a new stream
+  var bufferStream = new stream.PassThrough();
 
+  // Pass the buffer into the stream
+  bufferStream.end(sound);
+
+  console.log('comparing to:', sound);
+  
+  // Create a new wav writer
+  var wavWriter = new wav.FileWriter(__dirname + '/test.wav', {channels: 1});
+  
+  // Pipe the stream into wav writer
+  bufferStream.pipe(wavWriter);
+  
   res.json('ok');
 }
 
