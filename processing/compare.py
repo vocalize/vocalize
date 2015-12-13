@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-from __future__ import division
-import cv2
-import numpy as np
+
+
+# from __future__ import division
+# import cv2
+# import numpy as np
 import sys
 import os
-from scipy.io.wavfile import read,write
-from pylab import plot,show,subplot,specgram,savefig
-import pylab
+# from scipy.io.wavfile import read,write
+# from pylab import plot,show,subplot,specgram,savefig
+# import pylab
 from features import mfcc
 from features import logfbank
 import scipy.io.wavfile as wav
@@ -91,7 +93,7 @@ if __name__ == '__main__':
   (rate,sig) = wav.read(native_wav_path)
   mfcc_feat = mfcc(sig,rate)
   fbank_feat = logfbank(sig,rate)
-​
+
   (rate2,sig2) = wav.read(user_wav_path)
   mfcc_feat2 = mfcc(sig2,rate2)
   fbank_feat2 = logfbank(sig2,rate2)
@@ -100,9 +102,5 @@ if __name__ == '__main__':
     print mean_squared_error(mfcc_feat, mfcc_feat2[:len(mfcc_feat)])
   if len(mfcc_feat)>len(mfcc_feat2):
     print mean_squared_error(mfcc_feat[:len(mfcc_feat2)], mfcc_feat2)
-​
-​
-​
-
-
-
+  else:
+    print mean_squared_error(mfcc_feat, mfcc_feat2)
