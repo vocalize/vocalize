@@ -14,10 +14,10 @@
 * numpy
 * scipy
 * scikits.audiolab sndfile `brew install libsndfile`
+* sklearn
 * pydub
 * pylab
 * python_speech_features
-* opencv python bindings
 
 ## About
 
