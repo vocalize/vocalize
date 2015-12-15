@@ -6,6 +6,9 @@ var mongoose = require('mongoose');
 var config = require('./config');
 var util = require('../util');
 
+// Set Mongoose Promise Library
+mongoose.Promise = BbPromise;
+
 // Promisify fs functions
 var readFile = BbPromise.promisify(fs.readFile);
 var readdir = BbPromise.promisify(fs.readdir);
@@ -31,12 +34,16 @@ exports.addWordsByDir = function(directory) {
   var params,
     metadataFile = path.join(directory, 'params.json');
 
-  console.log('saving ' + directory);
+  if (!util.exists(directory)) {
+    return BbPromise.reject('Directory does not exist');
+  }
 
   // Connect to MongoDB
-  return _openDbConnection()
+  return exports.openDbConnection()
     // Read data file to get params
-    .then(readFile.bind(this, metadataFile))
+    .then(function() {
+      return readFile(metadataFile);
+    })
     .then(function(data) {
 
       params = JSON.parse(data);
@@ -50,7 +57,7 @@ exports.addWordsByDir = function(directory) {
         return path.parse(file).ext === '.wav';
         // Bind upload/save commands for each file
       }).map(function(file) {
-        return _uploadWordAndSave.bind(this, path.join(directory, file), params);
+        return exports.uploadWordAndSave.bind(this, path.join(directory, file), params);
       });
 
       // Run each upload/save command
@@ -62,11 +69,10 @@ exports.addWordsByDir = function(directory) {
       console.log('done!');
     })
     .catch(function(err) {
-      console.log('Error adding files from ' + directory, err);
+      return BbPromise.reject(err);
     })
     .finally(function() {
-      // Close connection
-      mongoose.connection.close();
+      exports.closeDbConnection();
     });
 };
 
@@ -76,15 +82,18 @@ exports.addWordsByDir = function(directory) {
  * @param {[object]} params [params to save on db]
  */
 exports.addWord = function(file, params) {
-  return _openDbConnection()
+  if (!util.exists(file)) {
+    return BbPromise.reject('Can not find ' + file);
+  }
+  return exports.openDbConnection()
     .then(function() {
-      return _uploadWordAndSave(file, params);
+      return exports.uploadWordAndSave(file, params);
     })
     .catch(function(err) {
       console.log(err);
     })
     .finally(function() {
-      mongoose.connection.close();
+      exports.closeDbConnection();
     });
 };
 
@@ -160,14 +169,14 @@ exports.downloadFile = function(filepath, word) {
  * @return {[promise]}      [promise object]
  */
 exports.removeWordsByQuery = function(query) {
-  return _openDbConnection()
+  return exports.openDbConnection()
     .then(function() {
       // Find matching words
       return Word.find(query);
     })
     .then(function(words) {
       // Remove words from S3
-      return _removeS3File(words);
+      return exports.removeS3File(words);
     })
     .then(function() {
       // Delete words from DB
@@ -179,11 +188,11 @@ exports.removeWordsByQuery = function(query) {
       console.log(err);
     })
     .finally(function() {
-      mongoose.connection.close();
+      exports.closeDbConnection();
     });
 };
 
-/**
+/**gul
  * Finds a file on Amazon S3 and pipes a readstream to the response object
  * Requires req.params.filename to be set to a file on S3
  * @return {[stream]}        [pipes stream to the response]
@@ -216,7 +225,7 @@ exports.downloadStream = function(req, res, next) {
  * @param  {[array]} words [list of words to remove]
  * @return {[promise]}     [resolves on successful removal]
  */
-var _removeS3File = function(words) {
+exports.removeS3File = function(words) {
   return new BbPromise(function(resolve, reject) {
 
     // Map word keys
@@ -239,7 +248,7 @@ var _removeS3File = function(words) {
     deleter.on('end', function() {
       console.log(words.length + ' words deleted from s3');
       resolve();
-    })
+    });
     deleter.on('error', function(err) {
       console.log('error');
       reject(err);
@@ -251,18 +260,29 @@ var _removeS3File = function(words) {
  * Opens a new mongoose db connection
  * @return {[type]} [description]
  */
-var _openDbConnection = function() {
+exports.openDbConnection = function() {
   return new BbPromise(function(resolve, reject) {
+
     mongoose.connect(config.mongoURI);
 
     mongoose.connection.on('connected', function() {
+      console.log('connected to db');
       resolve(mongoose.connection);
     });
 
     mongoose.connection.on('error', function(err) {
       reject(err);
-    })
+    });
+
   });
+};
+
+/**
+ * Closes db connection
+ * @return {[type]} [description]
+ */
+exports.closeDbConnection = function() {
+  mongoose.connection.close();
 };
 
 /**
@@ -272,7 +292,7 @@ var _openDbConnection = function() {
  * @param  {[object]} params [{word:String, language: String, accent: String, gender: String}]
  * @return {[promise]}       [resolves on successful save]
  */
-var _uploadWordAndSave = function(file, params) {
+exports.uploadWordAndSave = function(file, params) {
 
   // Create new word object
   // word defaults to filename
@@ -291,5 +311,7 @@ var _uploadWordAndSave = function(file, params) {
     .then(function() {
       // Upload file to s3 on successful save to DB
       return exports.uploadFile(file, word);
+    }).catch(function(err) {
+      return BbPromise.reject(err);
     });
 };
