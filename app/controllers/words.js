@@ -1,6 +1,7 @@
 var Word = require('../models/word');
 var util = require('../util');
 var fs = require('fs');
+var winston = require('winston');
 var binaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
 var stream = require('stream');
@@ -38,6 +39,8 @@ exports.compareAudio = function(req, res) {
             console.log('exec error: ' + error);
 
           }
+          winston.log('stdout: ', stdout);
+          winston.error('stderr: ', stderr);
           res.status(200).send(stdout);
         });
       });

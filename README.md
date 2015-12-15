@@ -14,9 +14,10 @@
 * numpy
 * scipy
 * scikits.audiolab sndfile `brew install libsndfile`
+* sklearn
 * pydub
 * pylab
-* opencv python bindings
+* python_speech_features
 
 ## About
 
@@ -41,6 +42,9 @@ In the processing directory you will find a few python files for processing user
   * Usage: `compareuser.sh <inputfile> <word>`
 
 * trim.py - Trims a wav file of silence
+  * Usage: `trim.py <inputfilepath> <outputfilepath>`
+
+* chop.py - Trims a little off the front and back. Because the recording feature of HTML5 is bad and puts a "blip" there.
   * Usage: `trim.py <inputfilepath> <outputfilepath>`
 
 * matchlength.py - Changes the length of a file to match another

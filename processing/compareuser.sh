@@ -43,6 +43,6 @@ python $filter_command
 compare_command="compare.py $control_file filtered.wav"
 python $compare_command
 
-rm filtered.wav
-rm matched.wav
-rm trimmed.wav
+# rm filtered.wav
+# rm matched.wav
+# rm trimmed.wav

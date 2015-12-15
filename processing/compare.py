@@ -98,18 +98,9 @@ if __name__ == '__main__':
   (rate2,sig2) = wav.read(user_wav_path)
   mfcc_feat2 = mfcc(sig2,rate2)
   fbank_feat2 = logfbank(sig2,rate2)
-
-  # if len(mfcc_feat)<len(mfcc_feat2):
-  #   print mean_squared_error(mfcc_feat, mfcc_feat2[:len(mfcc_feat)])
-  # elif len(mfcc_feat)>len(mfcc_feat2):
-  #   print mean_squared_error(mfcc_feat[:len(mfcc_feat2)], mfcc_feat2)
-  # else:
-  #   print mean_squared_error(mfcc_feat, mfcc_feat2)
-
   x = mfcc(sig,rate)
   y = mfcc(sig2,rate2)
 
   dist, cost, acc = dtw.dtw(x, y, dist=lambda x, y: dtw.norm(x - y, ord=1))
 
   print dist
-

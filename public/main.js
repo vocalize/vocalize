@@ -119,7 +119,7 @@ var PronunciationTest = React.createClass({
 
     function loadSound() {
       var request = new XMLHttpRequest();
-      request.open("GET", "http://localhost:3000/api/audio/" + s3key, true);
+      request.open("GET", "https://localhost:3000/api/audio/" + s3key, true);
       request.responseType = "arraybuffer";
 
       request.onload = function() {
