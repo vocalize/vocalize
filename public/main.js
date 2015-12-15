@@ -85,7 +85,7 @@ var TargetWord = React.createClass({
     );
   }
 });
-
+ 
 var PronunciationTest = React.createClass({
   recordRTC: null,
 
@@ -243,8 +243,8 @@ var PronunciationTest = React.createClass({
         <NextWordBtn onClick={this.loadWordFromServer} />
       </div>
     );
-  }
-});
+    }
+  });
 
 var Instructions = React.createClass({
   render: function(){
