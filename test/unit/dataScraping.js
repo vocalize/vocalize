@@ -8,7 +8,7 @@ var youtube_scraper = require('../../dataScraping/lib/youtube-scraper');
 
 describe('data scraping', function() {
   it('works', function() {
-    expect(true).to.not.be(false);       // Check for opposite day
+    expect(true).to.not.equal(false);       // Check for opposite day
   });
 
   describe('audio parser', function() {
