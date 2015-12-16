@@ -1,14 +1,24 @@
 process.env.NODE_ENV = 'test';
 
+var fs = require('fs');
 var request = require('supertest');
 var express = require('express');
 var mongoose = require('mongoose');
 var expect = require('chai').expect;
+var sinon = require('sinon');
 var db = require('../../app/config');
 var app = require('../../server');
 
 var Word = require('../../app/models/word');
 var Counter = require('../../app/models/counter');
+
+var cookieParser = function(cookie) {
+  return cookie.reduce(function(obj, cookie) {
+    var keyValue = cookie.split(';')[0].split('=');
+    obj[keyValue[0]] = keyValue[1];
+    return obj;
+  }, {});
+};
 
 describe('Routes', function() {
 
@@ -51,9 +61,12 @@ describe('Routes', function() {
   });
 
   after(function(done) {
+    
     con.db.dropDatabase(function(err, result) {
+      mongoose.connection.close();
       con.close(done);
     });
+    
   });
 
   it('should load the index', function(done) {
@@ -121,9 +134,11 @@ describe('Routes', function() {
       });
 
       it('should restart at the first word', function(done) {
-        request(app)
-          .get('/api/words/index?word_index=1')
-          .expect(function(resp) {
+        var req = request(app).get('/api/words/index?');
+
+        req.cookies = 'word_index=1';
+
+        req.expect(function(resp) {
             expect(resp.body.word_index).to.equal(0);
           })
           .end(done);
@@ -135,10 +150,10 @@ describe('Routes', function() {
         req.cookies = 'word_index=0';
 
         req.expect(function(resp) {
-            //console.log(resp.headers);
+
             expect(resp.headers['set-cookies']).to.not.equal(null);
-            var cookie = resp.headers['set-cookie'].pop().split(';')[0];
-            expect(cookie).to.equal('word_index=1');
+            var cookie = cookieParser(resp.headers['set-cookie']);
+            expect(cookie.word_index).to.equal('1');
           })
           .end(done);
       });
@@ -151,8 +166,22 @@ describe('Routes', function() {
         req.expect(function(resp) {
             //console.log(resp.headers);
             expect(resp.headers['set-cookies']).to.not.equal(null);
-            var cookie = resp.headers['set-cookie'].pop().split(';')[0];
-            expect(cookie).to.equal('word_index=0');
+            var cookie = cookieParser(resp.headers['set-cookie']);
+            expect(cookie.word_index).to.equal('0');
+          })
+          .end(done);
+      });
+
+      it('should handle word indexes that do not exist', function(done) {
+        var req = request(app).get('/api/words/index?word_index=1');
+
+        req.cookies = 'word_index=5000';
+
+        req.expect(function(resp) {
+            //console.log(resp.headers);
+            expect(resp.headers['set-cookies']).to.not.equal(null);
+            var cookie = cookieParser(resp.headers['set-cookie']);
+            expect(cookie.word_index).to.equal('0');
           })
           .end(done);
       });
@@ -164,43 +193,49 @@ describe('Routes', function() {
           .end(done);
       });
 
-      it('should reject requests without word_index query', function(done) {
+      it('should assign a response cookie even if there is no request cookie set', function(done) {
         request(app)
           .get('/api/words/index?language=english')
-          .expect(400)
+          .expect(function(resp) {
+            expect(resp.headers['set-cookies']).to.not.equal(null);
+            var cookie = cookieParser(resp.headers['set-cookie']);
+            expect(cookie.word_index).to.equal('0');
+          })
+          .end(done);
+      });
+    });
+
+  });
+
+  describe('Audio API', function() {
+
+    describe('api/audio', function() {
+
+    });
+
+    describe('api/audio/:filename', function() {
+
+      // Makes live calls to S3!
+      xit('should stream a file from s3', function(done) {
+        request(app)
+          .get('/api/audio/apple.wav')
+          .expect(function(resp) {
+            expect(resp.status).to.equal(200);
+            expect(resp.header['content-type']).to.equal('audio/x-wav');
+          })
+          .end(done);
+      });
+
+      // Makes live calls to S3!
+      xit('should not stream a file that does not exist', function(done) {
+        request(app)
+          .get('/api/audio/fakestreet.wav')
+          .expect(404)
           .end(done);
       });
 
     });
 
-    describe('Audio API', function() {
-
-      describe('api/audio/:filename', function() {
-
-        // Makes live calls to S3!
-        xit('should stream a file from s3', function(done) {
-          request(app)
-            .get('/api/audio/apple.wav')
-            .expect(function(resp) {
-              expect(resp.status).to.equal(200);
-              expect(resp.header['content-type']).to.equal('audio/x-wav');
-            })
-            .end(done);
-        });
-
-        // Makes live calls to S3!
-        xit('should not stream a file that does not exist', function(done) {
-          request(app)
-            .get('/api/audio/fakestreet.wav')
-            .expect(404)
-            .end(done);
-        });
-
-      });
-
-    });
-
   });
-
 
 });

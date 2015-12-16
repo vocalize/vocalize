@@ -1,1 +1,4 @@
+*.wav
 node_modules
+coverage
+dist

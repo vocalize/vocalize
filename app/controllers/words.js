@@ -11,7 +11,7 @@ var currentWords = {};
 exports.compareAudio = function(req, res) {
   
   var sound = req.body;
-  var word = req.cookies.word
+  var word = req.cookies.word;
 
   // Create a new stream
   var bufferStream = new stream.PassThrough();
@@ -45,13 +45,13 @@ exports.compareAudio = function(req, res) {
         });
       });
     });
-}
+};
 
 exports.setWord = function(req, res) {
   var ip = util.getIp(req);
   currentWords[ip] = req.body.word;
   res.json('ok');
-}
+};
 
 /**
  * Gets one word based on the passed query string
