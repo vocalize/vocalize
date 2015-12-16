@@ -12,7 +12,7 @@ export default function vocalizeReducer( state = initalState, action){
 
   case: types.REQUEST_NEXT_WORD:
     return Object.assign({}, state, {
-      targetWord: action.requestNextWord,
+      targetWord: action.data.word,
       percentCorrect: null
     });
 
@@ -20,7 +20,7 @@ export default function vocalizeReducer( state = initalState, action){
     return action.play;
 
   case: types.RECORD_USER_AUDIO:
-    return action.record;
+    return action.record;//fix this i dont think the state is complely correct
 
   case: types.STOP_RECORDING_USER_AUDIO:
     return Object.assign({}, state, {
