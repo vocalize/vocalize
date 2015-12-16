@@ -1,4 +1,5 @@
 *.wav
+!test/testwords/*.wav
 node_modules
 coverage
 dist

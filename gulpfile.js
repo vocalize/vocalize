@@ -133,7 +133,8 @@ gulp.task('test-coverage', ['pre-test'], function() {
 gulp.task('test', function() {
   return gulp.src(['test/**/*.js'])
     .pipe(mocha())
-    .once('error', function() {
+    .once('error', function(err) {
+      console.log(err);
       process.exit(1);
     })
     .once('end', function() {
