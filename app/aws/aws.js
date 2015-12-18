@@ -320,7 +320,7 @@ exports.uploadWordAndSave = function(file, params) {
     });
 };
 
-exports.getScoresFromFile = function(file) {
+exports.getScoresFromFile = function(file, callback) {
   return new BbPromise(function(fulfill, reject) {
     readFile(file, "utf-8").then(function(data) {
       var scores = data.split('\n');
