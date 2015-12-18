@@ -1,16 +1,12 @@
 import {compose, createStore, applyMiddleware } from 'redux';
 
 import vocalizeReducer form './reducer';
-import thunkMiddleware from 'redux-thunk';
+import thunk from 'redux-thunk';
 
-import { routerStateReducer, reduxReactRouter } from 'redux-react-router';
+const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 
 
-const createAppStore = compose(applyMiddleware(thunkMiddleware))(createStore);
+const store = createStoreWithMiddleware(vocalizeReducer, initialState);
 
-export default function configureStore(initialState){
-  const store = createAppStore(rootReducer, initialState);
 
-  return store;
-};
 
