@@ -10,6 +10,14 @@ const initalState = {
 export default function vocalizeReducer( state = initalState, action){
   switch(action.types) {
 
+  case SET_STATE: 
+    return Object.assign({}, state, {
+      language: 'english',
+      gender: 'male',
+      targetWord: action.data.word,
+      percentCorrect: null,
+    })
+
   case: types.REQUEST_NEXT_WORD:
     return Object.assign({}, state, {
       targetWord: action.data.word,
@@ -31,3 +39,28 @@ export default function vocalizeReducer( state = initalState, action){
     return state;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

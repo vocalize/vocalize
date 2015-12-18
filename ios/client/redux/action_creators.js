@@ -2,38 +2,45 @@ import * as types from './action_constants';
 import axios from 'axios';
 import { pushState } from 'redux-react-router';
 
-const recordRTC = null;
 
-export function setState(state){
+
+export function setState(state){//x
   return {
     type: types.SET_STATE,
-    state
+    data: state
   }
 }
 
 
-export function playWord(word){
+function playWord(word){//x
   return {
     type: types.PLAY_WORD,
-    word,
+    data: word,
   }
 }
 
-export function recordUserAudio(word){
+function recordUserAudio(word){//x
   return {
     type: types.RECORD_USER_AUDIO,
     word,
   }
 }
 
-export function stopUserRecording(word){
+function stopUserRecording(word){//x
   return {
     type: types.STOP_RECORDING_USER_AUDIO,
     word,
   }
 }
 
-export function receiveNewWord(json) {
+function sendUserRecording(word){//x
+  return {
+    type: types.SEND_RECORDING_USER_AUDIO,
+    word,
+  }
+}
+
+function receiveNewWord(json) {
   return{
     type: types.RECEIVE_NEW_WORD,
     data: json
@@ -41,10 +48,10 @@ export function receiveNewWord(json) {
 };
 
 
-export function requestNextWord(word){
+function requestNextWord(word){ //x
   return {
     type: types.REQUEST_NEXT_WORD,
-    word,
+    data: word,
   }
 }
 
@@ -64,6 +71,24 @@ export function fetchWord(){
       })
   }
 }
+
+export function setInitalState(){
+ const language = 'language=' + this.state.language; //firgure out about this in redux
+ const gender = 'gender=' + this.state.gender;
+ const url = '/api/words/index/?' + language + '&' + gender;
+
+  return function(dispatch) {
+    return axios.({
+      method: 'get',
+      url: url,
+      responseType: 'json'
+    })
+      .then(function(response) {
+        dispatch(setState(response.data));
+      })
+  }
+}
+
 
 
 export function stop(soundBlob){
@@ -121,7 +146,27 @@ export function play(){
 }
 
 
+export function postWord(){
+  return function(dispatch){
+    return axios.({
+      method: 'post',
+      url: '/api/word/',
+      data: {'word': this.state.targetWord},
+    })
+      .then(function(response){
+        dispatch(sendUserRecording(response.data))
+      })
+  }
+}
 
+export function record(){
+startRecordingUserAudio: function() {
+    this.recordRTC.startRecording();
+  } // this will need to be changed to update the state of the function only
+  return function(dispatch){
+    disptach(recordUserAudio()) 
+  }
+}
 
 
 
