@@ -11,7 +11,7 @@ var util = require('../util');
 
 var transcript_parser;
 
-var videoId = '1ndYA_32dFo';
+var videoId = 'VKUyezKHNXk';
 
 var mockConfig = {
   username: 'fake',

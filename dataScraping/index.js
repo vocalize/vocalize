@@ -14,10 +14,10 @@ util.mkdir(path.join(__dirname, 'input'));
 util.mkdir(path.join(__dirname, 'output'));
 
 var scrape = function(videoId){
-  youtubeScraper(videoId, null)
-    .then(transcriptParser.getTranscript.bind(this, videoId, null))
-    .then(audioParser.bind(this, videoId, null, null))
-    .then(standardiseWordLength.bind(this, null))
+  youtubeScraper.download(videoId)
+    .then(transcriptParser.getTranscript.bind(this, videoId))
+    .then(audioParser.bind(this, videoId))
+    .then(standardiseWordLength.bind(this))
     .catch(util.handleError);
 };
 
@@ -36,7 +36,7 @@ switch(flags[0]){
   // Downloads to input subdirectory named for videoId
   // ie. node index.js youtube VKUyezKHNXk
   case 'youtube':
-    youtubeScraper(flags[1]);
+    youtubeScraper.download(flags[1]);
     break;
   // Gets an audiotranscript from watson for an audio file
   // Pass in a videoId
