@@ -181,7 +181,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
           // Output file location
           .output(path.join(wordDir, idx + ts.word + '.wav'))
           .on('progress', function(progress){
-            console.log('Splitting: ' + progress.percent.toFixed(2));
+            //console.log('Splitting: ' + progress.percent.toFixed(2));
           })
           // Success
           .on('end', function(err) {

@@ -6,5 +6,5 @@ module.exports = {
 	inputDir:  path.join(__dirname, '..', '..', 'input'),
 	outputDir: path.join(__dirname, '..', '..', 'output'),
 	wordListDir: path.join(__dirname, '..', '..', 'word-lists'),
-	audioChunkLength: 300
+	audioChunkLength: 10
 };
