@@ -1,4 +1,3 @@
-'use strict';
 
 var watson = require('watson-developer-cloud');
 var fs = require('fs');
@@ -15,16 +14,17 @@ var speech_to_text = watson.speech_to_text({
   url: 'https://stream.watsonplatform.net/speech-to-text/api',
 });
 
+var inputDir = config.inputDir;
 /**
  * Queries Watson to get the transcript of an audio file with timestamps
  * @param  {[string]} audioFilename [filename of the audio file]
  * @param  {[string]} audioFilepath [(optional) filepath - defaults to config.inputDir]
  * @return {[BbPromise]}            [Resolves with transcript file path]
  */
-module.exports = function(videoId) {
-  console.log('getting transcript from watson...');
-  var audioFileDirectory = path.join(__dirname, '..', 'input', videoId);
-  var transcriptDir = path.join(__dirname, '..', 'input', videoId, 'transcripts');
+exports.getTranscript = function(videoId) {
+  console.log('Getting trancript for ' + videoId);
+  var audioFileDirectory = path.join(inputDir, videoId);
+  var transcriptDir = path.join(inputDir, videoId, 'transcripts');
 
   return readdir(audioFileDirectory)
     .then(function(files) {
@@ -34,7 +34,7 @@ module.exports = function(videoId) {
       })
       .map(function(file, idx) {
           var filePath = path.join(audioFileDirectory, file);
-          return _watsonStream.bind(this, filePath, transcriptDir);
+          return exports._watsonStream.bind(this, filePath, transcriptDir);
       });
 
       return BbPromise.each(transcriptProcesses, function(process) {
@@ -43,7 +43,7 @@ module.exports = function(videoId) {
     });
 };
 
-var _watsonStream = function(audioFile, transcriptDir) {
+exports._watsonStream = function(audioFile, transcriptDir) {
 
   return new BbPromise(function(resolve, reject) {
 

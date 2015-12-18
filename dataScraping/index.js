@@ -14,10 +14,10 @@ util.mkdir(path.join(__dirname, 'input'));
 util.mkdir(path.join(__dirname, 'output'));
 
 var scrape = function(videoId){
-  youtubeScraper(videoId)
-    .then(transcriptParser.bind(this, videoId))
-    .then(audioParser.bind(this, videoId))
-    .then(standardiseWordLength)
+  youtubeScraper(videoId, null)
+    .then(transcriptParser.getTranscript.bind(this, videoId, null))
+    .then(audioParser.bind(this, videoId, null, null))
+    .then(standardiseWordLength.bind(this, null))
     .catch(util.handleError);
 };
 

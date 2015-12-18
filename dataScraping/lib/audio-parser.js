@@ -1,4 +1,3 @@
-'use strict';
 
 var ffmpeg = require('fluent-ffmpeg');
 var fs = require('fs');
@@ -14,6 +13,8 @@ var util = require('./util');
 // Otherwise filters by words that exist in wordList
 var _filterByWordList = true;
 
+var inputDir = config.inputDir;
+var outputDir = config.outputDir;
 /**
  * Splits all of the flac files in the directory by their transcript
  * @param  {[string]} audioFilePath [audio file to parse]
@@ -22,7 +23,7 @@ var _filterByWordList = true;
 module.exports = function(videoId) {
   console.log('parsing audio into words...');
   // Get directory
-  var audioDir = path.join(__dirname, '..', 'input', videoId);
+  var audioDir = path.join(inputDir, videoId);
 
   // Read all the files in the directory
   return util.readdir(audioDir)
@@ -36,6 +37,9 @@ module.exports = function(videoId) {
         // Parse each audio file according to its transcript file
         return _doIt(audio.audioFile, audio.transcript);
       });
+    })
+    .catch(function(err){
+      util.handleError(err);
     });
 };
 
@@ -104,7 +108,7 @@ var _parseTimeStamps = function(buffer) {
         start: timestamp[1],
         end: timestamp[2],
         duration: timestamp[2] - timestamp[1]
-      }
+      };
 
       // Check if filtering by wordlist and a wordList is present
       // Discard all words that aren't on the list 
@@ -119,23 +123,23 @@ var _parseTimeStamps = function(buffer) {
 
 /**
  * If directory for a given word doesn't exists, creates it and a text file containing that word
- * @param  {[string]} outputDir [parent directory for create directories]
+ * @param  {[string]} targetDir [parent directory for new directories]
  * @param  {[string]} word      [current word, will be the name of new directory]
  * @return {[promise]}          [resolves on completion]
  */
-var _createWordDir = function(outputDir, word) {
+var _createWordDir = function(targetDir, word) {
 
   return new BbPromise(function(resolve, reject) {
 
     // Check if directory already exists
-    if (!util.exists(outputDir)) {
+    if (!util.exists(targetDir)) {
 
       // Create new directory
-      util.mkdir(outputDir);
-      util.mkdir(path.join(outputDir, 'standard'));
+      util.mkdir(targetDir);
+      util.mkdir(path.join(targetDir, 'standard'));
 
       //Create a text file containing the word stored in that directory
-      fs.writeFile(path.join(outputDir, 'word.txt'), word, function(err) {
+      fs.writeFile(path.join(targetDir, 'word.txt'), word, function(err) {
         if (err) {
           reject(err);
         } else {
@@ -154,16 +158,15 @@ var _createWordDir = function(outputDir, word) {
  * start and duration properties
  * @param  {[string]} audioFilePath [audio file to split]
  * @param  {[object]} ts            [time stamp object with word, start, and duration props]
- * @param  {[string]} outputDir     [directory to write parsed audio file to]
  * @return {[BbPromise]}              [resolves on successful split]
  */
 var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
-  console.log('Splitting ' + path.basename(audioFilePath));
-  var outputDir = path.join(__dirname, '..', 'output', ts.word);
+
+  var wordDir = path.join(outputDir, ts.word);
 
   return new BbPromise(function(resolve, reject) {
 
-    _createWordDir(outputDir, ts.word)
+    _createWordDir(wordDir, ts.word)
       .then(function() {
 
         ffmpeg(audioFilePath)
@@ -176,7 +179,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
           // set the number of channels
           .audioChannels(1)
           // Output file location
-          .output(path.join(outputDir, idx + ts.word + '.wav'))
+          .output(path.join(wordDir, idx + ts.word + '.wav'))
           .on('progress', function(progress){
             console.log('Splitting: ' + progress.percent.toFixed(2));
           })
@@ -206,7 +209,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
  */
 var _getTranscriptsForAudioDirectory = function(files, videoId) {
 
-  var audioDir = path.join(__dirname, '..', 'input', videoId);
+  var audioDir = path.join(inputDir, videoId);
   var transcriptDir = path.join(audioDir, 'transcripts');
 
   return files.filter(function(file) {

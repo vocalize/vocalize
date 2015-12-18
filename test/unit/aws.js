@@ -6,19 +6,43 @@ var Promise = require('bluebird');
 var path = require('path');
 var fs = require('fs');
 var mongoose = require('mongoose');
+var mockrequire = require('mockrequire');
+var EventEmitter = require('events').EventEmitter;
 
-var aws = require('../../app/aws/aws');
+var mockEmitter = function(params) {
+  var emitter = new EventEmitter();
+  setTimeout(function() {
+    emitter.emit('end');
+  }, 0)
+  return emitter;
+};
+
+var Client = {
+  uploadFile: mockEmitter,
+  downloadFile: mockEmitter,
+  deleteObjects: mockEmitter
+};
+
+var aws = mockrequire('../../app/aws/aws', {
+  's3': {
+    createClient: function(options) {
+      return Client;
+    }
+  }
+});
+
+var config = require('../config');
 var Word = require('../../app/models/word');
 var Counter = require('../../app/models/counter');
 
-var testdir = path.join(__dirname, '..', 'testwords');
-var testfile = path.join(__dirname, '..', 'testwords', 'circle.wav');
-var badfile = path.join(__dirname, '..', 'testwords', 'fake.wav');
-var params = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'testwords', 'params.json')));
+var testdir = config.aws;
+var testfile = path.join(testdir, 'circle.wav');
+var badfile = path.join(testdir, 'fake.wav');
+var params = JSON.parse(fs.readFileSync(path.join(testdir, 'params.json')));
 
 describe('aws', function() {
 
-  var uploadFile, openDbConnection, closeDbConnection, removeS3File;
+  var openDbConnection, closeDbConnection, removeS3File;
 
   beforeEach(function(done) {
     // Open DB connection
@@ -33,15 +57,6 @@ describe('aws', function() {
       // Stub connection function
       closeDbConnection = sinon.stub(aws, 'closeDbConnection');
 
-      removeS3File = sinon.stub(aws, 'removeS3File', function(){
-        return Promise.resolve();
-      });
-
-      // Stub upload to AWS function
-      uploadFile = sinon.stub(aws, 'uploadFile', function() {
-        return Promise.resolve();
-      });
-
       done();
     });
   });
@@ -51,8 +66,6 @@ describe('aws', function() {
     // Restore stubbed functions
     aws.openDbConnection.restore();
     aws.closeDbConnection.restore();
-    aws.uploadFile.restore();
-    aws.removeS3File.restore();
 
     mongoose.connection.db.dropDatabase(function(err, result) {
       mongoose.connection.close();
@@ -69,6 +82,15 @@ describe('aws', function() {
   });
 
   describe('addWordsByDir', function() {
+    var uploadSpy;
+
+    beforeEach(function() {
+      uploadSpy = sinon.spy(Client, 'uploadFile');
+    });
+
+    afterEach(function() {
+      Client.uploadFile.restore();
+    });
 
     it('should be a function', function() {
       expect(aws.addWordsByDir).to.be.a('function');
@@ -88,7 +110,7 @@ describe('aws', function() {
         .then(function() {
           Word.find()
             .then(function(words) {
-              expect(uploadFile.callCount).to.equal(4);
+              expect(uploadSpy.callCount).to.equal(4);
               expect(words.length).to.equal(4);
               done();
             });
@@ -100,7 +122,7 @@ describe('aws', function() {
         .catch(function(err) {
           Word.find()
             .then(function(words) {
-              expect(uploadFile.callCount).to.equal(0);
+              expect(uploadSpy.callCount).to.equal(0);
               expect(words.length).to.equal(0);
               done();
             });
@@ -112,17 +134,27 @@ describe('aws', function() {
         .catch(function(err) {
           Word.find()
             .then(function(words) {
-              expect(uploadFile.callCount).to.equal(0);
+              expect(uploadSpy.callCount).to.equal(0);
               expect(words.length).to.equal(0);
               done();
             });
         });
     });
 
-
   });
 
+
   describe('addWord', function() {
+
+    var uploadSpy;
+
+    beforeEach(function() {
+      uploadSpy = sinon.spy(Client, 'uploadFile');
+    });
+
+    afterEach(function() {
+      Client.uploadFile.restore();
+    });
 
     it('should be a function', function() {
       expect(aws.addWord).to.be.a('function');
@@ -142,7 +174,7 @@ describe('aws', function() {
         .then(function() {
           Word.find()
             .then(function(words) {
-              expect(uploadFile.callCount).to.equal(1);
+              expect(uploadSpy.callCount).to.equal(1);
               expect(words.length).to.equal(1);
               done();
             });
@@ -154,7 +186,7 @@ describe('aws', function() {
         .catch(function(err) {
           Word.find()
             .then(function(words) {
-              expect(uploadFile.callCount).to.equal(0);
+              expect(uploadSpy.callCount).to.equal(0);
               expect(words.length).to.equal(0);
               done();
             });
@@ -165,21 +197,92 @@ describe('aws', function() {
 
   describe('uploadFile', function() {
 
+    var uploadSpy;
+
+    beforeEach(function() {
+      uploadSpy = sinon.spy(Client, 'uploadFile');
+    });
+
+    afterEach(function() {
+      Client.uploadFile.restore();
+    });
+
     it('should be a function', function() {
       expect(aws.uploadFile).to.be.a('function');
+    });
+
+    it('should create a params object with filepath and s3 locations', function(done) {
+      var params = {
+        localFile: 'filepath',
+        s3Params: {
+          Bucket: 'hr10-vocalize-testing',
+          Key: 'filekey'
+        }
+      };
+
+      aws.uploadFile('filepath', {
+          s3: {
+            Key: 'filekey'
+          }
+        })
+        .then(function() {
+          expect(uploadSpy.calledWith(params)).to.equal(true);
+          done();
+        });
     });
 
   });
 
   describe('dowloadFile', function() {
 
+    var downloadSpy;
+
+    beforeEach(function() {
+      downloadSpy = sinon.spy(Client, 'downloadFile');
+    });
+
+    afterEach(function() {
+      Client.downloadFile.restore();
+    });
+
     it('should be a function', function() {
       expect(aws.downloadFile).to.be.a('function');
+    });
+
+    it('should create a params object with filepath and s3 locations', function(done) {
+      var params = {
+        localFile: 'filepath',
+        s3Params: {
+          Bucket: 'filebucket',
+          Key: 'filekey'
+        }
+      };
+
+      aws.downloadFile('filepath', {
+          s3: {
+            Bucket: 'filebucket',
+            Key: 'filekey'
+          }
+        })
+        .then(function() {
+          expect(downloadSpy.calledWith(params)).to.equal(true);
+          done();
+        });
     });
 
   });
 
   describe('removeWordsByQuery', function() {
+
+    var deleteSpy;
+
+    beforeEach(function() {
+      deleteSpy = sinon.spy(Client, 'deleteObjects');
+    });
+
+    afterEach(function() {
+      Client.deleteObjects.restore();
+    });
 
     it('should be a function', function() {
       expect(aws.removeWordsByQuery).to.be.a('function');
@@ -195,21 +298,52 @@ describe('aws', function() {
     });
 
     it('should remove words from S3 and delete them from the DB', function(done) {
+
       aws.addWordsByDir(testdir)
         .then(function() {
           return Word.find({});
         })
-        .then(function(words){
+        .then(function(data) {
+          words = data;
           expect(words.length).to.equal(4);
-          return aws.removeWordsByQuery({language: 'english'});
+          return aws.removeWordsByQuery({
+            language: 'english'
+          });
         })
-        .then(function(){
-          expect(removeS3File.callCount).to.equal(1);
-          expect(removeS3File.firstCall.args[0].length).to.equal(4);
+        .then(function() {
           return Word.find();
         })
-        .then(function(words){
+        .then(function(words) {
           expect(words.length).to.equal(0);
+          done();
+        });
+    });
+
+    it('should create a params object for s3 with Bucket and Delete properties', function(done) {
+
+      var params = {
+        Bucket: 'hr10-vocalize-testing',
+        Delete: {}
+      };
+
+      aws.addWordsByDir(testdir)
+        .then(function() {
+          return Word.find({});
+        })
+        .then(function(words) {
+          params.Delete.Objects = words.map(function(word) {
+            return {
+              Key: word.s3.Key
+            }
+          });
+          expect(words.length).to.equal(4);
+          return aws.removeWordsByQuery({
+            language: 'english'
+          });
+        })
+        .then(function() {
+          expect(deleteSpy.callCount).to.equal(1);
+          expect(deleteSpy.calledWith(params)).to.equal(true);
           done();
         });
     });
