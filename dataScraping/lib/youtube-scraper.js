@@ -1,38 +1,42 @@
-'use strict';
-
 var spawn = require('child_process').spawn;
 var fs = require('fs');
 var ffmpeg = require('fluent-ffmpeg');
 var path = require('path');
 var BbPromise = require('bluebird');
 var util = require('./util');
+var config = require('./config/config');
 
+var inputDir = config.inputDir;
 
 // Install youtube_dl locally: brew install youtube-dl
-module.exports = function(videoId) {
-  console.log('downloading audio from youtube...');
-  util.mkdir(path.join(__dirname, '..', 'input', videoId));
-  util.mkdir(path.join(__dirname, '..', 'input', videoId, 'transcripts'));
+exports.download = function(videoId) {
 
-  return new BbPromise(function(resolve, reject) {
-      var inputPath = path.join(__dirname, '..', 'input');
-      var youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-R', '100', '-o', inputPath + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
+  util.mkdir(path.join(inputDir, videoId));
+  util.mkdir(path.join(inputDir, videoId, 'transcripts'));
 
-      youtube_dl.stdout.on('data', function(data) {
-        console.log(data.toString());
-      });
-
-      youtube_dl.stderr.on('data', function(data) {
-        process.stderr.write(data);
-      });
-
-      youtube_dl.on('exit', function() {
-        resolve();
-      });
-    })
+  return exports.youtube_dl(videoId, inputDir)
     .then(function() {
-      return _sliceAudioByInterval(videoId, 300);
+      return _sliceAudioByInterval(videoId, config.audioChunkLength);
     });
+};
+
+exports.youtube_dl = function(videoId, directory) {
+  return new BbPromise(function(resolve, reject) {
+    var inputPath = inputDir;
+    var youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-R', '100', '-o', directory + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
+
+    youtube_dl.stdout.on('data', function(data) {
+      console.log(data.toString());
+    });
+
+    youtube_dl.stderr.on('data', function(data) {
+      process.stderr.write(data);
+    });
+
+    youtube_dl.on('exit', function() {
+      resolve();
+    });
+  });
 };
 
 // Get the length of the audio
@@ -42,6 +46,7 @@ var _getFileInfo = function(file) {
   var filename = path.basename(file, ext);
 
   return new BbPromise(function(resolve, reject) {
+    
     ffmpeg.ffprobe(file, function(err, metadata) {
       if (err) {
         reject(err);
@@ -60,12 +65,12 @@ var _getFileInfo = function(file) {
 // Slice length up into ten minute pieces
 var _sliceAudioByInterval = function(videoId, interval) {
 
-  var file = path.join(__dirname, '..', 'input', videoId + '.mp3');
+  var file = path.join(inputDir, videoId + '.mp3');
 
   return _getFileInfo(file)
     .then(function(file) {
 
-      var outputDir = path.join(__dirname, '..', 'input', file.filename);
+      var outputDir = path.join(inputDir, file.filename);
 
       file.outputDir = outputDir;
 
@@ -98,7 +103,6 @@ var _slice = function(file, start, interval, idx) {
       .output(newFile)
       // Success
       .on('end', function(err) {
-        console.log('Splitting ' + idx + file.filename + '.flac');
         if (err) {
           reject(err);
         }
@@ -106,7 +110,7 @@ var _slice = function(file, start, interval, idx) {
       })
       //Failure
       .on('error', function(err) {
-        util.handleError()
+        util.handleError();
       })
       //Run ffmpeg command
       .run();

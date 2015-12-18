@@ -1,0 +1,15 @@
+[{
+  "results": [{
+    "alternatives": [{
+      "timestamps": [
+        ["apple", 1.00, 2.00],
+        ["board", 3.18, 3.3],
+        ["circle", 3.3, 3.58]
+      ],
+      "confidence": 0.9230931401252747,
+      "transcript": "test"
+    }],
+    "final": true
+  }],
+  "result_index": 0
+}]

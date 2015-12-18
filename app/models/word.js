@@ -42,7 +42,7 @@ var wordSchema = new Schema({
 });
 
 wordSchema.pre('save', function(next) {
-  console.log('saving....');
+
   // Initializes the created_at date
   if (!this.created_at) {
     this.created_at = new Date();
