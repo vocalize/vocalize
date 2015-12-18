@@ -1,6 +1,11 @@
 {
   "globals": {
     "it": false,
-    "describe": false
+    "describe": false,
+    "require": false,
+    "module": false,
+    "__dirname": false,
+    "process": false,
+    "console": false
   }
 }

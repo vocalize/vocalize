@@ -1,43 +1,46 @@
-'use strict'
-
 var fs = require('fs');
 var path = require('path');
+var Promise = require('bluebird');
 var util = require('./util');
+var config = require('./config/config');
 
 module.exports = {
 
   textToJson: function(filename) {
-    var textFile = path.join(__dirname, '..', 'word-lists', filename);
-    var fileName = path.basename(textFile, '.txt');
+    return new Promise(function(resolve, reject) {
 
-    fs.readFile(textFile, function(err, data) {
-      if (err) {
-        util.handleError(err);
-      }
-      var content = data.toString();
+      var textFile = path.join(config.wordListDir, filename);
+      var fileName = path.basename(textFile, '.txt');
 
-      var json = JSON.stringify(content.split('\n').reduce(function(hash, word) {
-        hash[word] = true;
-        return hash;
-      }, {}));
-
-      fs.writeFile(path.join(__dirname, '..', 'word-lists', fileName + '.json'), json, function(err) {
+      fs.readFile(textFile, function(err, data) {
         if (err) {
           util.handleError(err);
-        } else {
-          console.log(fileName + ' successfully parsed');
         }
+        var content = data.toString();
+
+        var json = JSON.stringify(content.split('\n').reduce(function(hash, word) {
+          hash[word] = true;
+          return hash;
+        }, {}));
+
+        fs.writeFile(path.join(config.wordListDir, fileName + '.json'), json, function(err) {
+          if (err) {
+            util.handleError(err);
+          } else {
+            resolve();
+          }
+        });
       });
     });
   },
 
   getWordList: function(listTitle, syllables) {
     syllables = syllables || 1;
-    var jsonFile = path.join(__dirname, '..', 'word-lists', listTitle + '.json');
+    var jsonFile = path.join(config.wordListDir, listTitle + '.json');
     var data = JSON.parse(fs.readFileSync(jsonFile));
     for (var word in data) {
       if (util.countSyllables(word) < syllables) {
-        delete data[word]
+        delete data[word];
       }
     }
     return data;

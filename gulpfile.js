@@ -111,7 +111,7 @@ gulp.task('replaceHtml', function() {
 
 // Sets up istanbul
 gulp.task('pre-test', function() {
-  return gulp.src(['app/*.js', 'app/models/*.js', 'app/controllers/*.js', 'app/aws/*.js'])
+  return gulp.src(['app/*.js', 'app/models/*.js', 'app/controllers/*.js', 'app/aws/*.js', 'dataScraping/lib/*.js'])
     .pipe(istanbul().on('error', util.log))
     .pipe(istanbul.hookRequire());
 });
@@ -142,9 +142,22 @@ gulp.task('test', function() {
     });
 });
 
+// Runs unit and integration tests
+gulp.task('test-one', function() {
+  return gulp.src(['test/unit/youtube-scraper.js'])
+    .pipe(mocha())
+    .once('error', function(err) {
+      console.log(err);
+      process.exit(1);
+    })
+    .once('end', function() {
+      process.exit();
+    });
+});
+
 // Lints js files
 gulp.task('lint', function() {
-  return gulp.src(['app/**/*.js', 'test/**/*.js', 'dist/public/src/build.js', '!app/aws/node_modules/**/*.js'])
+  return gulp.src(['app/**/*.js', 'dataScraping/lib/*.js', 'test/**/*.js', 'dist/public/src/build.js', '!app/aws/node_modules/**/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });

@@ -66,7 +66,7 @@ exports.addWordsByDir = function(directory) {
       });
     })
     .then(function() {
-      console.log('done!');
+      // console.log('done!');
     })
     .catch(function(err) {
       return BbPromise.reject(err);
@@ -125,7 +125,6 @@ exports.uploadFile = function(filepath, word) {
         uploader.progressAmount, uploader.progressTotal);
     });
     uploader.on('end', function() {
-      console.log("done uploading");
       resolve();
     });
   });
@@ -181,7 +180,7 @@ exports.removeWordsByQuery = function(query) {
     .then(function() {
       // Delete words from DB
       return Word.remove(query, function() {
-        console.log('words deleted from db');
+        //console.log('words deleted from db');
       });
     })
     .catch(function(err) {
@@ -226,6 +225,7 @@ exports.downloadStream = function(req, res, next) {
  * @return {[promise]}     [resolves on successful removal]
  */
 exports.removeS3File = function(words) {
+
   return new BbPromise(function(resolve, reject) {
 
     // Map word keys
@@ -246,11 +246,11 @@ exports.removeS3File = function(words) {
     var deleter = client.deleteObjects(params);
 
     deleter.on('end', function() {
-      console.log(words.length + ' words deleted from s3');
+      //console.log(words.length + ' words deleted from s3');
       resolve();
     });
     deleter.on('error', function(err) {
-      console.log('error');
+      //console.log('error');
       reject(err);
     });
   });
@@ -306,7 +306,6 @@ exports.uploadWordAndSave = function(file, params) {
       Key: path.parse(file).base
     }
   });
-
   return word.save()
     .then(function() {
       // Upload file to s3 on successful save to DB

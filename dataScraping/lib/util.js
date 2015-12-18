@@ -39,7 +39,9 @@ exports.getFilename = function(path) {
 };
 
 exports.handleError = function(err) {
-  console.error('Blew it! ' + err);
+  if(process.env.NODE_ENV !== 'test'){
+    console.error('Blew it! ' + err);
+  }
 };
 
 exports.countSyllables = function(word) {

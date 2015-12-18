@@ -5,34 +5,43 @@ var BbPromise = require('bluebird');
 var readdir = BbPromise.promisify(fs.readdir);
 var stat = BbPromise.promisify(fs.stat);
 var util = require('./util');
+var config = require('./config/config');
+
+var outputDir = config.outputDir;
 
 module.exports = function() {
-  console.log('standardizing...');
-  var outputDir = path.join(__dirname, '..', 'output');
-
-  return readdir(outputDir)
-    .then(function(dirs) {
-      // Add full directory paths
-      dirs = dirs.map(function(dir){
-        return path.join(outputDir, dir);
+  console.log('Standardising word lengths for ' + outputDir);
+  return new BbPromise(function(resolve, reject) {
+    readdir(outputDir)
+      .then(function(dirs) {
+        // Add full directory paths
+        dirs = dirs.map(function(dir) {
+          return path.join(outputDir, dir);
+        });
+        // Filter out any non-directories
+        return BbPromise.filter(dirs, function(dir) {
+          return stat(dir)
+            .then(function(stats) {
+              return stats.isDirectory();
+            });
+        });
+      })
+      .then(function(directories) {
+        return BbPromise.each(directories, function(dir) {
+          return _standardiseWordDirectory(dir);
+        });
+      })
+      .then(function(){
+        resolve();
+      })
+      .catch(function(err){
+        util.handleError(err);
       });
-      // Filter out any non-directories
-      return BbPromise.filter(dirs, function(dir) {
-        return stat(dir)
-          .then(function(stats) {
-            return stats.isDirectory();
-          });
-      });
-    })
-    .then(function(directories) {
-      BbPromise.each(directories, function(dir){
-        return _standardiseWordDirectory(dir);
-      });
-    });
+  });
 };
 
 var _standardiseWordDirectory = function(dir) {
-  console.log(dir);
+
   var audioFileMetaData = [];
 
   // Get each audio file
@@ -65,10 +74,7 @@ var _standardiseWordDirectory = function(dir) {
       });
 
       return BbPromise.each(commands, function(command) {
-          command();
-        })
-        .then(function() {
-          console.log('Standardized Times for: ' + path.basename(dir));
+          return command();
         });
     });
 };
@@ -86,7 +92,7 @@ var _getAudioFiles = function(directory) {
 
       }).map(function(file) {
         return path.join(directory, file);
-      })
+      });
 
       resolve(audioFiles);
     });
@@ -94,6 +100,7 @@ var _getAudioFiles = function(directory) {
 };
 
 var _getFileInfo = function(file) {
+
   return new BbPromise(function(resolve, reject) {
     ffmpeg.ffprobe(file, function(err, metadata) {
       if (err) {
@@ -109,7 +116,6 @@ var _getFileInfo = function(file) {
 };
 
 var _modifyTempo = function(file, avg) {
-
   var tempo = file.duration / avg;
   var filename = path.basename(file.file, '.wav');
   var dirname = path.dirname(file.file);
@@ -117,7 +123,7 @@ var _modifyTempo = function(file, avg) {
 
   return new BbPromise(function(resolve, reject) {
 
-      ffmpeg(file.file)
+    ffmpeg(file.file)
       .audioCodec('pcm_f32le')
       .audioFilters('atempo=' + tempo)
       .output(newFile)
@@ -125,6 +131,9 @@ var _modifyTempo = function(file, avg) {
         util.handleError('Error standardizing ' + filename + ' ' + err.message);
       })
       .on('end', function(err) {
+        if (err) {
+          util.handleError(err);
+        }
         resolve();
       })
       .run();
