@@ -293,24 +293,45 @@ exports.closeDbConnection = function() {
  * @return {[promise]}       [resolves on successful save]
  */
 exports.uploadWordAndSave = function(file, params) {
+  var scoresPath = file.replace(/\.wav$/, '.txt');
+  var scores = exports.getScoresFromFile(scoresPath).then(function(scores) {
+  //   console.log(scores);
+  // });
 
-  // Create new word object
-  // word defaults to filename
-  var word = new Word({
-    word: params.word || path.parse(file).name,
-    language: params.language,
-    accent: params.accent,
-    gender: params.gender,
-    s3: {
-      Bucket: config.bucket,
-      Key: path.parse(file).base
-    }
-  });
-  return word.save()
-    .then(function() {
-      // Upload file to s3 on successful save to DB
-      return exports.uploadFile(file, word);
-    }).catch(function(err) {
-      return BbPromise.reject(err);
+    // Create new word object
+    // word defaults to filename
+    var word = new Word({
+      word: params.word || path.parse(file).name,
+      language: params.language,
+      accent: params.accent,
+      gender: params.gender,
+      scores: scores,
+      s3: {
+        Bucket: config.bucket,
+        Key: path.parse(file).base
+      }
     });
+    return word.save()
+      .then(function() {
+        // Upload file to s3 on successful save to DB
+        return exports.uploadFile(file, word);
+      }).catch(function(err) {
+        return BbPromise.reject(err);
+      });
+  });
+
+
+};
+
+exports.getScoresFromFile = function(file, callback) {
+  return new BbPromise(function(fulfill, reject) {
+    readFile(file, "utf-8").then(function(data) {
+      var scores = data.split('\n');
+      scores = scores.filter(Boolean);  // Gets rid of empty elements
+      scores = scores.map(function(score) {
+        return parseFloat(score);
+      });
+      fulfill(scores);
+    });
+  });
 };
