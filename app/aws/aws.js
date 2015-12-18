@@ -294,7 +294,7 @@ exports.closeDbConnection = function() {
  */
 exports.uploadWordAndSave = function(file, params) {
   var scoresPath = file.replace(/\.wav$/, '.txt');
-  var scores = exports.getScoresFromFile(scoresPath).then(function(scores) {
+  return exports.getScoresFromFile(scoresPath).then(function(scores) {
   //   console.log(scores);
   // });
 
@@ -319,7 +319,6 @@ exports.uploadWordAndSave = function(file, params) {
         return BbPromise.reject(err);
       });
   });
-
 
 };
 
