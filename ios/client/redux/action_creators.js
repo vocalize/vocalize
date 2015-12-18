@@ -92,81 +92,26 @@ export function setInitalState(){
 
 
 export function stop(soundBlob){
-  let formData = new FormData();
-  return function(dispatch) {
-    return axios.({
-      method: 'post',
-      url: '/api/audio/',
-      data: formData,
-      processData: false,
-      contentType: 'audio/wav'
-    })
-      .then(function(response) {
-        return function(dispatch) {
-          this.recordRTC.clearRecordedData()
-          let percentCorrect = Math.floor(response.data);
-          dispatch(stopUserRecording(percentCorrect));
-        }
-      })
-  }
+  
 }
 
 
 
 export function play(){
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  let context = new AudioContext();
-  let s3key = this.state.s3key;//needs to be fixed
-   function loadSound(dispatch){
-    return axios.({
-      method: 'get',
-      url: "https://localhost:3000/api/audio/" + s3key,
-      responseType: 'arraybuffer'
-    })
-      .then(function(response){
-        request.onload = function() { ///needs to be transforms to be used with the axios api
-        let Data = request.response;
-        process(Data);
-      };
-        dispatch(playWord(response.data))
-      })
-  }
-  function process(Data) {
-      let source = context.createBufferSource(); // Create Sound Source
-      context.decodeAudioData(Data, function(buffer) {
-        source.buffer = buffer;
-        source.connect(context.destination);
-        source.start(context.currentTime);
-        // Close audio context when file is done
-        source.onended = function(){
-          context.close();
-        }
-      });
-    }
+ AudioPlayer.playWithUrl()
 }
 
 
 export function postWord(){
-  return function(dispatch){
-    return axios.({
-      method: 'post',
-      url: '/api/word/',
-      data: {'word': this.state.targetWord},
-    })
-      .then(function(response){
-        dispatch(sendUserRecording(response.data))
-      })
-  }
+  
 }
 
 export function record(){
-startRecordingUserAudio: function() {
-    this.recordRTC.startRecording();
-  } // this will need to be changed to update the state of the function only
-  return function(dispatch){
-    disptach(recordUserAudio()) 
-  }
+
+
 }
+
+
 
 
 
