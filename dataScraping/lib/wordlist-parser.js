@@ -35,7 +35,7 @@ module.exports = {
   },
 
   getWordList: function(listTitle, syllables) {
-    syllables = syllables || 1;
+    syllables = syllables || 2;
     var jsonFile = path.join(config.wordListDir, listTitle + '.json');
     var data = JSON.parse(fs.readFileSync(jsonFile));
     for (var word in data) {
