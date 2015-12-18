@@ -23,6 +23,7 @@ var wordSchema = new Schema({
     type: String,
     required: true
   },
+  scores: [Number],
   acceptable_score: Number,
   level: String,
   s3: {

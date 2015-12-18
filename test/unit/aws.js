@@ -358,4 +358,11 @@ describe('aws', function() {
 
   });
 
+  describe('getScoresFromFile', function() {
+    it('should be a function', function() {
+      expect(aws.getScoresFromFile).to.be.a('function');
+    });
+    
+  });
+
 });

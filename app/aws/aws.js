@@ -293,6 +293,10 @@ exports.closeDbConnection = function() {
  * @return {[promise]}       [resolves on successful save]
  */
 exports.uploadWordAndSave = function(file, params) {
+  var scoresPath = file.replace(/\.wav$/, '.txt');
+  var scores = exports.getScoresFromFile(scoresPath).then(function(scores) {
+    console.log(scores);
+  });
 
   // Create new word object
   // word defaults to filename
@@ -301,6 +305,7 @@ exports.uploadWordAndSave = function(file, params) {
     language: params.language,
     accent: params.accent,
     gender: params.gender,
+    // scores: scores,
     s3: {
       Bucket: config.bucket,
       Key: path.parse(file).base
@@ -313,4 +318,17 @@ exports.uploadWordAndSave = function(file, params) {
     }).catch(function(err) {
       return BbPromise.reject(err);
     });
+};
+
+exports.getScoresFromFile = function(file) {
+  return new BbPromise(function(fulfill, reject) {
+    readFile(file, "utf-8").then(function(data) {
+      var scores = data.split('\n');
+      scores = scores.filter(Boolean);  // Gets rid of empty elements
+      scores = scores.map(function(score) {
+        return parseFloat(score);
+      });
+      fulfill(scores);
+    });
+  });
 };
