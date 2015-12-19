@@ -32,7 +32,7 @@ describe('Routes', function() {
         return Counter.remove({});
       })
       .then(function() {
-        Word.create({
+        return Word.create({
           word: 'apple',
           language: 'english',
           accent: 'general',
@@ -44,11 +44,23 @@ describe('Routes', function() {
         });
       })
       .then(function() {
-        Word.create({
+        return Word.create({
           word: 'circle',
           language: 'english',
           accent: 'general',
           gender: 'male',
+          s3: {
+            Bucket: 'hr10-vocalize-testing',
+            Key: 'circle.wav'
+          }
+        });
+      })
+      .then(function() {
+        return Word.create({
+          word: 'circle',
+          language: 'english',
+          accent: 'general',
+          gender: 'female',
           s3: {
             Bucket: 'hr10-vocalize-testing',
             Key: 'circle.wav'
@@ -61,12 +73,12 @@ describe('Routes', function() {
   });
 
   after(function(done) {
-    
+
     con.db.dropDatabase(function(err, result) {
       mongoose.connection.close();
       con.close(done);
     });
-    
+
   });
 
   it('should load the index', function(done) {
@@ -76,12 +88,76 @@ describe('Routes', function() {
       .end(done);
   });
 
-  it('should have two words on the db', function(done) {
+  it('should have three words on the db', function(done) {
     Word.find({})
       .then(function(words) {
-        expect(words.length).to.equal(2);
+        expect(words.length).to.equal(3);
         done();
       });
+  });
+
+  describe('Word Model', function() {
+
+    it('should accept multiple words with the same word index', function(done) {
+      Word.find({
+          word_index: 0
+        })
+        .then(function(words) {
+          expect(words.length).to.equal(2);
+          done();
+        });
+    });
+
+    it('should increment the counter for words of the same type', function(done) {
+      Word.find({
+          gender: 'male'
+        })
+        .then(function(words) {
+          expect(words.length).to.equal(2);
+          expect(words[0].word_index).to.not.equal(words[1].word_index);
+          done();
+        });
+    });
+
+    it('should not add the same word object twice', function(done) {
+      Word.create({
+        word: 'apple',
+        language: 'english',
+        accent: 'general',
+        gender: 'male',
+        s3: {
+          Bucket: 'hr10-vocalize-testing',
+          Key: 'apple.wav'
+        }
+      })
+      .catch(function(err){
+        done();
+      });
+    });
+
+  });
+
+  describe('Counter Model', function() {
+
+    it('should create a new counter for each type of word', function(done){
+      Counter.find()
+        .then(function(counters){
+          expect(counters.length).to.equal(2);
+          expect(counters[0].language).to.equal(counters[1].language);
+          expect(counters[0].gender).to.not.equal(counters[1].gender);
+          done();
+        });
+    });
+
+    // Still counts up for the word that wasn't added
+    it('should increment counter for each word added', function(done){
+      Counter.findOne({'gender': 'male'})
+        .then(function(counter){
+          expect(counter.seq).to.equal(3);
+          done();
+        });
+    });
+
   });
 
   describe('Words API', function() {
@@ -125,10 +201,24 @@ describe('Routes', function() {
       var cookie;
 
       it('should find the next word', function(done) {
-        request(app)
-          .get('/api/words/index?word_index=0')
-          .expect(function(resp) {
+        var req = request(app).get('/api/words/index?language=english&accent=general&gender=male');
+
+        req.cookies = 'word_index=0';
+
+        req.expect(function(resp) {
             expect(resp.body.word_index).to.equal(1);
+          })
+          .end(done);
+      });
+
+      it('should find words by index and query', function(done) {
+        var req = request(app).get('/api/words/index?language=english&accent=general&gender=female');
+
+        req.cookies = 'word_index=0';
+
+        req.expect(function(resp) {
+            expect(resp.body.word_index).to.equal(0);
+            expect(resp.body.gender).to.equal('female');
           })
           .end(done);
       });
@@ -204,7 +294,7 @@ describe('Routes', function() {
           .end(done);
       });
     });
-  
+
 
   });
 

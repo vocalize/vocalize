@@ -1,4 +1,3 @@
-
 var ffmpeg = require('fluent-ffmpeg');
 var fs = require('fs');
 var _ = require('underscore');
@@ -38,7 +37,7 @@ module.exports = function(videoId) {
         return _doIt(audio.audioFile, audio.transcript);
       });
     })
-    .catch(function(err){
+    .catch(function(err) {
       util.handleError(err);
     });
 };
@@ -50,35 +49,35 @@ module.exports = function(videoId) {
  * @return {[promise]}               [resolves when file is done parsing]
  */
 var _doIt = function(audioFilePath, transcriptFile) {
-
-  if(util.exists(transcriptFile)){
+  console.log('Preparing ' + path.parse(audioFilePath).name);
+  if (util.exists(transcriptFile)) {
     return readFile(transcriptFile)
-    .then(function(transcript) {
-      var timestamps = _parseTimeStamps(transcript);
+      .then(function(transcript) {
+        var timestamps = _parseTimeStamps(transcript);
 
-      // Create an ffmpeg command for each timestamp and push them into the ffmpegCommand array
-      // Each command is bound with the correct arguments
-      // Each command will be saved as a promise so that they can be executed serially
-      // If they are done all at once, too many child processes are spawned and ffmpeg explodes
+        // Create an ffmpeg command for each timestamp and push them into the ffmpegCommand array
+        // Each command is bound with the correct arguments
+        // Each command will be saved as a promise so that they can be executed serially
+        // If they are done all at once, too many child processes are spawned and ffmpeg explodes
 
-      var ffmpegCommands = timestamps.map(function(ts, idx) {
-        return _splitAudioFileByTimeStamp.bind(this, audioFilePath, ts, idx);
+        var ffmpegCommands = timestamps.map(function(ts, idx) {
+          return _splitAudioFileByTimeStamp.bind(this, audioFilePath, ts, idx);
+        });
+
+        // Run Bluebird reduce function on ffmpegCommands
+        // Each element is a promise wrapped around an ffmpeg command
+        // reduce will run every command after the previous one resolved
+
+        return BbPromise.reduce(ffmpegCommands, function(_, command) {
+          return command();
+        }, 0);
+      })
+      .then(function() {
+        console.log('Done parsing ' + path.parse(audioFilePath).base);
+      })
+      .catch(function(err) {
+        util.handleError(err);
       });
-
-      // Run Bluebird reduce function on ffmpegCommands
-      // Each element is a promise wrapped around an ffmpeg command
-      // reduce will run every command after the previous one resolved
-
-      return BbPromise.reduce(ffmpegCommands, function(_, command) {
-        return command();
-      }, 0);
-    })
-    .then(function() {
-      console.log('Done parsing ' + path.parse(audioFilePath).base);
-    })
-    .catch(function(err) {
-      util.handleError(err);
-    });
   } else {
     console.log('Could not find transcript: ' + transcriptFile);
     return false;
@@ -179,7 +178,7 @@ var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
           .audioChannels(1)
           // Output file location
           .output(path.join(wordDir, idx + ts.word + '.wav'))
-          .on('progress', function(progress){
+          .on('progress', function(progress) {
             //console.log('Splitting: ' + progress.percent.toFixed(2));
           })
           // Success
