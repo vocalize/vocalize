@@ -204,37 +204,7 @@ describe('Routes', function() {
           .end(done);
       });
     });
-
-  });
-
-  describe('Audio API', function() {
-
-    describe('api/audio', function() {
-
-    });
-
-    describe('api/audio/:filename', function() {
-
-      // Makes live calls to S3!
-      xit('should stream a file from s3', function(done) {
-        request(app)
-          .get('/api/audio/apple.wav')
-          .expect(function(resp) {
-            expect(resp.status).to.equal(200);
-            expect(resp.header['content-type']).to.equal('audio/x-wav');
-          })
-          .end(done);
-      });
-
-      // Makes live calls to S3!
-      xit('should not stream a file that does not exist', function(done) {
-        request(app)
-          .get('/api/audio/fakestreet.wav')
-          .expect(404)
-          .end(done);
-      });
-
-    });
+  
 
   });
 
