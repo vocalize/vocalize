@@ -22,8 +22,8 @@ exports.download = function(videoId) {
 
 exports.youtube_dl = function(videoId, directory) {
   return new BbPromise(function(resolve, reject) {
-    var inputPath = inputDir;
-    var youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-R', '100', '-o', directory + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
+
+    var youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-ab', '128k', '-ar', '44100', '-o', directory + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
 
     youtube_dl.stdout.on('data', function(data) {
       console.log(data.toString());
@@ -34,6 +34,7 @@ exports.youtube_dl = function(videoId, directory) {
     });
 
     youtube_dl.on('exit', function() {
+      console.log('Finished Downloading ' + videoId);
       resolve();
     });
   });
@@ -106,6 +107,7 @@ var _slice = function(file, start, interval, idx) {
         if (err) {
           reject(err);
         }
+        console.log('Sliced part ' + idx + ' of ' + file.filename);
         resolve();
       })
       //Failure

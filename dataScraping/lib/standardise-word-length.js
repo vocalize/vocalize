@@ -27,9 +27,9 @@ module.exports = function() {
         });
       })
       .then(function(directories) {
-        return BbPromise.each(directories, function(dir) {
+        return BbPromise.reduce(directories, function(_, dir) {
           return _standardiseWordDirectory(dir);
-        });
+        }, 0);
       })
       .then(function(){
         resolve();

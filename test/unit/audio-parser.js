@@ -66,12 +66,6 @@ describe('audio parser', function() {
       done();
     });
 
-    it('should create directories for each word', function(done) {
-      expect(words.length).to.equal(3);
-      expect(words[0]).to.equal('apple');
-      done();
-    });
-
     it('should create a standard directory and a word.txt file in each directory', function(done) {
       words.forEach(function(word) {
         var sub = fs.readdirSync(path.join(outputDir, word));
