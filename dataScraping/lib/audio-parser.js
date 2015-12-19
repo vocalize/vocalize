@@ -65,14 +65,13 @@ var _doIt = function(audioFilePath, transcriptFile) {
         return _splitAudioFileByTimeStamp.bind(this, audioFilePath, ts, idx);
       });
 
-      // Run Bluebird each function on ffmpegCommands
+      // Run Bluebird reduce function on ffmpegCommands
       // Each element is a promise wrapped around an ffmpeg command
-      // each will run every command after the previous one resolved
+      // reduce will run every command after the previous one resolved
 
-      return BbPromise.each(ffmpegCommands, function(command) {
+      return BbPromise.reduce(ffmpegCommands, function(_, command) {
         return command();
-      });
-
+      }, 0);
     })
     .then(function() {
       console.log('Done parsing ' + path.parse(audioFilePath).base);

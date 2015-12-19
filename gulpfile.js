@@ -144,7 +144,7 @@ gulp.task('test', function() {
 
 // Runs unit and integration tests
 gulp.task('test-one', function() {
-  return gulp.src(['test/unit/youtube-scraper.js'])
+  return gulp.src(['test/unit/audio-parser.js'])
     .pipe(mocha())
     .once('error', function(err) {
       console.log(err);

@@ -3,9 +3,11 @@ process.env.NODE_ENV = 'test';
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Promise = require('bluebird');
+var http = require('http');
 var path = require('path');
 var fs = require('fs');
 var mongoose = require('mongoose');
+var request = require('request');
 
 var aws = require('../../app/aws/aws');
 
@@ -13,6 +15,7 @@ var util = require('../util');
 
 var filepath = path.join(__dirname, '..', 'testfiles/aws');
 var testfile = path.join(filepath, 'circle.wav');
+var url = 'http://d2oh9tgz5bro4i.cloudfront.net/circle.wav';
 
 var testword = {
   s3: {
@@ -32,7 +35,7 @@ describe('aws live', function() {
   });
 
   after(function(done) {
-    if(util.exists(path.join(filepath, 'temp', 'test.wav'))){
+    if (util.exists(path.join(filepath, 'temp', 'test.wav'))) {
       fs.unlink(path.join(filepath, 'temp', 'test.wav'));
     }
     mongoose.connection.db.dropDatabase(function(err, result) {
@@ -43,7 +46,7 @@ describe('aws live', function() {
 
   describe('uploadFile', function() {
 
-    it('should upload a file to s3', function(done) {
+    xit('should upload a file to s3', function(done) {
 
       aws.uploadFile(testfile, testword)
         .then(function() {
@@ -56,7 +59,7 @@ describe('aws live', function() {
 
   describe('downloadFile', function() {
 
-    it('should download a file from s3', function(done) {
+    xit('should download a file from s3', function(done) {
 
       aws.downloadFile(filepath + '/temp/test.wav', testword)
         .then(function() {
@@ -68,11 +71,20 @@ describe('aws live', function() {
         });
     });
 
+    xit('should have a valid streaming url', function(done) {
+      
+      request(url, function(err, resp, body){
+        expect(resp.statusCode === 200);
+        done();
+      });
+
+    });
+
   });
 
   describe('removeS3File', function() {
 
-    it('should remove a file from s3', function(done) {
+    xit('should remove a file from s3', function(done) {
 
       aws.removeS3File([testword])
         .then(function() {
