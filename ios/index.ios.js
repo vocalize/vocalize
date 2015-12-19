@@ -3,6 +3,7 @@
 var React = require('react-native');
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var Button = require('react-native-button');
+var {AudioRecorder, AudioPlayer} = require('react-native-audio');
 
 var {
   AppRegistry,
@@ -10,19 +11,20 @@ var {
   Text,
   View,
   TabBarIOS,
-  TouchableHighlight,
-  AlertIOS,
-  Dimensions,
 } = React;
 
 var PlayWordBtn = React.createClass({
+  playWord: function() {
+    AudioPlayer.playWithUrl('http://d2oh9tgz5bro4i.cloudfront.net/apple.wav');
+  },
+
   render: function() {
     return (
       <View style={styles.playWordContainer}>
         <Button
           style={styles.PlayWordBtn}
           styleDisabled={{color: 'red'}}
-          onPress={this.onPress}
+          onPress={this.playWord}
         >
           <Icon name="play_circle_outline" size={50} color="#007AFF" />
         </Button>
@@ -32,6 +34,21 @@ var PlayWordBtn = React.createClass({
 });
 
 var RecordAudioBtn = React.createClass({
+  componentDidMount: function() {
+    AudioRecorder.prepareRecordingAtPath('/test.caf')
+    AudioRecorder.onFinished = (data) => {
+      AudioRecorder.playRecording();
+      console.log(`Finished recording: ${data}`)
+    };
+  },
+
+  _stopRecording: function() {
+    AudioRecorder.stopRecording();
+  },
+
+  _startRecording: function() {
+    AudioRecorder.startRecording();
+  },
 
   render: function() {
     return (
@@ -39,7 +56,8 @@ var RecordAudioBtn = React.createClass({
         <Button
           style={styles.recordAudioBtn}
           styleDisabled={{color: '#FF3B30'}}
-          onPress={this.onPress}
+          onPressIn={this._startRecording}
+          onPressOut={this._stopRecording}
         >
           <Icon name="mic" size={100} color="#007AFF" />
         </Button>
@@ -56,7 +74,7 @@ var NextWordBtn = React.createClass({
         <Button
           style={styles.nextWordBtn}
           styleDisabled={{color: 'red'}}
-          onPress={this.onPress}
+          onPress={this.props.stop}
           >
           Next
         </Button>
@@ -86,6 +104,7 @@ var ComparisonResults = React.createClass({
 });
 
 var WordOptions = React.createClass({
+
   render: function() {
     return (
       <View style={styles.wordOptionsContainer}>
@@ -98,6 +117,7 @@ var WordOptions = React.createClass({
 });
 
 var PronunciationTest = React.createClass({
+
   render: function() {
     return (
       <View style={styles.pronunciationTest}>
