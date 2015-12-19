@@ -165,84 +165,78 @@ describe('aws', function() {
 
   });
 
-  describe('uploadFile', function() {
-
-    var uploadSpy;
-
-    beforeEach(function() {
-      uploadSpy = sinon.spy(Client, 'uploadFile');
-    });
-
-    afterEach(function() {
-      Client.uploadFile.restore();
-    });
+  describe('removeWordsByQuery', function() {
 
     it('should be a function', function() {
-      expect(aws.uploadFile).to.be.a('function');
+      expect(aws.removeWordsByQuery).to.be.a('function');
     });
 
-    it('should create a params object with filepath and s3 locations', function(done) {
-      var params = {
-        localFile: 'filepath',
-        s3Params: {
-          Bucket: 'hr10-vocalize-testing',
-          Key: 'filekey'
-        }
-      };
-
-      aws.uploadFile('filepath', {
-          s3: {
-            Key: 'filekey'
-          }
-        })
+    it('should establish a connection to the db and close it when finished', function(done) {
+      aws.removeWordsByQuery({})
         .then(function() {
-          console.log('params:', params);
-          expect(uploadSpy.calledWith(params)).to.equal(true);
+          expect(openDbConnection.callCount).to.equal(1);
+          expect(closeDbConnection.callCount).to.equal(1);
           done();
         });
     });
 
-  });
+    it('should remove words from S3 and delete them from the DB', function(done) {
 
-  describe('dowloadFile', function() {
-
-    var downloadSpy;
-
-    beforeEach(function() {
-      downloadSpy = sinon.spy(Client, 'downloadFile');
-    });
-
-    afterEach(function() {
-      Client.downloadFile.restore();
-    });
-
-    it('should be a function', function() {
-      expect(aws.downloadFile).to.be.a('function');
-    });
-
-    it('should create a params object with filepath and s3 locations', function(done) {
-      var params = {
-        localFile: 'filepath',
-        s3Params: {
-          Bucket: 'filebucket',
-          Key: 'filekey'
-        }
-      };
-
-      aws.downloadFile('filepath', {
-          s3: {
-            Bucket: 'filebucket',
-            Key: 'filekey'
-          }
+      aws.addWordsByDir(testdir)
+        .then(function() {
+          return Word.find({});
+        })
+        .then(function(data) {
+          words = data;
+          expect(words.length).to.equal(4);
+          return aws.removeWordsByQuery({
+            language: 'english'
+          });
         })
         .then(function() {
-          expect(downloadSpy.calledWith(params)).to.equal(true);
+          return Word.find();
+        })
+        .then(function(words) {
+          expect(words.length).to.equal(0);
           done();
         });
     });
 
+    it('should create a params object for s3 with Bucket and Delete properties', function(done) {
+
+      var wordList;
+      var params = {
+        Bucket: 'hr10-vocalize-testing',
+        Delete: {}
+      };
+
+      aws.addWordsByDir(testdir)
+        .then(function() {
+          return Word.find({});
+        })
+        .then(function(words) {
+          wordList = words
+          params.Delete.Objects = words.map(function(word) {
+            return {
+              Key: word.s3.Key
+            }
+          });
+          expect(words.length).to.equal(4);
+          return aws.removeWordsByQuery({
+            language: 'english'
+          });
+        })
+        .then(function() {
+          Word.find({language: 'english'})
+            .then(function(words){
+              expect(words.length).to.equal(0);
+              expect(removeS3File.callCount).to.equal(1);
+              expect(removeS3File.firstCall.args[0].length).to.equal(4);
+              done();
+            });
+        });
+    });
+
   });
-
-
 
 });
