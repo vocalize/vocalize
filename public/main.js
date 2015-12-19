@@ -193,7 +193,7 @@ var PronunciationTest = React.createClass({
       success: function(data) {
         this.recordRTC.clearRecordedData();
         console.log('data', data);
-        var percentCorrect = Math.floor(data);
+        var percentCorrect = Math.floor(data.score);
         this.setState({
           percentCorrect: percentCorrect
         });
