@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "A41FE8350A0DD32BBA3784ABE8DF8845017EC3D1",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "A41FE8350A0DD32BBA3784ABE8DF8845017EC3D1" : 0,
+    "993B51121162EE08D3BBAC6E154A0866D926654E" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "A7184A9D-1C45-4CD3-84D6-2D673062A08D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "A41FE8350A0DD32BBA3784ABE8DF8845017EC3D1" : "vocalize\/",
+    "993B51121162EE08D3BBAC6E154A0866D926654E" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "vocalize",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ios\/ios\/vocalize.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/remotebeta\/2014-01-thunderbar.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "993B51121162EE08D3BBAC6E154A0866D926654E"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/acp31\/vocalize.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A41FE8350A0DD32BBA3784ABE8DF8845017EC3D1"
+    }
+  ]
+}
