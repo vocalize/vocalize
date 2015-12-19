@@ -23,7 +23,7 @@ exports.download = function(videoId) {
 exports.youtube_dl = function(videoId, directory) {
   return new BbPromise(function(resolve, reject) {
 
-    var youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-ab', '128k', '-ar', '44100', '-o', directory + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
+    var youtube_dl = spawn('youtube-dl', ['--extract-audio', '--audio-format', 'mp3', '-o', directory + '/' + videoId + '.%(ext)s', "http://www.youtube.com/watch?v=" + videoId]);
 
     youtube_dl.stdout.on('data', function(data) {
       console.log(data.toString());
