@@ -1,5 +1,6 @@
 *.wav
 !test/testwords/*.wav
+!test/testfiles/**/*.wav
 coverage
 dist
 
