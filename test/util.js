@@ -14,6 +14,15 @@ var rmdirRf = function(path) {
   }
 };
 
+var exists = function(path) {
+    try {
+      return fs.statSync(path).isFile() || fs.statSync(path).isDirectory();
+    } catch (err) {
+      return false;
+    }
+  }
+
 module.exports = {
-	rmdirRf: rmdirRf
+	rmdirRf: rmdirRf,
+  exists: exists
 };

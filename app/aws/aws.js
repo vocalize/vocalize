@@ -137,7 +137,6 @@ exports.uploadFile = function(filepath, word) {
  */
 exports.downloadFile = function(filepath, word) {
   return new BbPromise(function(resolve, reject) {
-
     var params = {
       // localFile: path.join(filepath, word.word + '.wav'),
       localFile: filepath,
@@ -147,15 +146,17 @@ exports.downloadFile = function(filepath, word) {
         Key: word.s3.Key
       }
     };
+
     var downloader = client.downloadFile(params);
     downloader.on('error', function(err) {
-      console.error("unable to download:", err.stack);
+      console.error("unable to download:", err);
+      reject(err);
     });
     downloader.on('progress', function() {
-      // console.log("progress", downloader.progressAmount, downloader.progressTotal);
+      console.log("progress", downloader.progressAmount, downloader.progressTotal);
     });
     downloader.on('end', function() {
-      // console.log("done downloading");
+      console.log("done downloading");
       resolve();
     });
   });

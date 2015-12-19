@@ -49,7 +49,7 @@ wordSchema.pre('save', function(next) {
     this.created_at = new Date();
   }
 
-  this.s3.Key = this._id + '-' + this.s3.Key;
+  this.s3.Key = 'public/' + this._id + '-' + this.s3.Key;
 
   Counter.findByIdAndUpdate('word_list', {$inc: {seq: 1}}, {upsert: true}, function(err, counter){
 

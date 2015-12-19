@@ -9,27 +9,7 @@ var mongoose = require('mongoose');
 var mockrequire = require('mockrequire');
 var EventEmitter = require('events').EventEmitter;
 
-var mockEmitter = function(params) {
-  var emitter = new EventEmitter();
-  setTimeout(function() {
-    emitter.emit('end');
-  }, 0)
-  return emitter;
-};
-
-var Client = {
-  uploadFile: mockEmitter,
-  downloadFile: mockEmitter,
-  deleteObjects: mockEmitter
-};
-
-var aws = mockrequire('../../app/aws/aws', {
-  's3': {
-    createClient: function(options) {
-      return Client;
-    }
-  }
-});
+var aws = require('../../app/aws/aws');
 
 var config = require('../config');
 var Word = require('../../app/models/word');
@@ -40,9 +20,13 @@ var testfile = path.join(testdir, 'circle.wav');
 var badfile = path.join(testdir, 'fake.wav');
 var params = JSON.parse(fs.readFileSync(path.join(testdir, 'params.json')));
 
+var mock = function(){
+  return Promise.resolve();
+};
+
 describe('aws', function() {
 
-  var openDbConnection, closeDbConnection, removeS3File;
+  var openDbConnection, closeDbConnection, removeS3File, uploadFile, downloadFile;
 
   beforeEach(function(done) {
     // Open DB connection
@@ -50,9 +34,10 @@ describe('aws', function() {
     mongoose.connection.once('open', function() {
 
       // Stub connection function
-      openDbConnection = sinon.stub(aws, 'openDbConnection', function() {
-        return Promise.resolve();
-      });
+      openDbConnection = sinon.stub(aws, 'openDbConnection', mock);
+      uploadFile = sinon.stub(aws, 'uploadFile', mock);
+      downloadFile = sinon.stub(aws, 'downloadFile', mock);
+      removeS3File = sinon.stub(aws, 'removeS3File', mock);
 
       // Stub connection function
       closeDbConnection = sinon.stub(aws, 'closeDbConnection');
@@ -66,6 +51,9 @@ describe('aws', function() {
     // Restore stubbed functions
     aws.openDbConnection.restore();
     aws.closeDbConnection.restore();
+    aws.uploadFile.restore();
+    aws.downloadFile.restore();
+    aws.removeS3File.restore();
 
     mongoose.connection.db.dropDatabase(function(err, result) {
       mongoose.connection.close();
@@ -82,15 +70,7 @@ describe('aws', function() {
   });
 
   describe('addWordsByDir', function() {
-    var uploadSpy;
 
-    beforeEach(function() {
-      uploadSpy = sinon.spy(Client, 'uploadFile');
-    });
-
-    afterEach(function() {
-      Client.uploadFile.restore();
-    });
 
     it('should be a function', function() {
       expect(aws.addWordsByDir).to.be.a('function');
@@ -110,7 +90,7 @@ describe('aws', function() {
         .then(function() {
           Word.find()
             .then(function(words) {
-              expect(uploadSpy.callCount).to.equal(4);
+              expect(uploadFile.callCount).to.equal(4);
               expect(words.length).to.equal(4);
               done();
             });
@@ -122,7 +102,7 @@ describe('aws', function() {
         .catch(function(err) {
           Word.find()
             .then(function(words) {
-              expect(uploadSpy.callCount).to.equal(0);
+              expect(uploadFile.callCount).to.equal(0);
               expect(words.length).to.equal(0);
               done();
             });
@@ -134,7 +114,7 @@ describe('aws', function() {
         .catch(function(err) {
           Word.find()
             .then(function(words) {
-              expect(uploadSpy.callCount).to.equal(0);
+              expect(uploadFile.callCount).to.equal(0);
               expect(words.length).to.equal(0);
               done();
             });
@@ -145,16 +125,6 @@ describe('aws', function() {
 
 
   describe('addWord', function() {
-
-    var uploadSpy;
-
-    beforeEach(function() {
-      uploadSpy = sinon.spy(Client, 'uploadFile');
-    });
-
-    afterEach(function() {
-      Client.uploadFile.restore();
-    });
 
     it('should be a function', function() {
       expect(aws.addWord).to.be.a('function');
@@ -174,7 +144,7 @@ describe('aws', function() {
         .then(function() {
           Word.find()
             .then(function(words) {
-              expect(uploadSpy.callCount).to.equal(1);
+              expect(uploadFile.callCount).to.equal(1);
               expect(words.length).to.equal(1);
               done();
             });
@@ -186,7 +156,7 @@ describe('aws', function() {
         .catch(function(err) {
           Word.find()
             .then(function(words) {
-              expect(uploadSpy.callCount).to.equal(0);
+              expect(uploadFile.callCount).to.equal(0);
               expect(words.length).to.equal(0);
               done();
             });
@@ -195,94 +165,7 @@ describe('aws', function() {
 
   });
 
-  describe('uploadFile', function() {
-
-    var uploadSpy;
-
-    beforeEach(function() {
-      uploadSpy = sinon.spy(Client, 'uploadFile');
-    });
-
-    afterEach(function() {
-      Client.uploadFile.restore();
-    });
-
-    it('should be a function', function() {
-      expect(aws.uploadFile).to.be.a('function');
-    });
-
-    it('should create a params object with filepath and s3 locations', function(done) {
-      var params = {
-        localFile: 'filepath',
-        s3Params: {
-          Bucket: 'hr10-vocalize-testing',
-          Key: 'filekey'
-        }
-      };
-
-      aws.uploadFile('filepath', {
-          s3: {
-            Key: 'filekey'
-          }
-        })
-        .then(function() {
-          expect(uploadSpy.calledWith(params)).to.equal(true);
-          done();
-        });
-    });
-
-  });
-
-  describe('dowloadFile', function() {
-
-    var downloadSpy;
-
-    beforeEach(function() {
-      downloadSpy = sinon.spy(Client, 'downloadFile');
-    });
-
-    afterEach(function() {
-      Client.downloadFile.restore();
-    });
-
-    it('should be a function', function() {
-      expect(aws.downloadFile).to.be.a('function');
-    });
-
-    it('should create a params object with filepath and s3 locations', function(done) {
-      var params = {
-        localFile: 'filepath',
-        s3Params: {
-          Bucket: 'filebucket',
-          Key: 'filekey'
-        }
-      };
-
-      aws.downloadFile('filepath', {
-          s3: {
-            Bucket: 'filebucket',
-            Key: 'filekey'
-          }
-        })
-        .then(function() {
-          expect(downloadSpy.calledWith(params)).to.equal(true);
-          done();
-        });
-    });
-
-  });
-
   describe('removeWordsByQuery', function() {
-
-    var deleteSpy;
-
-    beforeEach(function() {
-      deleteSpy = sinon.spy(Client, 'deleteObjects');
-    });
-
-    afterEach(function() {
-      Client.deleteObjects.restore();
-    });
 
     it('should be a function', function() {
       expect(aws.removeWordsByQuery).to.be.a('function');
@@ -321,6 +204,7 @@ describe('aws', function() {
 
     it('should create a params object for s3 with Bucket and Delete properties', function(done) {
 
+      var wordList;
       var params = {
         Bucket: 'hr10-vocalize-testing',
         Delete: {}
@@ -331,6 +215,7 @@ describe('aws', function() {
           return Word.find({});
         })
         .then(function(words) {
+          wordList = words
           params.Delete.Objects = words.map(function(word) {
             return {
               Key: word.s3.Key
@@ -342,18 +227,14 @@ describe('aws', function() {
           });
         })
         .then(function() {
-          expect(deleteSpy.callCount).to.equal(1);
-          expect(deleteSpy.calledWith(params)).to.equal(true);
-          done();
+          Word.find({language: 'english'})
+            .then(function(words){
+              expect(words.length).to.equal(0);
+              expect(removeS3File.callCount).to.equal(1);
+              expect(removeS3File.firstCall.args[0].length).to.equal(4);
+              done();
+            });
         });
-    });
-
-  });
-
-  describe('downloadStream', function() {
-
-    it('should be a function', function() {
-      expect(aws.downloadStream).to.be.a('function');
     });
 
   });
