@@ -1,6 +1,7 @@
 var Word = require('../models/word');
 var util = require('../util');
 var fs = require('fs');
+var ds = require('descriptive-statistics');
 var winston = require('winston');
 var binaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
@@ -35,13 +36,30 @@ exports.compareAudio = function(req, res) {
         }, function (error, stdout, stderr) {
           console.log('stdout: ' + stdout);
           if (error !== null) {
-            console.log('stderr: ' + stderr);
-            console.log('exec error: ' + error);
-
+            winston.error('stderr: ', stderr);
           }
           winston.log('stdout: ', stdout);
-          winston.error('stderr: ', stderr);
-          res.status(200).send(stdout);
+
+          var score = parseFloat(stdout);
+          var mean = word.scores.mean;
+          var stdDeviation = word.scores.standard_deviation;
+          var distance, stdDeviationCount;
+          if (stdDeviation === 0) {
+            distance = 0;
+            stdDeviationCount = 0;
+          } else {
+            distance = score - mean;
+            stdDeviationCount = distance / stdDeviation;
+          }
+          var results = {
+            score: score,
+            mean: mean,
+            stdDeviation: stdDeviation,
+            distance: distance,
+            stdDeviationCount: stdDeviationCount
+          }
+          console.log(results);
+          res.status(200).send(results);
         });
       });
     });

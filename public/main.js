@@ -120,7 +120,7 @@ var PronunciationTest = React.createClass({
 
     function loadSound() {
       var request = new XMLHttpRequest();
-      request.open("GET", "https://localhost:3000/api/audio/" + s3key, true);
+      request.open("GET", "http://localhost:3000/api/audio/" + s3key, true);
       request.responseType = "arraybuffer";
 
       request.onload = function() {
@@ -192,6 +192,7 @@ var PronunciationTest = React.createClass({
       contentType: 'audio/wav',
       success: function(data) {
         this.recordRTC.clearRecordedData();
+        console.log('data', data);
         var percentCorrect = Math.floor(data);
         this.setState({
           percentCorrect: percentCorrect
