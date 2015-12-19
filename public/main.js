@@ -29,6 +29,23 @@ var NextWordBtn = React.createClass({
   }
 });
 
+var PrevWordBtn = React.createClass({
+
+  render: function(){
+    return (
+      <div className="prev">
+        <button 
+          type='button'
+          className="btn btn-full" 
+          onClick={this.props.onClick}
+        >
+          Previous Word
+        </button>
+      </div>
+    );
+  }
+});
+
 var PercentCorrect = React.createClass({
   render: function(){
     return (
@@ -90,6 +107,11 @@ var TargetWord = React.createClass({
 var PronunciationTest = React.createClass({
   recordRTC: null,
 
+  loadPrevWordFromServer: function() {
+    var url = this.compilePrevWordUrl();
+    console.log(url);
+  },
+
   loadWordFromServer: function() {
     var url = this.compileNextWordUrl();
 
@@ -110,6 +132,13 @@ var PronunciationTest = React.createClass({
     var gender = 'gender=' + this.state.gender;
     var url = '/api/words/index/?' + language + '&' + gender;
     
+    return url;
+  },
+
+  compilePrevWordUrl: function() {
+    var language = 'language=' + this.state.language;
+    var gender = 'gender=' + this.state.gender;
+    var url = '/api/words/previndex/?' + language + '&' + gender;
     return url;
   },
 
@@ -243,6 +272,7 @@ var PronunciationTest = React.createClass({
         />
         <PercentCorrect percentCorrect={this.state.percentCorrect} />
         <NextWordBtn onClick={this.loadWordFromServer} />
+        <PrevWordBtn onClick={this.loadPrevWordFromServer} />
       </div>
     );
     }
