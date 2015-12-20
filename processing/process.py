@@ -9,7 +9,7 @@ processing = imp.load_source('processing', '../../speechprocessing/speechprocess
 
 
 def usage():
-  print "USAGE: process.py <input file path> <output file path>"
+  print "USAGE: process.py <input file path> <output file path> <control file path>"
   sys.exit(0)
 
 if __name__ == '__main__':
@@ -18,12 +18,14 @@ if __name__ == '__main__':
     usage()
   input_wav_path = sys.argv[1]
   output_wav_path = sys.argv[2]
+  control_wav_path = sys.argv[3]
 
-
-
-  output = processing.chop(input_wav_path)
-  print output
-  # speechprocessing.trim(output_wav_path, output_wav_path)
+  chopped = processing.chop(input_wav_path)
+  trimmed = processing.trim(chopped)
+  processing.match_length(trimmed, output_wav_path, control_wav_path)
+  processing.filter(output_wav_path, output_wav_path)
+  distance = processing.compare(control_wav_path, output_wav_path)
+  return distance
 
 
 
