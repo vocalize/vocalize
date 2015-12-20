@@ -20,12 +20,12 @@ if __name__ == '__main__':
   output_wav_path = sys.argv[2]
   control_wav_path = sys.argv[3]
 
-  chopped = processing.chop(input_wav_path)
-  trimmed = processing.trim(chopped)
-  processing.match_length(trimmed, output_wav_path, control_wav_path)
+  processing.chop(input_wav_path, output_wav_path)
+  processing.trim(output_wav_path, output_wav_path)
+  processing.match_length(output_wav_path, output_wav_path, control_wav_path)
   processing.filter(output_wav_path, output_wav_path)
   distance = processing.compare(control_wav_path, output_wav_path)
-  return distance
+  print distance
 
 
 
