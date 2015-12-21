@@ -35,7 +35,7 @@ exports.compareAudio = function(req, res) {
       bufferStream.pipe(wavWriter);
 
       word.downloadAudioFile('processing/control.wav').then(function() {
-        child_process.exec('bash compareuser.sh user.wav control.wav', {
+        child_process.exec('python process.py user.wav control.wav', {
           cwd: 'processing'
         }, function(error, stdout, stderr) {
           console.log('stdout: ' + stdout);
