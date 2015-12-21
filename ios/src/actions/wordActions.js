@@ -1,42 +1,9 @@
-import * as types from './action_constants';
-import axios from 'axios';
-import { pushState } from 'redux-react-router';
+import * as types from '../constants/ActionTypes';
 
-
-
-export function setState(state){//x
+export function setState(state){
   return {
     type: types.SET_STATE,
     data: state
-  }
-}
-
-
-function playWord(word){//x
-  return {
-    type: types.PLAY_WORD,
-    data: word,
-  }
-}
-
-function recordUserAudio(word){//x
-  return {
-    type: types.RECORD_USER_AUDIO,
-    word,
-  }
-}
-
-function stopUserRecording(word){//x
-  return {
-    type: types.STOP_RECORDING_USER_AUDIO,
-    word,
-  }
-}
-
-function sendUserRecording(word){//x
-  return {
-    type: types.SEND_RECORDING_USER_AUDIO,
-    word,
   }
 }
 
@@ -47,8 +14,15 @@ function receiveNewWord(json) {
   }
 };
 
+function getScore(json) {
+  return{
+    type: types.GET_SCORE,
+    data: json
+  }
+};
 
-function requestNextWord(word){ //x
+
+function requestNextWord(word){
   return {
     type: types.REQUEST_NEXT_WORD,
     data: word,
@@ -89,53 +63,25 @@ export function setInitalState(){
   }
 }
 
-
-
-export function stop(soundBlob){
-  
+export function receiveScore(soundBlob){
+  let formData = new FormData();
+  formData.append('userAudio', soundBlob);
+  AudioRecorder.onFinished = (data) => {
+    return function(dispatch) {
+    return axios.({
+      method: 'post',
+      url: '/api/audio/',
+      data: formData,
+      processData: false,
+      contentType: 'audio/wav',
+    })
+      .then(function(data) {
+        let percentCorrect = Math.floor(data);
+        dispatch(getScore(percentCorrect)
+      })
+  }
 }
-
-
-
-export function play(){
- AudioPlayer.playWithUrl()
 }
-
-
-export function postWord(){
-  
-}
-
-export function record(){
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
