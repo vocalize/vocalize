@@ -39,7 +39,7 @@ describe('transcript parser', function() {
       return Promise.resolve();
     });
 
-    transcript_parser.getTranscript(videoId, inputDir)
+    transcript_parser.getTranscript(videoId, 'english')
       .then(function() {
         done();
       });
@@ -64,6 +64,20 @@ describe('transcript parser', function() {
     var filePath = path.join(inputDir, videoId, files[0]);
     var transcriptPath = path.join(inputDir, videoId, 'transcripts');
     expect(watsonStub.calledWith(filePath, transcriptPath)).to.equal(true);
+  });
+
+  it('should throw an error when no video id is specified', function(done) {
+    transcript_parser.getTranscript()
+      .catch(function() {
+        done();
+      });
+  });
+
+  it('should throw an error when no language is specified', function(done) {
+    transcript_parser.getTranscript(videoId)
+      .catch(function() {
+        done();
+      });
   });
 
 });

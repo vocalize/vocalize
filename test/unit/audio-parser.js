@@ -48,38 +48,51 @@ describe('audio parser', function() {
   });
 
   describe('functions', function() {
-    var words, subdir;
 
     before(function(done) {
-      audio_parser(videoId).then(function() {
-        words = fs.readdirSync(outputDir);
-        subdir = fs.readdirSync(path.join(outputDir, words[0]));
-        done();
-      });
+      audio_parser(videoId, 'english')
+        .then(function() {
+          return audio_parser(videoId, 'spanish');
+        })
+        .then(function() {
+          done();
+        });
     });
 
-    it('should create directories for each word', function(done) {
-      expect(words.length).to.equal(3);
-      expect(words[0]).to.equal('apple');
-      // Subdir should have audio file, standard folder, and word file
-      expect(subdir).to.eql(['0apple.wav', 'standard', 'word.txt']);
+    it('should create a directory for each language', function(done) {
+      var language_directories = fs.readdirSync(path.join(outputDir));
+      expect(language_directories).to.include.members(['english', 'spanish']);
       done();
     });
 
-    it('should create a standard directory and a word.txt file in each directory', function(done) {
-      words.forEach(function(word) {
-        var sub = fs.readdirSync(path.join(outputDir, word));
-        expect(sub.indexOf('standard')).to.not.equal(-1);
-        expect(sub.indexOf('word.txt')).to.not.equal(-1);
+    it('should create directories for each word', function(done) {
+      var word_directories = fs.readdirSync(path.join(outputDir, 'english'));
+      expect(word_directories.length).to.equal(3);
+      expect(word_directories).to.include.members(['apple', 'circle', 'board']);
+      done();
+    });
+
+    it('should create an audio file for each word', function(done) {
+      var apple = fs.readdirSync(path.join(outputDir, 'english', 'apple'));
+      expect(apple).to.include.members(['0apple.wav']);
+      done()
+    });
+
+    it('should create an audio file, a standard directory and a word.txt file in each directory', function(done) {
+      var word_directories = fs.readdirSync(path.join(outputDir, 'english'));
+
+      word_directories.forEach(function(word) {
+        var sub = fs.readdirSync(path.join(outputDir, 'english', word));
+        expect(sub).to.include.members(['standard', 'word.txt']);
       })
       done()
     });
 
     it('should not create a new directory for a word that exists', function(done) {
-      audio_parser(videoId)
+      audio_parser(videoId, 'english')
         .then(function() {
-          words = fs.readdirSync(outputDir);
-          expect(words.length).to.equal(3);
+          word_directories = fs.readdirSync(path.join(outputDir, 'english'));
+          expect(word_directories.length).to.equal(3);
           done()
         });
     });
@@ -88,16 +101,30 @@ describe('audio parser', function() {
 
   describe('handles errors', function() {
 
-    it('should catch an error for a directory that does not exist', function(done) {
-      audio_parser('fake')
-        .then(function() {
+    it('should throw an error if no video id is specified', function(done) {
+      audio_parser()
+        .catch(function() {
           done();
         });
     });
 
-    it('should catch an error when there is no transcript', function(done) {
-      audio_parser('fail')
-        .then(function() {
+    it('should throw an error if no language is specified', function(done) {
+      audio_parser(videoId)
+        .catch(function() {
+          done();
+        });
+    });
+
+    it('should throw an error for a directory that does not exist', function(done) {
+      audio_parser('fake', 'english')
+        .catch(function() {
+          done();
+        });
+    });
+
+    it('should throw an error when there is no transcript', function(done) {
+      audio_parser('fail', 'english')
+        .catch(function() {
           done();
         });
     });
