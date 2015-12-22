@@ -57,6 +57,18 @@ describe('Routes', function() {
       })
       .then(function() {
         return Word.create({
+          word: 'board',
+          language: 'english',
+          accent: 'general',
+          gender: 'male',
+          s3: {
+            Bucket: 'hr10-vocalize-testing',
+            Key: 'board.wav'
+          }
+        });
+      })
+      .then(function() {
+        return Word.create({
           word: 'circle',
           language: 'english',
           accent: 'general',
@@ -91,7 +103,7 @@ describe('Routes', function() {
   it('should have three words on the db', function(done) {
     Word.find({})
       .then(function(words) {
-        expect(words.length).to.equal(3);
+        expect(words.length).to.equal(4);
         done();
       });
   });
@@ -113,7 +125,7 @@ describe('Routes', function() {
           gender: 'male'
         })
         .then(function(words) {
-          expect(words.length).to.equal(2);
+          expect(words.length).to.equal(3);
           expect(words[0].word_index).to.not.equal(words[1].word_index);
           done();
         });
@@ -121,27 +133,27 @@ describe('Routes', function() {
 
     it('should not add the same word object twice', function(done) {
       Word.create({
-        word: 'apple',
-        language: 'english',
-        accent: 'general',
-        gender: 'male',
-        s3: {
-          Bucket: 'hr10-vocalize-testing',
-          Key: 'apple.wav'
-        }
-      })
-      .catch(function(err){
-        done();
-      });
+          word: 'apple',
+          language: 'english',
+          accent: 'general',
+          gender: 'male',
+          s3: {
+            Bucket: 'hr10-vocalize-testing',
+            Key: 'apple.wav'
+          }
+        })
+        .catch(function(err) {
+          done();
+        });
     });
 
   });
 
   describe('Counter Model', function() {
 
-    it('should create a new counter for each type of word', function(done){
+    it('should create a new counter for each type of word', function(done) {
       Counter.find()
-        .then(function(counters){
+        .then(function(counters) {
           expect(counters.length).to.equal(2);
           expect(counters[0].language).to.equal(counters[1].language);
           expect(counters[0].gender).to.not.equal(counters[1].gender);
@@ -150,10 +162,12 @@ describe('Routes', function() {
     });
 
     // Still counts up for the word that wasn't added
-    it('should increment counter for each word added', function(done){
-      Counter.findOne({'gender': 'male'})
-        .then(function(counter){
-          expect(counter.seq).to.equal(3);
+    it('should increment counter for each word added', function(done) {
+      Counter.findOne({
+          'gender': 'male'
+        })
+        .then(function(counter) {
+          expect(counter.seq).to.equal(4);
           done();
         });
     });
@@ -206,7 +220,20 @@ describe('Routes', function() {
         req.cookies = 'word_index=0';
 
         req.expect(function(resp) {
+            expect(resp.status).to.equal(200);
             expect(resp.body.word_index).to.equal(1);
+          })
+          .end(done);
+      });
+
+      it('should optionally find the previous word', function(done) {
+        var req = request(app).get('/api/words/index?previous=true&language=english&accent=general&gender=male');
+
+        req.cookies = 'word_index=1';
+
+        req.expect(function(resp) {
+            expect(resp.status).to.equal(200);
+            expect(resp.body.word_index).to.equal(0);
           })
           .end(done);
       });
@@ -217,6 +244,7 @@ describe('Routes', function() {
         req.cookies = 'word_index=0';
 
         req.expect(function(resp) {
+            expect(resp.status).to.equal(200);
             expect(resp.body.word_index).to.equal(0);
             expect(resp.body.gender).to.equal('female');
           })
@@ -224,23 +252,24 @@ describe('Routes', function() {
       });
 
       it('should restart at the first word', function(done) {
-        var req = request(app).get('/api/words/index?');
+        var req = request(app).get('/api/words/index?language=english&gender=male');
 
-        req.cookies = 'word_index=1';
+        req.cookies = 'word_index=2';
 
         req.expect(function(resp) {
+            expect(resp.status).to.equal(200);
             expect(resp.body.word_index).to.equal(0);
           })
           .end(done);
       });
 
       it('should get a cookie with word_index incremented by one', function(done) {
-        var req = request(app).get('/api/words/index?word_index=0');
+        var req = request(app).get('/api/words/index?language=english&gender=male');
 
         req.cookies = 'word_index=0';
 
         req.expect(function(resp) {
-
+            expect(resp.status).to.equal(200);
             expect(resp.headers['set-cookies']).to.not.equal(null);
             var cookie = cookieParser(resp.headers['set-cookie']);
             expect(cookie.word_index).to.equal('1');
@@ -249,13 +278,13 @@ describe('Routes', function() {
       });
 
       it('should reset cookie to 0 when restarting at first word', function(done) {
-        var req = request(app).get('/api/words/index?word_index=1');
+        var req = request(app).get('/api/words/index?language=english&gender=male');
 
-        req.cookies = 'word_index=1';
+        req.cookies = 'word_index=2';
 
         req.expect(function(resp) {
-            //console.log(resp.headers);
-            expect(resp.headers['set-cookies']).to.not.equal(null);
+            expect(resp.status).to.equal(200);
+            expect(resp.headers['set-cookie']).to.not.equal(undefined);
             var cookie = cookieParser(resp.headers['set-cookie']);
             expect(cookie.word_index).to.equal('0');
           })
@@ -263,13 +292,13 @@ describe('Routes', function() {
       });
 
       it('should handle word indexes that do not exist', function(done) {
-        var req = request(app).get('/api/words/index?word_index=1');
+        var req = request(app).get('/api/words/index?language=english&gender=male');
 
         req.cookies = 'word_index=5000';
 
         req.expect(function(resp) {
-            //console.log(resp.headers);
-            expect(resp.headers['set-cookies']).to.not.equal(null);
+            expect(resp.status).to.equal(200);
+            expect(resp.headers['set-cookie']).to.not.equal(undefined);
             var cookie = cookieParser(resp.headers['set-cookie']);
             expect(cookie.word_index).to.equal('0');
           })
@@ -277,6 +306,10 @@ describe('Routes', function() {
       });
 
       it('should not find words that do not exist', function(done) {
+        var req = request(app).get('/api/words/index?language=piglatin&gender=martian');
+
+        req.cookies = 'word_index=1';
+
         request(app)
           .get('/api/words/index?word_index=0&language=piglatin')
           .expect(404)
@@ -285,9 +318,10 @@ describe('Routes', function() {
 
       it('should assign a response cookie even if there is no request cookie set', function(done) {
         request(app)
-          .get('/api/words/index?language=english')
+          .get('/api/words/index?language=english&gender=male')
           .expect(function(resp) {
-            expect(resp.headers['set-cookies']).to.not.equal(null);
+            expect(resp.status).to.equal(200);
+            expect(resp.headers['set-cookie']).to.not.equal(undefined);
             var cookie = cookieParser(resp.headers['set-cookie']);
             expect(cookie.word_index).to.equal('0');
           })

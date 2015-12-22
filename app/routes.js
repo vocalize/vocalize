@@ -23,6 +23,7 @@ router.get('/api/words/', wordController.getWord);
 /**
  * Get next word by index
  * Must satisfy other query parameters: language etc.
+ * Set &previous=true to get previous word_index instead of the next one
  */
 router.get('/api/words/index/', wordController.getWordByNextIndex);
 
