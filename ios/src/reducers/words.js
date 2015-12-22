@@ -1,4 +1,4 @@
-import * as types from './action_constants';
+import * as types from '../constants/ActionTypes';
 
 const initalState = {
   language: 'english',
@@ -7,9 +7,9 @@ const initalState = {
   percentCorrect: null,
 }
 
-export default function vocalizeReducer( state = initalState, action){
+export default function words( state = initalState, action){
   switch(action.types) {
-
+//can't have the type be null it needs to be passed in from the action functions
   case SET_STATE: 
     return Object.assign({}, state, {
       language: 'english',
@@ -18,49 +18,23 @@ export default function vocalizeReducer( state = initalState, action){
       percentCorrect: null,
     })
 
-  case: types.REQUEST_NEXT_WORD:
+  case types.REQUEST_NEXT_WORD:
     return Object.assign({}, state, {
       targetWord: action.data.word,
-      percentCorrect: null
     });
 
-  case: types.PLAY_WORD:
-    return action.play;
-
-  case: types.RECORD_USER_AUDIO:
-    return action.record;//fix this i dont think the state is complely correct
-
-  case: types.STOP_RECORDING_USER_AUDIO:
+  case types.RECEIVE_NEW_WORD: 
+    return Object.assign({}, state, {//this probably needs to get fixed
+      percentCorrect: action.data
+    })
+  case types.GET_SCORE:
     return Object.assign({}, state, {
-      percentCorrect: action.stopUserRecording
-    });
-
+      percentCorrect: action.score
+    })
   default: 
     return state;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -25,6 +25,7 @@
     "express": "^4.13.3",
     "fluent-ffmpeg": "^2.0.1",
     "mongoose": "^4.2.10",
+    "react-native-audio": "^0.3.2",
     "s3": "^4.4.0",
     "streamws": "^0.1.1",
     "wav": "^1.0.0",
