@@ -93,91 +93,108 @@ exports.getWord = function(req, res) {
 
 /**
  * Will get the next word in the list by word_index
- * If no words are found, will run _findRootWord 
- * to restart the word list at the lowest index
+ * Will restart at 0 after reaching last word index
  * Searches by all queries in the get query string
- * ie GET /api/words/index/?language=english&gender=male
+ * Set &previous=true to optionally get previous word
+ * ie GET /api/words/index?language=english&gender=male
  * @param  {[object]} req [include query string to search by]
  * @param  {[object]} res [response]
  * @return {[object]}     [word object from db]
  */
 exports.getWordByNextIndex = function(req, res) {
-  
-  var word_index = _setWordIndexCookie(res, req.cookies.word_index);
 
-  if (word_index) {
-    req.query.word_index = {
-      $gt: word_index
-    };
+  var word_index = req.cookies.word_index;
+  var previous = req.query.previous;
 
-    Word.find(req.query).sort({
-        word_index: 1
-      })
-      .limit(1)
-      .then(function(word) {
-        if (!word.length) {
-          _findRootWord(req, res);
-        } else {
-          res.cookie("word" , word[0].word);
-          res.status(200).send(word[0]);
-        }
-      })
-      .catch(function(err) {
-        res.status(500).send('Error finding word');
-      });
+  if (previous) delete req.query.previous;
+
+  // Check if cookie is set
+  if (word_index !== undefined) {
+
+    // If previous is set get previous word
+    if (previous) {
+      req.query.word_index = {
+        $lt: word_index
+      };
+    // Get next word
+    } else {
+      req.query.word_index = {
+        $gt: word_index
+      };
+    }
+
+    // Assign first word if cookie isn't set
   } else {
-    res.status(400).send('Word Index Not Included');
+    req.query.word_index = {
+      $gte: 0
+    };
   }
+
+  // Run query
+  _getWordByIndexQuery(req.query)
+    .then(function(word) {
+      // Set cookies on the response
+      _setCookie(res, word);
+      res.send(word);
+    })
+    .catch(function(err) {
+      res.status(404).send('Error Finding Word');
+    });
+
 };
 
 /**
- * Returns the word with the lowest word_index
- * matching all other parameters.
- * @param  {[object]} req [include query string to search by]
- * @param  {[object]} res [response]
- * @return {[object]}     [word object from db]
+ * Runs a query to find a word based on its word_index value
+ * If no words are found, calls itself once to find word_index: 0 
+ * @param  {[object]}  query  [mongodb query]
+ * @param  {[boolean]} _root  [gets set to true when function calls itself]
+ * @return {[promise]}        [returns promise object that resolves with found word]
  */
-var _findRootWord = function(req, res) {
+var _getWordByIndexQuery = function(query, _root) {
 
-  req.query.word_index = {
-    $gte: 0
-  };
-
-  Word.find(req.query).sort({
+  return Word.find(query).sort({
       word_index: 1
     })
     .limit(1)
     .then(function(word) {
+      // If no words are found with specified query
+      // Usually if word_index is at the last word
       if (!word.length) {
-        res.status(404).send('No Words Found');
+        // Break out of infinite loop if no words are found
+        // on second call
+        if (_root) {
+          reject('Error finding word');
+        }
+
+        // Reset word_index to 0 at the first word
+        query.word_index = {
+          $gte: 0
+        }
+
+        // Run function again to return first word
+        return _getWordByIndexQuery(query, true);
       } else {
-        res.cookie("word_index", 0);
-        res.cookie("word" , word[0].word);
-        res.status(200).send(word[0]);
+        // Return found word
+        return word[0];
       }
-    }).catch(function(err) {
-      res.status(500).send('Error finding word');
+    })
+    .catch(function(err) {
+      return BbPromise.reject(err);
     });
+
 };
 
 /**
- * Increment the word_index cookie
- * If word_index cookie does not exists, create it and set it to 0
- * @param  {[object]} res    [response]
- * @param  {[string]} cookie [current value of word_index]
- * @return {[string]}        [new value of word_index]
+ * Sets response cookie to include word and word index
+ * @param {[object]} res  [response object]
+ * @param {[object]} word [result document to set to the cookie]
  */
-
-var _setWordIndexCookie = function(res, cookie) {
-  var word_index;
-
-  if ( !cookie ) {
-    word_index = 0;
-    res.cookie("word_index" , word_index);
-    return word_index.toString();
-  } else {
-    word_index = parseInt(cookie);
-    res.cookie("word_index", word_index + 1);
-    return word_index.toString();
-  }
+var _setCookie = function(res, word) {
+  res.cookie('word_index', word.word_index);
+  res.cookie('word', word.word);
 };
+
+
+
+
+
