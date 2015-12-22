@@ -47,12 +47,10 @@ function doneRecoring(done){
   }
 }
 
-const url = `http://d2oh9tgz5bro4i.cloudfront.net/apple.wav`;
-    dispatch(playWord(url));
 
 export function play(){
   if(this.state.recording){
-    stopRecording();
+    AudioRecorder.stopRecording();
     dispatch(recordUserAudio(false));
   }
   AudioRecorder.playRecording();

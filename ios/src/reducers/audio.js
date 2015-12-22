@@ -12,7 +12,6 @@ const initalState = {
 export default function audio( state = initalState, action){
 
   switch(action.types) {
-//change the booleans to get passed in by the action functions
   case types.PLAY_WORD:
     return Object.assign({}, state, {
       playing: action.word
