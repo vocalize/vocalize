@@ -4,6 +4,11 @@ var Promise = require('bluebird');
 var util = require('./util');
 var config = require('./config/config');
 
+var wordLists = {
+  english: 'eng-1000mostcommon.json'
+};
+
+
 module.exports = {
 
   textToJson: function(filename) {
@@ -34,15 +39,24 @@ module.exports = {
     });
   },
 
-  getWordList: function(listTitle, syllables) {
-    syllables = syllables || 1;
-    var jsonFile = path.join(config.wordListDir, listTitle + '.json');
-    var data = JSON.parse(fs.readFileSync(jsonFile));
-    for (var word in data) {
-      if (util.countSyllables(word) < syllables) {
-        delete data[word];
+  getWordList: function(language, syllables) {
+
+    if (wordLists[language]) {
+
+      syllables = syllables || 1;
+      var jsonFile = path.join(config.wordListDir, wordLists[language]);
+      var data = JSON.parse(fs.readFileSync(jsonFile));
+      for (var word in data) {
+        if (util.countSyllables(word) < syllables) {
+          delete data[word];
+        }
       }
+      return data;
+    } else {
+      return false;
     }
-    return data;
+
   }
+
+
 };

@@ -4,13 +4,13 @@ var _ = require('underscore');
 var path = require('path');
 var BbPromise = require('bluebird');
 var readFile = BbPromise.promisify(fs.readFile);
-var wordList = require('./wordlist-parser').getWordList('eng-1000mostcommon', 1);
+var wordList = require('./wordlist-parser');
 var config = require('./config/config');
 var util = require('./util');
 
 // Set to false if all words should be considered
 // Otherwise filters by words that exist in wordList
-var _filterByWordList = true;
+var _filterByWordList;
 
 var inputDir = config.inputDir;
 var outputDir = config.outputDir;
@@ -19,15 +19,33 @@ var outputDir = config.outputDir;
  * @param  {[string]} audioFilePath [audio file to parse]
  * @return {[BbPromise]}            [resolves when parsing is complete]
  */
-module.exports = function(videoId) {
+module.exports = function(videoId, language) {
   console.log('parsing audio into words...');
-  // Get directory
-  var audioDir = path.join(inputDir, videoId);
 
-  // Read all the files in the directory
-  return util.readdir(audioDir)
+  return new BbPromise(function(resolve, reject) {
+      if (!videoId) {
+        reject('Video Id not specified for audio parser');
+      } else if (!language) {
+        reject('Language not specified for audio parser');
+      } else {
+        _filterByWordList = wordList.getWordList(language);
+
+        // Get input directory
+        var audioDir = path.join(inputDir, videoId);
+
+        // Set up output directory for language
+        languageDir = util.mkdir(path.join(outputDir, language));
+
+        // Get directory
+        var audioDir = path.join(inputDir, videoId);
+        resolve(audioDir);
+      }
+    })
+    .then(function(audioDir) {
+      // Read all the files in the directory
+      return util.readdir(audioDir);
+    })
     .then(function(files) {
-
       // Associated each audio file with its transcript file
       return _getTranscriptsForAudioDirectory(files, videoId);
 
@@ -36,9 +54,6 @@ module.exports = function(videoId) {
         // Parse each audio file according to its transcript file
         return _doIt(audio.audioFile, audio.transcript);
       });
-    })
-    .catch(function(err) {
-      util.handleError(err);
     });
 };
 
@@ -74,13 +89,10 @@ var _doIt = function(audioFilePath, transcriptFile) {
       })
       .then(function() {
         console.log('Done parsing ' + path.parse(audioFilePath).base);
-      })
-      .catch(function(err) {
-        util.handleError(err);
       });
   } else {
     console.log('Could not find transcript: ' + transcriptFile);
-    return false;
+    return BbPromise.reject('Could not find transcript: ' + transcriptFile);
   }
 };
 
@@ -108,9 +120,14 @@ var _parseTimeStamps = function(buffer) {
         duration: timestamp[2] - timestamp[1]
       };
 
-      // Check if filtering by wordlist and a wordList is present
-      // Discard all words that aren't on the list 
-      if (_filterByWordList && wordList && wordList[ts.word]) {
+      // Check if wordList is present
+      if (_filterByWordList) {
+        // Discard all words that aren't on the list 
+        if (_filterByWordList[ts.word]) {
+          timestamps.push(ts);
+        }
+      } else {
+        // If no word list is present, add in all words
         timestamps.push(ts);
       }
     });
@@ -160,7 +177,7 @@ var _createWordDir = function(targetDir, word) {
  */
 var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
 
-  var wordDir = path.join(outputDir, ts.word);
+  var wordDir = path.join(languageDir, ts.word);
 
   return new BbPromise(function(resolve, reject) {
 

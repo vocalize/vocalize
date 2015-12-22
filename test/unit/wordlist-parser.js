@@ -40,7 +40,7 @@ describe('wordlistParser function', function() {
 
     it('should create a json file', function() {
       var files = fs.readdirSync(mockConfig.wordListDir);
-      expect(files.sort()).to.eql(['test.txt', 'test.json'].sort());
+      expect(files).to.include.members(['test.txt', 'test.json']);
     });
 
     it('should create a json object with words for keys', function() {
@@ -59,8 +59,8 @@ describe('wordlistParser function', function() {
       expect(wordlist_parser.getWordList).to.be.a('function');
     });
 
-    it('should return an object given a json filepath', function() {
-      var obj = wordlist_parser.getWordList('test');
+    it('should return an object given a language', function() {
+      var obj = wordlist_parser.getWordList('english');
       expect(obj).to.eql({
         head: true,
         stand: true
