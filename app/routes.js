@@ -26,7 +26,7 @@ router.get('/api/words/', wordController.getWord);
  * Set &previous=true to get previous word_index instead of the next one
  */
 router.get('/api/words/index/', wordController.getWordByNextIndex);
-
+router.get('/api/words/previndex', wordController.getWordByPrevIndex);
 /**
  * Stream file from S3 to response
  * Include S3 filename as a parameter

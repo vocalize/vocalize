@@ -149,6 +149,34 @@ exports.getWordByNextIndex = function(req, res) {
 
 };
 
+exports.getWordByPrevIndex = function(req, res) {
+  
+  var word_index = _decWordIndexCookie(res, req.cookies.word_index);
+
+  if (word_index) {
+    req.query.word_index = {
+      $lt: word_index
+    };
+    Word.find(req.query).sort({
+        word_index: -1
+      })
+      .limit(1)
+      .then(function(word) {
+        console.log(word);
+        if (!word.length) {
+          _findRootWord(req, res);
+        } else {
+          res.cookie("word" , word[0].word);
+          res.status(200).send(word[0]);
+        }
+      })
+      .catch(function(err) {
+        res.status(500).send('Error finding word');
+      });
+  } else {
+    res.status(400).send('Word Index Not Included');
+  }
+};
 /**
  * Runs a query to find a word based on its word_index value
  * If no words are found, calls itself once to find word_index: 0 
@@ -211,4 +239,30 @@ var _setCookie = function(res, word) {
 
 
 
+var _incWordIndexCookie = function(res, cookie) {
+  var word_index;
 
+  if ( !cookie ) {
+    word_index = 0;
+    res.cookie("word_index" , word_index);
+    return word_index.toString();
+  } else {
+    word_index = parseInt(cookie);
+    res.cookie("word_index", word_index + 1);
+    return word_index.toString();
+  }
+};
+
+var _decWordIndexCookie = function(res, cookie) {
+  var word_index;
+
+  if ( !cookie ) {
+    word_index = 0;
+    res.cookie("word_index" , word_index);
+    return word_index.toString();
+  } else {
+    word_index = parseInt(cookie);
+    res.cookie("word_index", word_index - 1);
+    return word_index.toString();
+  }
+};
