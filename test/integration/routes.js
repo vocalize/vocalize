@@ -189,7 +189,7 @@ describe('Routes', function() {
 
       it('should find a word by any query', function(done) {
         request(app)
-          .get('/api/words?word_index=0')
+          .get('/api/words?word_index=0&gender=female')
           .expect(200)
           .end(done);
       });
@@ -225,6 +225,7 @@ describe('Routes', function() {
           })
           .end(done);
       });
+
 
       it('should optionally find the previous word', function(done) {
         var req = request(app).get('/api/words/index?previous=true&language=english&accent=general&gender=male');

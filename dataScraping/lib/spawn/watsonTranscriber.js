@@ -12,10 +12,12 @@ var speech_to_text = watson.speech_to_text({
 
 var audioFile = process.argv[2];
 var transcriptDir = process.argv[3];
+var languageModel = process.argv[4];
 
 var ext = path.extname(audioFile);
 var filename = path.basename(audioFile, ext);
 var params = {
+  model: languageModel,
   content_type: 'audio/flac',
   timestamps: true,
   continuous: true
@@ -35,6 +37,7 @@ fs.createReadStream(audioFile).pipe(recognizeStream);
 recognizeStream.setEncoding('utf8'); // to get strings instead of Buffers from `data` events
 
 recognizeStream.on('results', function(e) {
+
   if (e.results[0].final) {
   	process.stdout.write(e.results[0].alternatives[0].transcript);
     results.push(e);

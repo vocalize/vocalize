@@ -1,5 +1,6 @@
 var watson = require('watson-developer-cloud');
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 var path = require('path');
 var BbPromise = require('bluebird');
 var readdir = BbPromise.promisify(fs.readdir);
@@ -75,9 +76,9 @@ exports.getTranscript = function(videoId, language) {
           return exports._watsonStream.bind(this, filePath, transcriptDir, languageModel);
         });
 
-      return BbPromise.each(transcriptProcesses, function(process) {
+      return BbPromise.map(transcriptProcesses, function(process) {
         return process();
-      });
+      }, {concurrency: config.concurrencyLimit});
     });
 
 };
@@ -89,48 +90,19 @@ exports._watsonStream = function(audioFile, transcriptDir, languageModel) {
     var ext = path.extname(audioFile);
     var filename = path.basename(audioFile, ext);
 
-    var params = {
-      model: languageModel,
-      content_type: 'audio/flac',
-      timestamps: true,
-      continuous: true
-    };
+    var watson_process = spawn('node', ['./dataScraping/lib/spawn/watsonTranscriber.js', audioFile, transcriptDir, languageModel]);
 
-    var results = [];
-
-    // create the stream
-    var recognizeStream = speech_to_text.createRecognizeStream(params);
-
-    // pipe in some audio
-    fs.createReadStream(audioFile).pipe(recognizeStream);
-
-    // listen for 'data' events for just the final text
-    // listen for 'results' events to get the raw JSON with interim results, timings, etc.
-
-    recognizeStream.setEncoding('utf8'); // to get strings instead of Buffers from `data` events
-
-    recognizeStream.on('results', function(e) {
-      if (e.results[0].final) {
-        results.push(e);
-      }
+    watson_process.stdout.on('data', function(data){
+      console.log(data.toString());
     });
 
-    ['data', 'results', 'error', 'connection-close'].forEach(function(eventName) {
-      recognizeStream.on(eventName, console.log.bind(console, eventName + ' event: '));
+    watson_process.stderr.on('data', function(err){
+      reject(err.toString());
     });
 
-    recognizeStream.on('error', function(err) {
-      util.handleError('Error writing to transcript.json: ' + err);
+    watson_process.on('exit', function(){
+      resolve();
     });
 
-    recognizeStream.on('connection-close', function() {
-      var trancriptFile = path.join(transcriptDir, filename + '-transcript.json');
-      fs.writeFile(trancriptFile, JSON.stringify(results), function(err) {
-        if (err) {
-          util.handleError(err);
-        }
-        resolve();
-      });
-    });
   });
 };

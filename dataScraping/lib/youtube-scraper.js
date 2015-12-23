@@ -30,7 +30,7 @@ exports.youtube_dl = function(videoId, directory) {
     });
 
     youtube_dl.stderr.on('data', function(data) {
-      process.stderr.write(data);
+      process.stderr.write(data.toString());
     });
 
     youtube_dl.on('exit', function() {
@@ -47,17 +47,25 @@ var _getFileInfo = function(file) {
   var filename = path.basename(file, ext);
 
   return new BbPromise(function(resolve, reject) {
-    
-    ffmpeg.ffprobe(file, function(err, metadata) {
-      if (err) {
-        reject(err);
-      }
+    var content;
+    var ffmpeg_probe = spawn('node', ['./dataScraping/lib/spawn/probeAudio.js', file]);
+
+    ffmpeg_probe.stderr.on('data', function(err){
+      reject(err.toString());
+    });
+
+    ffmpeg_probe.stdout.on('data', function(data){
+      content = JSON.parse(data.toString());
+    });
+
+    ffmpeg_probe.on('exit', function(){
+
       resolve({
         file: file,
         filename: filename,
         ext: ext,
-        metadata: metadata,
-        duration: metadata.format.duration
+        metadata: content,
+        duration: content.format.duration
       });
     });
   });
@@ -80,9 +88,9 @@ var _sliceAudioByInterval = function(videoId, interval) {
       for (var i = 0; i < file.duration; i += interval) {
         commands.push(_slice.bind(this, file, i, interval, i / interval));
       }
-      return BbPromise.each(commands, function(command) {
+      return BbPromise.map(commands, function(command) {
         return command();
-      });
+      }, {concurrency: config.concurrencyLimit});
     });
 };
 
@@ -91,30 +99,19 @@ var _slice = function(file, start, interval, idx) {
   var newFile = path.join(file.outputDir, idx + '-' + file.filename + '.flac');
 
   return new BbPromise(function(resolve, reject) {
+    
+    var ffmpeg_split = spawn('node', ['./dataScraping/lib/spawn/split.js', file.file, newFile, ''+start, ''+interval]);
 
-    ffmpeg(file.file)
-      // Time to begin parsing
-      .setStartTime(start)
-      // Duration of snippet
-      // Add a buffer so audio file doesn't get cut off too early
-      .setDuration(interval)
-      // set the number of channels
-      .audioChannels(1)
-      // Output file location
-      .output(newFile)
-      // Success
-      .on('end', function(err) {
-        if (err) {
-          reject(err);
-        }
-        console.log('Sliced part ' + idx + ' of ' + file.filename);
-        resolve();
-      })
-      //Failure
-      .on('error', function(err) {
-        util.handleError();
-      })
-      //Run ffmpeg command
-      .run();
+    ffmpeg_split.stdout.on('data', function(data){
+      console.log(data.toString());
+    });
+
+    ffmpeg_split.stderr.on('data', function(err){
+      reject(err.toString());
+    });
+
+    ffmpeg_split.on('exit', function(){
+      resolve();
+    });
   });
 };

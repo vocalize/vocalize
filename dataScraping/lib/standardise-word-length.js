@@ -1,4 +1,5 @@
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 var ffmpeg = require('fluent-ffmpeg');
 var path = require('path');
 var BbPromise = require('bluebird');
@@ -27,14 +28,14 @@ module.exports = function() {
         });
       })
       .then(function(directories) {
-        return BbPromise.reduce(directories, function(_, dir) {
+        return BbPromise.map(directories, function(dir) {
           return _standardiseWordDirectory(dir);
-        }, 0);
+        }, {concurrency: config.concurrencyLimit});
       })
-      .then(function(){
+      .then(function() {
         resolve();
       })
-      .catch(function(err){
+      .catch(function(err) {
         util.handleError(err);
       });
   });
@@ -57,7 +58,7 @@ var _standardiseWordDirectory = function(dir) {
       // Execute ffprobe commands to get metadata
       return BbPromise.map(ffprobeCommands, function(command) {
         return command();
-      });
+      }, {concurrency: config.concurrencyLimit});
 
     })
     .then(function(fileData) {
@@ -73,9 +74,9 @@ var _standardiseWordDirectory = function(dir) {
         return _modifyTempo.bind(this, file, avg);
       });
 
-      return BbPromise.each(commands, function(command) {
-          return command();
-        });
+      return BbPromise.map(commands, function(command) {
+        return command();
+      }, {concurrency: config.concurrencyLimit});
     });
 };
 
@@ -102,20 +103,28 @@ var _getAudioFiles = function(directory) {
 var _getFileInfo = function(file) {
 
   return new BbPromise(function(resolve, reject) {
-    ffmpeg.ffprobe(file, function(err, metadata) {
-      if (err) {
-        reject(err);
-      }
+    var content;
+    var ffmpeg_probe = spawn('node', ['./dataScraping/lib/spawn/probeAudio.js', file]);
+
+    ffmpeg_probe.stderr.on('data', function(err) {
+      reject(err.toString());
+    });
+
+    ffmpeg_probe.stdout.on('data', function(data) {
+      content = JSON.parse(data.toString());
+    });
+
+    ffmpeg_probe.on('exit', function() {
       resolve({
         file: file,
-        metadata: metadata,
-        duration: metadata.format.duration
+        duration: content.format.duration
       });
     });
   });
 };
 
 var _modifyTempo = function(file, avg) {
+
   var tempo = file.duration / avg;
   var filename = path.basename(file.file, '.wav');
   var dirname = path.dirname(file.file);
@@ -123,19 +132,20 @@ var _modifyTempo = function(file, avg) {
 
   return new BbPromise(function(resolve, reject) {
 
-    ffmpeg(file.file)
-      .audioCodec('pcm_f32le')
-      .audioFilters('atempo=' + tempo)
-      .output(newFile)
-      .on('error', function(err) {
-        util.handleError('Error standardizing ' + filename + ' ' + err.message);
-      })
-      .on('end', function(err) {
-        if (err) {
-          util.handleError(err);
-        }
-        resolve();
-      })
-      .run();
+
+    var ffmpeg_split = spawn('node', ['./dataScraping/lib/spawn/modifyTempo.js', file.file, newFile, tempo]);
+
+    ffmpeg_split.stdout.on('data', function(data) {
+      console.log(data.toString());
+    });
+
+    ffmpeg_split.stderr.on('data', function(err) {
+      reject(err.toString());
+    });
+
+    ffmpeg_split.on('exit', function() {
+      resolve();
+    });
+
   });
 };

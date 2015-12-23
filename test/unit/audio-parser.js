@@ -59,30 +59,24 @@ describe('audio parser', function() {
         });
     });
 
-    it('should create a directory for each language', function(done) {
-      var language_directories = fs.readdirSync(path.join(outputDir));
-      expect(language_directories).to.include.members(['english', 'spanish']);
-      done();
-    });
-
     it('should create directories for each word', function(done) {
-      var word_directories = fs.readdirSync(path.join(outputDir, 'english'));
+      var word_directories = fs.readdirSync(outputDir);
       expect(word_directories.length).to.equal(3);
       expect(word_directories).to.include.members(['apple', 'circle', 'board']);
       done();
     });
 
     it('should create an audio file for each word', function(done) {
-      var apple = fs.readdirSync(path.join(outputDir, 'english', 'apple'));
+      var apple = fs.readdirSync(path.join(outputDir, 'apple'));
       expect(apple).to.include.members(['0apple.wav']);
       done()
     });
 
     it('should create an audio file, a standard directory and a word.txt file in each directory', function(done) {
-      var word_directories = fs.readdirSync(path.join(outputDir, 'english'));
+      var word_directories = fs.readdirSync(outputDir);
 
       word_directories.forEach(function(word) {
-        var sub = fs.readdirSync(path.join(outputDir, 'english', word));
+        var sub = fs.readdirSync(path.join(outputDir, word));
         expect(sub).to.include.members(['standard', 'word.txt']);
       })
       done()
@@ -91,7 +85,7 @@ describe('audio parser', function() {
     it('should not create a new directory for a word that exists', function(done) {
       audio_parser(videoId, 'english')
         .then(function() {
-          word_directories = fs.readdirSync(path.join(outputDir, 'english'));
+          word_directories = fs.readdirSync(outputDir);
           expect(word_directories.length).to.equal(3);
           done()
         });

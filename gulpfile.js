@@ -143,6 +143,19 @@ gulp.task('test', function() {
 });
 
 // Runs unit and integration tests
+gulp.task('test-integration', function() {
+  return gulp.src(['test/integration/*.js'])
+    .pipe(mocha())
+    .once('error', function(err) {
+      console.log(err);
+      process.exit(1);
+    })
+    .once('end', function() {
+      process.exit();
+    });
+});
+
+// Runs a single test
 gulp.task('test-one', function() {
   return gulp.src(['test/unit/audio-parser.js'])
     .pipe(mocha())
