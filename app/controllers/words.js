@@ -10,7 +10,7 @@ var child_process = require('child_process');
 var currentWords = {};
 
 exports.compareAudio = function(req, res) {
-  
+
   var sound = req.body;
   var word = req.cookies.word;
 
@@ -21,11 +21,15 @@ exports.compareAudio = function(req, res) {
   bufferStream.end(sound);
 
   console.log('comparing to:', word);
-  
-  Word.findOne({'word': word})
+
+  Word.findOne({
+      'word': word
+    })
     .then(function(word) {
       // Create a new wav writer
-      var wavWriter = new wav.FileWriter('processing/user.wav', {channels: 1});
+      var wavWriter = new wav.FileWriter('processing/user.wav', {
+        channels: 1
+      });
 
       // Pipe the stream into wav writer
       bufferStream.pipe(wavWriter);
@@ -33,7 +37,7 @@ exports.compareAudio = function(req, res) {
       word.downloadAudioFile('processing/control.wav').then(function() {
         child_process.exec('bash compareuser.sh user.wav control.wav', {
           cwd: 'processing'
-        }, function (error, stdout, stderr) {
+        }, function(error, stdout, stderr) {
           console.log('stdout: ' + stdout);
           if (error !== null) {
             winston.error('stderr: ', stderr);
@@ -184,6 +188,14 @@ var _getWordByIndexQuery = function(query, _root) {
 
 };
 
+var _getIndexFromCookie = function(req){
+  if(!req.cookies || !req.cookies.word_index){
+    return 0;
+  } else {
+    return parseInt(req.cookies.word_index);
+  }
+};
+
 /**
  * Sets response cookie to include word and word index
  * @param {[object]} res  [response object]
@@ -193,7 +205,6 @@ var _setCookie = function(res, word) {
   res.cookie('word_index', word.word_index);
   res.cookie('word', word.word);
 };
-
 
 
 

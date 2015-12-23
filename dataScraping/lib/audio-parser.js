@@ -3,6 +3,7 @@ var fs = require('fs');
 var _ = require('underscore');
 var path = require('path');
 var BbPromise = require('bluebird');
+var spawn = require('child_process').spawn;
 var readFile = BbPromise.promisify(fs.readFile);
 var wordList = require('./wordlist-parser');
 var config = require('./config/config');
@@ -33,8 +34,8 @@ module.exports = function(videoId, language) {
         // Get input directory
         var audioDir = path.join(inputDir, videoId);
 
-        // Set up output directory for language
-        languageDir = util.mkdir(path.join(outputDir, language));
+        // // Set up output directory for language
+        // outputDir = util.mkdir(path.join(outputDir, language));
 
         // Get directory
         var audioDir = path.join(inputDir, videoId);
@@ -53,7 +54,7 @@ module.exports = function(videoId, language) {
       return BbPromise.map(map, function(audio) {
         // Parse each audio file according to its transcript file
         return _doIt(audio.audioFile, audio.transcript);
-      });
+      }, {concurrency: config.concurrencyLimit});
     });
 };
 
@@ -83,9 +84,9 @@ var _doIt = function(audioFilePath, transcriptFile) {
         // Each element is a promise wrapped around an ffmpeg command
         // reduce will run every command after the previous one resolved
 
-        return BbPromise.reduce(ffmpegCommands, function(_, command) {
+        return BbPromise.map(ffmpegCommands, function(command) {
           return command();
-        }, 0);
+        }, {concurrency: config.concurrencyLimit});
       })
       .then(function() {
         console.log('Done parsing ' + path.parse(audioFilePath).base);
@@ -177,42 +178,29 @@ var _createWordDir = function(targetDir, word) {
  */
 var _splitAudioFileByTimeStamp = function(audioFilePath, ts, idx) {
 
-  var wordDir = path.join(languageDir, ts.word);
+  var wordDir = path.join(outputDir, ts.word);
+  var filename = path.join(wordDir, idx + ts.word + '.wav');
 
   return new BbPromise(function(resolve, reject) {
 
     _createWordDir(wordDir, ts.word)
-      .then(function() {
 
-        ffmpeg(audioFilePath)
-          .audioCodec('pcm_f32le')
-          // Time to begin parsing
-          .setStartTime(ts.start)
-          // Duration of snippet
-          // Add a buffer so audio file doesn't get cut off too early
-          .setDuration(+ts.duration)
-          // set the number of channels
-          .audioChannels(1)
-          // Output file location
-          .output(path.join(wordDir, idx + ts.word + '.wav'))
-          .on('progress', function(progress) {
-            //console.log('Splitting: ' + progress.percent.toFixed(2));
-          })
-          // Success
-          .on('end', function(err) {
-            if (err) {
-              reject(err);
-            }
-            resolve();
-          })
-          //Failure
-          .on('error', function(err) {
-            util.handleError('Problem splitting ' + path.basename(audioFilePath) + ' ' + err.message);
-          })
-          //Run ffmpeg command
-          .run();
+    .then(function() {
 
+      var ffmpeg_split = spawn('node', ['./dataScraping/lib/spawn/split.js', audioFilePath, filename, '' + ts.start, '' + ts.duration, 'pcm_f32le']);
+
+      ffmpeg_split.stdout.on('data', function(data) {
+        console.log(data.toString());
       });
+
+      ffmpeg_split.stderr.on('data', function(err) {
+        reject(err.toString());
+      });
+
+      ffmpeg_split.on('exit', function() {
+        resolve();
+      });
+    });
   });
 };
 
