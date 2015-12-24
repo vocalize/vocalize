@@ -4,7 +4,6 @@ var aws = require('../aws/aws');
 var Promise = require('bluebird');
 var Counter = require('./counter');
 
-// TODO: figure out word schema
 var wordSchema = new Schema({
   word_index: {
     type: Number

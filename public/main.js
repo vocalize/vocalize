@@ -218,7 +218,7 @@ var PronunciationTest = React.createClass({
       url: '/api/audio/',
       data: formData,
       processData: false,
-      contentType: 'audio/wav',
+      contentType: 'multipart/form-data',
       success: function(data) {
         this.recordRTC.clearRecordedData();
         console.log('data', data);

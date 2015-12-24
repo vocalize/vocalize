@@ -9,10 +9,7 @@ var aws = require('./aws/aws');
 var wordController = require('./controllers/words');
 
 // MIDDLEWARE
-
-router.use(bodyParser.raw({ type: 'audio/wav', limit: '50mb' }));
-router.use(bodyParser.json()); // automatically parses the body of all POST requests
-router.use(bodyParser.urlencoded({extended: true})); // only accept url encoded requests
+router.use(bodyParser.raw({ type: 'multipart/form-data', limit: '50mb' }));
 
 // ROUTES
 /**
