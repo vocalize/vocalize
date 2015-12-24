@@ -11,20 +11,21 @@ React Component Hierarchy
       -NextWordBtn
 */
 
+var React = require('react');
+window.jQuery = require('jquery');
+var $ = window.jQuery;
+var Button = require('react-bootstrap').Button;
+var ReactDOM = require('react-dom');
+require('bootstrap');
+
 
 var NextWordBtn = React.createClass({
 
   render: function(){
     return (
-      <div className="next">
-        <button 
-          type='button'
-          className="btn btn-full" 
-          onClick={this.props.onClick}
-        >
-          Next Word
-        </button>
-      </div>
+      <div>
+        <Button bsStyle="primary" onClick={this.props.onClick} > Next Word </Button> 
+      </div> 
     );
   }
 });
@@ -293,9 +294,71 @@ var Instructions = React.createClass({
 var Title = React.createClass({
   render: function(){
     return (
-      <div>
-        <h1 className="title">Vocalize</h1>
+      <NavBar title="Vocalize">
+        <LanguageRadio />
+      </NavBar>
+    );
+  }
+});
+
+var LanguageRadio = React.createClass({
+  render: function(){
+    return (
+      <form>
+        <RadioButton label={"English"} groupName={"language"} value={"english"} />
+        <RadioButton label={"Spanish"} groupName={"language"} value={"spanish"} />
+        <RadioButton label={"Chinese"} groupName={"language"} value={"chinese"} />
+      </form>
+    );
+  }
+});
+
+var RadioButton = React.createClass({
+  render: function(){
+    return (
+      <div clasName="radio">
+        <label>
+          <input type="radio" name={this.props.groupName} value={this.props.value} />
+          {this.props.label}
+        </label>
       </div>
+    );
+  }
+});
+
+var NavBar = React.createClass({
+  render: function(){
+
+    var children = React.Children.map(this.props.children, function(child, i){
+      return <li key={i}>{child}</li>
+    });
+
+    return (
+      <nav className="navbar navbar-default">
+        <div className="container-fluid">
+          <div className="navbar-header">
+            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+              <span className="sr-only">Toggle navigation</span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+            </button>
+            <a className="navbar-brand" href="#">{this.props.title}</a>
+          </div>
+
+          <div className="collapse navbar-collapse" id="navbar-collapse">
+            
+            <ul className="nav navbar-nav navbar-right">
+              <li className="dropdown">
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span className="caret"></span></a>
+                <ul className="dropdown-menu">
+                  {children}
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
     );
   }
 });

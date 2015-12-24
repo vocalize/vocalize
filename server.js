@@ -11,7 +11,7 @@ app.set('port', (process.env.PORT || 3000));
 
 
 // Client Route - serve up all files in the public directory on requests to the home page
-app.use('/', express.static(path.join(__dirname, 'public')));
+app.use('/', express.static(path.join(__dirname, 'dist')));
 
 
 // Routing

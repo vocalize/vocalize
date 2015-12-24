@@ -7,10 +7,10 @@
   outline: 0;
   vertical-align: baseline;
   background: 0 0;
-  background-color: #252839;
 }
 
 body {
+background-color: #303030;
 -webkit-touch-callout: none;
 -webkit-user-select: none;
 -khtml-user-select: none;
@@ -117,7 +117,7 @@ h3:after {
 
 /* -------------------------BUTTONS-----------------------------*/
 
-.btn {
+/*.btn {
   display: inline-block;
   padding: 10px 30px;
   font-weight: 300;
@@ -131,7 +131,7 @@ h3:after {
   border: 1px solid #f2b632;
   color: #E12839;
   margin-right: 15px;
-}
+}*/
 
 .usr-options {
   text-align: center;
