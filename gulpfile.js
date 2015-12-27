@@ -4,24 +4,26 @@
  * TASKS
  * 
  * - default 
- * 		--> watches and lints all js files
- * 		--> converts jsx - js and puts relevant files in dist folder
+ *    --> watches and lints all js files
+ *    --> converts jsx - js and puts relevant files in dist folder
  * 
  * - production
- * 		--> tests code
- * 		--> builds, concats, minifies
- * 		--> sets index.html script to minified source
+ *    --> tests code
+ *    --> builds, concats, minifies
+ *    --> sets index.html script to minified source
  *
  * - test
- * 		--> runs unit and integration tests
- * 		
+ *    --> runs unit and integration tests
+ *    
  * - test-coverage
- * 		--> runs unit and integration tests
- * 		--> gives coverage istanbul report
+ *    --> runs unit and integration tests
+ *    --> gives coverage istanbul report
  */
 
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+var minifyCss = require('gulp-minify-css');
 var htmlreplace = require('gulp-html-replace');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
@@ -41,14 +43,20 @@ var path = {
   dest: 'dist',
   dest_build: 'dist/build',
   dest_src: 'dist/src',
-  entry: 'public/main.js',
+  entry: './public/main.js',
   js: ['app/**/*.js', 'test/**/*.js', 'dist/public/src/build.js', '!app/aws/node_modules/**/*.js']
 };
 
+var cssPath = {
+  src: 'public/style/*.css',
+  dest: 'dist/styles',
+  min: 'style.min.css'
+};
+
 // Default
-gulp.task('default', ['watch', 'copy']);
+gulp.task('default', ['watch', 'replaceHtml-dev']);
 // Production
-gulp.task('production', ['test', 'replaceHtml', 'build']);
+gulp.task('production', ['test', 'replaceHtml-prod', 'css', 'build']);
 
 // Copies index.html to the dist folder
 gulp.task('copy', function() {
@@ -59,9 +67,11 @@ gulp.task('copy', function() {
 // Watches
 gulp.task('watch', function() {
   // Copy index.html on any changes
-  gulp.watch(path.html, ['copy']);
+  gulp.watch(path.html, ['copy', 'replaceHtml-dev']);
   // Watch all .js files for linting
   gulp.watch(path.js, ['lint']);
+  // Watch for css changes
+  gulp.watch(cssPath.src, ['css']);
 
   // Browserify
   // Changes jsx --> js
@@ -82,6 +92,9 @@ gulp.task('watch', function() {
         .pipe(gulp.dest(path.dest_src));
       console.log('updated');
     })
+    .on('log', function(msg){
+      console.log(msg);
+    })
     .bundle()
     .pipe(source(path.out))
     .pipe(gulp.dest(path.dest_src));
@@ -92,19 +105,39 @@ gulp.task('watch', function() {
 gulp.task('build', function() {
   browserify({
       entries: [path.entry],
-      transform: [reactify]
+      transform: [reactify],
+      debug: true
     })
     .bundle()
     .pipe(source(path.min))
-    .pipe(streamify(uglify(path.min)))
+    .pipe(streamify(uglify()))
     .pipe(gulp.dest(path.dest_build));
 });
 
+// Minifies and concats css files
+gulp.task('css', function() {
+  return gulp.src(cssPath.src)
+    .pipe(minifyCss())
+    .pipe(concat(cssPath.min))
+    .pipe(gulp.dest(cssPath.dest));
+});
+
 // Replaces script source in index.html to minified source from dest/build
-gulp.task('replaceHtml', function() {
+gulp.task('replaceHtml-prod', function() {
   gulp.src(path.html)
     .pipe(htmlreplace({
-      'js': 'build/' + path.min
+      'js': 'build/' + path.min,
+      'css': 'styles/' + cssPath.min
+    }))
+    .pipe(gulp.dest(path.dest));
+});
+
+// Replaces script source in index.html to build src
+gulp.task('replaceHtml-dev', function() {
+  gulp.src(path.html)
+    .pipe(htmlreplace({
+      'js': 'src/build.js',
+      'css': 'styles/' + cssPath.min
     }))
     .pipe(gulp.dest(path.dest));
 });
