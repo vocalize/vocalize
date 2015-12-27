@@ -1,17 +1,31 @@
 var React = require('react');
 
+var TargetWord = require('../components/targetWord');
+var PlayWordBtn = require('../components/playWordBtn');
+var RecordAudioBtn = require('../components/recordAudioBtn');
+var PercentCorrect = require('../components/percentCorrect');
+
+var Button = require('../bootstrap-components/button');
+
 var PronunciationTest = React.createClass({
   recordRTC: null,
 
   loadPrevWordFromServer: function() {
     var url = this.compilePrevWordUrl();
-    console.log(url);
+
+    jQuery.ajax({
+      url: url,
+      dataType: 'json',
+      success: function(data) {
+        this.setState({targetWord: data.word, s3key: data.s3.Key});
+      }.bind(this)
+    });
   },
 
   loadWordFromServer: function() {
     var url = this.compileNextWordUrl();
 
-    $.ajax({
+    jQuery.ajax({
       url: url,
       dataType: 'json',
       success: function(data) {
@@ -34,7 +48,7 @@ var PronunciationTest = React.createClass({
   compilePrevWordUrl: function() {
     var language = 'language=' + this.state.language;
     var gender = 'gender=' + this.state.gender;
-    var url = '/api/words/previndex/?' + language + '&' + gender;
+    var url = '/api/words/index/?previous=true&' + language + '&' + gender;
     return url;
   },
 
@@ -106,10 +120,11 @@ var PronunciationTest = React.createClass({
       this.postAudioFile(soundBlob);
     }.bind(this));
   },
+  
   postAudioFile: function(soundBlob) {
     var formData = new FormData();
     formData.append('userAudio', soundBlob);
-    $.ajax({
+    jQuery.ajax({
       type: 'POST',
       url: '/api/audio/',
       data: formData,
@@ -130,7 +145,7 @@ var PronunciationTest = React.createClass({
   },
 
   postTargetWord: function() {
-    $.ajax({
+    jQuery.ajax({
       type: 'POST',
       url: '/api/word/',
       data: {'word': this.state.targetWord},
@@ -164,12 +179,13 @@ var PronunciationTest = React.createClass({
         <PlayWordBtn playWord={this.playWord} />
         <RecordAudioBtn 
           startRecording={this.startRecordingUserAudio}
-          stopRecording={this.stopRecordingUserAudio}
-        />
+          stopRecording={this.stopRecordingUserAudio} />
         <PercentCorrect percentCorrect={this.state.percentCorrect} />
-        <NextWordBtn onClick={this.loadWordFromServer} />
-        <PrevWordBtn onClick={this.loadPrevWordFromServer} />
+        <Button text="prev" onClick={this.loadPrevWordFromServer} />
+        <Button text="next" onClick={this.loadWordFromServer} />
       </div>
     );
     }
   });
+
+module.exports = PronunciationTest;

@@ -43,7 +43,7 @@ var path = {
   dest: 'dist',
   dest_build: 'dist/build',
   dest_src: 'dist/src',
-  entry: 'public/main.js',
+  entry: './public/main.js',
   js: ['app/**/*.js', 'test/**/*.js', 'dist/public/src/build.js', '!app/aws/node_modules/**/*.js']
 };
 
@@ -92,6 +92,9 @@ gulp.task('watch', function() {
         .pipe(gulp.dest(path.dest_src));
       console.log('updated');
     })
+    .on('log', function(msg){
+      console.log(msg);
+    })
     .bundle()
     .pipe(source(path.out))
     .pipe(gulp.dest(path.dest_src));
@@ -102,7 +105,8 @@ gulp.task('watch', function() {
 gulp.task('build', function() {
   browserify({
       entries: [path.entry],
-      transform: [reactify]
+      transform: [reactify],
+      debug: true
     })
     .bundle()
     .pipe(source(path.min))
