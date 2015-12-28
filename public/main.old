@@ -1,20 +1,121 @@
-var React = require('react');
+ /*
+React Component Hierarchy
+  -VocalizeApp
+    -Title
+    -Instructions
+    -PronunciationTest
+      -TargetWord
+      -PlayWordBtn
+      -RecordAudioBtn
+      -PercentCorrect
+      -NextWordBtn
+*/
 
-var TargetWord = require('../components/targetWord');
-var PlayWordBtn = require('../components/playWordBtn');
-var RecordAudioBtn = require('../components/recordAudioBtn');
-var PercentCorrect = require('../components/percentCorrect');
 
-var Button = require('../bootstrap-components/button');
+var NextWordBtn = React.createClass({
 
+  render: function(){
+    return (
+      <div className="next">
+        <button 
+          type='button'
+          className="btn btn-full" 
+          onClick={this.props.onClick}
+        >
+          Next Word
+        </button>
+      </div>
+    );
+  }
+});
+
+var PrevWordBtn = React.createClass({
+
+  render: function(){
+    return (
+      <div className="prev">
+        <button 
+          type='button'
+          className="btn btn-full" 
+          onClick={this.props.onClick}
+        >
+          Previous Word
+        </button>
+      </div>
+    );
+  }
+});
+
+var PercentCorrect = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <h2>Score:</h2>
+        <h2 className="score">
+          {this.props.percentCorrect}%
+        </h2>
+      </div>
+    );
+  }
+});
+
+var PlayWordBtn = React.createClass({
+
+  render: function() {
+    return ( 
+      < div className = "usr-options" >
+        <button type = "button"
+          className = "sound"
+          onClick = {this.props.playWord} 
+        >
+          <i className="icon ion-volume-high"></i>
+        </button> 
+      </div>
+    );
+  }
+});
+
+var RecordAudioBtn = React.createClass({
+  render: function() {
+    return (
+      <div className="usr-options">
+        <button 
+          type="button" 
+          className="microphone" 
+          onMouseDown={this.props.startRecording}
+          onMouseUp={this.props.stopRecording}
+        >
+          <i className="icon ion-mic-a"></i>
+        </button>
+      </div>    
+    );
+  }
+});
+
+var TargetWord = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <h2 className="target-word">
+          {this.props.targetWord}
+        </h2>
+      </div>
+    );
+  }
+});
+ 
 var PronunciationTest = React.createClass({
-  
   recordRTC: null,
+
+  loadPrevWordFromServer: function() {
+    var url = this.compilePrevWordUrl();
+    console.log(url);
+  },
 
   loadWordFromServer: function() {
     var url = this.compileNextWordUrl();
 
-    jQuery.ajax({
+    $.ajax({
       url: url,
       dataType: 'json',
       success: function(data) {
@@ -37,7 +138,7 @@ var PronunciationTest = React.createClass({
   compilePrevWordUrl: function() {
     var language = 'language=' + this.state.language;
     var gender = 'gender=' + this.state.gender;
-    var url = '/api/words/index/?previous=true&' + language + '&' + gender;
+    var url = '/api/words/previndex/?' + language + '&' + gender;
     return url;
   },
 
@@ -109,11 +210,10 @@ var PronunciationTest = React.createClass({
       this.postAudioFile(soundBlob);
     }.bind(this));
   },
-  
   postAudioFile: function(soundBlob) {
     var formData = new FormData();
     formData.append('userAudio', soundBlob);
-    jQuery.ajax({
+    $.ajax({
       type: 'POST',
       url: '/api/audio/',
       data: formData,
@@ -134,7 +234,7 @@ var PronunciationTest = React.createClass({
   },
 
   postTargetWord: function() {
-    jQuery.ajax({
+    $.ajax({
       type: 'POST',
       url: '/api/word/',
       data: {'word': this.state.targetWord},
@@ -147,34 +247,72 @@ var PronunciationTest = React.createClass({
     });  
   },
 
-  // getInitialState: function() {
-  //   return {
-  //     language: 'english',
-  //     gender: 'male',
-  //     targetWord: null,
-  //     percentCorrect: null,
-  //   };
-  // },
+  getInitialState: function() {
+    return {
+      language: 'english',
+      gender: 'male',
+      targetWord: null,
+      percentCorrect: null,
+    };
+  },
 
-  // componentDidMount: function() {
-  //   this.loadWordFromServer();
-  //   this.requestUserAudioPermission();
-  // },
+  componentDidMount: function() {
+    this.loadWordFromServer();
+    this.requestUserAudioPermission();
+  },
 
   render: function(){
     return (
       <div>
-        {/*<TargetWord targetWord={this.state.targetWord} />*/}
-            {/*<PlayWordBtn playWord={this.playWord} />*/}
-            {/*<RecordAudioBtn 
+        <TargetWord targetWord={this.state.targetWord} />
+        <PlayWordBtn playWord={this.playWord} />
+        <RecordAudioBtn 
           startRecording={this.startRecordingUserAudio}
-          stopRecording={this.stopRecordingUserAudio} />*/}
-            {/*<PercentCorrect percentCorrect={this.state.percentCorrect} />*/}
-        <Button text="prev" onClick={this.loadPrevWordFromServer} />
-        <Button text="next" onClick={this.loadWordFromServer} />
+          stopRecording={this.stopRecordingUserAudio}
+        />
+        <PercentCorrect percentCorrect={this.state.percentCorrect} />
+        <NextWordBtn onClick={this.loadWordFromServer} />
+        <PrevWordBtn onClick={this.loadPrevWordFromServer} />
       </div>
     );
     }
   });
 
-module.exports = PronunciationTest;
+var Instructions = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <h3>
+          Click and hold the microphone button, while pronouncing the word shown below
+        </h3>
+      </div>
+    );
+  }
+});
+
+var Title = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <h1 className="title">Vocalize</h1>
+      </div>
+    );
+  }
+});
+
+var VocalizeApp = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <Title />
+        <Instructions />
+        <PronunciationTest />
+      </div>
+    );
+  }
+});
+
+ReactDOM.render(
+  <VocalizeApp/>, 
+  document.getElementById('vocalizeApp')
+);
