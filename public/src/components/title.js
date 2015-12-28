@@ -11,11 +11,15 @@ var Title = React.createClass({
       <div>
       	<NavBar title="Vocalize">
       	  <CollapseButton collapseTargetId="radio">
-      	  	<span>Cheese?</span>
+      	  	<span className="user-settings icon ion-gear-a"></span>
       	  </CollapseButton>
       	</NavBar>
       	<CollapseContainer collapseId="radio">
-      		<LanguageRadio />
+      		<LanguageRadio 
+            handleChange={this.props.handleChange}
+            language={this.props.language} 
+            gender={this.props.gender} 
+            accent={this.props.accent}/>
       	</CollapseContainer>
       </div>
     );

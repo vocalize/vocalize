@@ -1,121 +1,175 @@
 /* ------------------------BASIC SETUP----------------------------*/
 
 * {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  vertical-align: baseline;
-  background: 0 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    background: 0 0;
 }
 
 body {
-background-color: #303030;
--webkit-touch-callout: none;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
+    height: 100%;
+    background-color: #202020;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.content-container{
+    background-color: #3B3B3B;
+    height: 100%;
 }
 
 html {
-  position: static;
-  width: 100%;
-  height: 100%;
-  color: #555;
-  font-family: 'Lato', 'Arial', sans-serif;
-  font-size: 20px;
-  font-weight: 300;
-  text-rendering: optimizeLegibility!important;
-  -webkit-font-smoothing: antialiased!important;
-  line-height: 1;
+    position: static;
+    width: 100%;
+    height: 100%;
+    color: #555;
+    font-family: 'Lato', 'Arial', sans-serif;
+    font-size: 20px;
+    font-weight: 300;
+    text-rendering: optimizeLegibility!important;
+    -webkit-font-smoothing: antialiased!important;
+    line-height: 1;
+}
+
+.app{
+    height: 100%;
 }
 
 .clearfix {
-zoom: 1
+    zoom: 1
 }
 
 .clearfix:after {
-  content: '.';
-  clear: both;
-  display: block;
-  height: 0;
-  visibility: hidden;
+    content: '.';
+    clear: both;
+    display: block;
+    height: 0;
+    visibility: hidden;
 }
 
 .row {
-  max-width: 1140px;
-  margin: 0 auto;
+    max-width: 1140px;
+    margin: 0 auto;
 }
 
 h1 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 240%;
-  word-spacing: 4px;
-  letter-spacing: 1px;
-  color: #f2b632;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 240%;
+    word-spacing: 4px;
+    letter-spacing: 1px;
+    color: #f2b632;
 }
 
 h2 {
-  font-size: 180%;
-  word-spacing: 2px;
-  text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 1px;
-  color: #C5C5C7;
+    font-size: 180%;
+    word-spacing: 2px;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+    color: #C5C5C7;
 }
 
 h3 {
-  font-size: 110%;
-  margin-bottom: 15px;
-  text-align: center;
-  color: #B2DBBF;
+    font-size: 110%;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #B2DBBF;
+}
+
+.radio {
+    position: relative;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.radio label {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+
+/* --------------------------UTILITY CLASSES--------------------*/
+
+.center-content {
+    text-align: center;
+}
+
+.max-height{
+    height:100%;
 }
 
 /* --------------------------TITLE------------------------------*/
 
+.navbar{
+    margin-bottom: 0px !important;
+}
+
+.navbar-brand{
+    font-size: 24px;
+}
+
 .title {
-  padding-top: 30px;
-  text-align: center;
-  margin-left: 10px;
+    padding-top: 30px;
+    text-align: center;
+    margin-left: 10px;
+}
+
+.user-settings{
+    font-size: 28px;
 }
 
 /* -------------------------TARGET WORD--------------------------*/
+
 .target-word {
-  position: relative;
-  top: 20px;
+    position: relative;
+    top: 20px;
 }
 
+
 /* -------------------------INSTRUCTIONS--------------------------*/
+
 h1:after {
-  display: block;
-  height: 2px;
-  background-color: #E12839;
-  content: " ";
-  width: 150px;
-  margin: 0 auto;
-  margin-top: 30px;
+    display: block;
+    height: 2px;
+    background-color: #E12839;
+    content: " ";
+    width: 150px;
+    margin: 0 auto;
+    margin-top: 30px;
 }
 
 h3:after {
-  display: block;
-  height: 2px;
-  background-color: #E12839;
-  content: " ";
-  width: 150px;
-  margin: 0 auto;
-  margin-top: 30px;
+    display: block;
+    height: 2px;
+    background-color: #E12839;
+    content: " ";
+    width: 150px;
+    margin: 0 auto;
+    margin-top: 30px;
 }
+
 
 /* --------------------------SCORE------------------------------*/
 
 .score {
-  color: #E12839;
+    color: #E12839;
 }
 
+
 /* -------------------------BUTTONS-----------------------------*/
+
 
 /*.btn {
   display: inline-block;
@@ -134,26 +188,22 @@ h3:after {
 }*/
 
 .usr-options {
-  text-align: center;
+    text-align: center;
 }
 
 .next {
-  margin-top: 30px;
-  text-align: center;
+    margin-top: 30px;
+    text-align: center;
 }
 
 .sound {
-  position: relative;
-  top: 30px;
-  margin-right: 75px;
-  font-size: 325%;
-  color: #E12839;
+    position: relative;
+    font-size: 325%;
+    color: #E12839;
 }
 
 .microphone {
-  position: relative;
-  bottom: 33px;
-  margin-left: 75px;
-  font-size: 325%;
-  color: #E12839;
+    position: relative;
+    font-size: 325%;
+    color: #E12839;
 }

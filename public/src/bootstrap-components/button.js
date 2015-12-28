@@ -7,7 +7,14 @@ var Button = React.createClass({
   	var buttonStyle = (this.props.style || 'btn-default');
 
     return (
-      <button type="button" className={"btn " + buttonStyle} onClick={this.props.onClick}>{this.props.text}</button>
+      <button 
+      	type="button" 
+      	className={"btn " + buttonStyle} 
+      	onClick={this.props.onClick}
+      	data-toggle={this.props.dataToggle}
+      	data-target={'#' + this.props.dataTarget}>
+      		{this.props.text}
+      	</button>
     );
   }
 });

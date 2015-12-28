@@ -1,12 +1,28 @@
 var React = require('react');
 
+var Modal = require('../bootstrap-components/modal');
+var Button = require('../bootstrap-components/button');
+
 var Instructions = React.createClass({
   render: function(){
+  	
+  	var buttonProps = {
+  		text: 'Instructions',
+  		style: 'btn-primary',
+  		dataToggle: 'modal',
+  		dataTarget: 'instructionsModal'
+  	};
+
+  	var modalProps = {
+  		targetId: 'instructionsModal',
+  		title: 'How to Vocalize',
+  		text: 'This is how we do it.'
+  	};
+
     return (
-      <div>
-        <h3>
-          Click and hold the microphone button, while pronouncing the word shown below
-        </h3>
+      <div className="center-content">
+      	<Button {...buttonProps}/>
+      	<Modal {...modalProps}/>
       </div>
     );
   }

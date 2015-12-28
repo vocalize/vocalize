@@ -10,7 +10,6 @@ var PronunciationTest = React.createComponent({
     return (
       <div>
         <TargetWord targetWord={this.state.targetWord} />
-        <PlayWordBtn playWord={this.playWord} />
         <RecordAudioBtn 
           startRecording={this.startRecordingUserAudio}
           stopRecording={this.stopRecordingUserAudio} />

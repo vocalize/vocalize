@@ -2,10 +2,15 @@ var React = require('react');
 
 var RadioButton = React.createClass({
   render: function(){
+    
     return (
-      <div clasName="radio">
+      <div className="radio">
         <label>
-          <input type="radio" name={this.props.groupName} value={this.props.value} />
+          <input type="radio"
+          onChange={this.props.handleChange}
+          defaultChecked={this.props.checked}
+          name={this.props.groupName} 
+          value={this.props.value} />
           {this.props.label}
         </label>
       </div>
