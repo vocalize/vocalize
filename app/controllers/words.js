@@ -109,6 +109,7 @@ exports.getWordByNextIndex = function(req, res) {
 
   var word_index = req.cookies.word_index;
   var previous = req.query.previous;
+  var sort = 1;
 
   if (previous) delete req.query.previous;
 
@@ -117,6 +118,7 @@ exports.getWordByNextIndex = function(req, res) {
 
     // If previous is set get previous word
     if (previous) {
+      sort = -1;
       req.query.word_index = {
         $lt: word_index
       };
@@ -135,7 +137,7 @@ exports.getWordByNextIndex = function(req, res) {
   }
 
   // Run query
-  _getWordByIndexQuery(req.query)
+  _getWordByIndexQuery(req.query, sort)
     .then(function(word) {
       // Set cookies on the response
       _setCookie(res, word);
@@ -151,13 +153,14 @@ exports.getWordByNextIndex = function(req, res) {
  * Runs a query to find a word based on its word_index value
  * If no words are found, calls itself once to find word_index: 0 
  * @param  {[object]}  query  [mongodb query]
+ * @param  {[number]}  sort   [1 sort word_index ascending, -1 sort descending]
  * @param  {[boolean]} _root  [gets set to true when function calls itself]
  * @return {[promise]}        [returns promise object that resolves with found word]
  */
-var _getWordByIndexQuery = function(query, _root) {
+var _getWordByIndexQuery = function(query, sort, _root) {
 
   return Word.find(query).sort({
-      word_index: 1
+      word_index: sort
     })
     .limit(1)
     .then(function(word) {
@@ -176,7 +179,7 @@ var _getWordByIndexQuery = function(query, _root) {
         }
 
         // Run function again to return first word
-        return _getWordByIndexQuery(query, true);
+        return _getWordByIndexQuery(query, 1, true);
       } else {
         // Return found word
         return word[0];
