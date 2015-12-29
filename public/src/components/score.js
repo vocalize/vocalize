@@ -1,13 +1,16 @@
 var React = require('react');
 
 var Score = React.createClass({
+  componentDidMount: function() {
+    drawGraph(this.props.peaks);
+  },
 
 	render: function(){
 		return(
 			<div>
 				<h2>Score</h2>
-        <div id="graph" class="aGraph"></div>
-				<span>{this.props.score}</span>
+        <div id="graph" className="aGraph"></div>
+				<span id="scoreDisplay">{this.props.percentCorrect}</span> 
 			</div>
 		);
 	}
@@ -15,15 +18,31 @@ var Score = React.createClass({
 
 module.exports = Score;
 
+var calculateXMax = function(data) {
+  var max = data.reduce(function(prev, curr, index, array) {
+    return Math.max(prev, Math.max(curr[0], curr[2]));
+  }, 0);
+
+  return max * 1.1;  // extra room
+}
+
+var calculateYMax = function(data) {
+  var max = data.reduce(function(prev, curr, index, array) {
+    return Math.max(prev, Math.max(curr[1], curr[3]));
+  }, 0);
+  return max * 1.1;  // extra room
+}
+
 var drawGraph = function(data) {
   if (!data) return;
+
 
   var m = [80, 80, 80, 80];
   var w = 800 - m[1] - m[3];
   var h = 400 - m[0] - m[2];
 
-  var x = d3.scale.linear().domain([0, 20000]).range([0, w]);
-  var y = d3.scale.linear().domain([0.00, 0.09]).range([h, 0]);
+  var x = d3.scale.linear().domain([0, calculateXMax(data)]).range([0, w]);
+  var y = d3.scale.linear().domain([0.00, calculateYMax(data)]).range([h, 0]);
 
   var nativeLine = d3.svg.line()
       .interpolate("basis")
@@ -71,7 +90,8 @@ var drawGraph = function(data) {
       .style("opacity", 0);
 
 
-  graph.append("svg:path").attr("d", nativeLine(data))
+  graph.append("svg:path")
+  .attr("d", nativeLine(data))
   .attr("class", "native")
       .on("mouseover", function(d) {
           div.transition()
@@ -86,6 +106,7 @@ var drawGraph = function(data) {
               .duration(500)
               .style("opacity", 0);
       });
+
 
   graph.append("svg:path").attr("d", userLine(data))
   .attr("class", "user")
@@ -105,45 +126,5 @@ var drawGraph = function(data) {
 
 
 }
-/* implementation heavily influenced by http://bl.ocks.org/1166403 */
-    
-    //dimensions of graph
-
-
-    // var data = [
-    //     [141, 0.059752584, 428, 0.075148381],
-    //     [1586, 0.084293477, 682, 0.055529114],
-    //     [1930, 0.051642373, 1554, 0.063409381],
-    //     [2089, 0.046324391, 2356, 0.072343513],
-    //     [2872, 0.068827689, 2979, 0.045618758],
-    //     [3296, 0.053785808, 3352, 0.048490517],
-    //     [3674, 0.054419037, 3701, 0.033609092],
-    //     [4089, 0.06812989, 4051, 0.057071056],
-    //     [4322, 0.038137503, 5369, 0.040184222],
-    //     [4854, 0.043681193, 5482, 0.038941864],
-    //     [5529, 0.040516123, 6368, 0.055369712],
-    //     [6115, 0.043028761, 6584, 0.031398799],
-    //     [6265, 0.03453549, 6955, 0.026006462],
-    //     [6688, 0.069173008, 7301, 0.041809995],
-    //     [7050, 0.032410365, 8154, 0.033934649],
-    //     [7651, 0.060003195, 8315, 0.022865785],
-    //     [8155, 0.051406257, 8675, 0.021453142],
-    //     [8517, 0.041929573, 9113, 0.031976182],
-    //     [8812, 0.036815859, 9405, 0.024029503],
-    //     [9502, 0.059880696, 9574, 0.020245638],
-    //     [9857, 0.039597239, 9829, 0.010965667],
-    //     [10223, 0.049861655, 10393, 0.022992456],
-    //     [10601, 0.030916154, 10497, 0.014151745],
-    //     [11407, 0.040453617, 10980, 0.028933708],
-    //     [11851, 0.034054797, 11199, 0.013407934],
-    //     [12050, 0.018086506, 11774, 0.015749579],
-    //     [12608, 0.013804808, 12194, 0.019376997],
-    //     [13190, 0.015733527, 12437, 0.017405471],
-    //     [13527, 0.01535001, 12824, 0.02055954],
-    //     [13887, 0.03185381, 13806, 0.02061658],
-    //     [14564, 0.031291306, 14318, 0.031293031],
-    //     [14974, 0.02502743, 14841, 0.027576791],
-    //     [15228, 0.019549977, 15772, 0.053660613]
-    // ];
 
 
