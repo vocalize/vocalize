@@ -17,13 +17,13 @@ var PlayWordBtn = React.createClass({
   render: function() {
 
     //var streamUrl = 'http://d2oh9tgz5bro4i.cloudfront.net/public/apple.wav';
-    var streamUrl = 'http://d2oh9tgz5bro4i.cloudfront.net/public/' + this.props.s3Key;
+    var streamUrl = 'http://dix3awiyfhxbk.cloudfront.net/public' + this.props.s3Key;
 
     return ( 
       
       <span>
         <audio id='audio-player' src={streamUrl}/>
-        <Button text={<i className="icon ion-volume-high"></i>} onClick = {this.playWord} style="btn-primary"/>
+        <Button text={<i className="icon ion-volume-high"></i>} onClick = {this.playWord} style="btn btn-primary"/>
       </span>
     );
   }

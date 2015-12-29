@@ -4,9 +4,10 @@ var TargetWord = React.createClass({
   render: function(){
     return (
       <div>
-        <h2 className="target-word">
+        <h1 className="target-word center-content">
           {this.props.targetWord}
-        </h2>
+        </h1>
+        <hr className="separator" />
       </div>
     );
   }

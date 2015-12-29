@@ -1,0 +1,37 @@
+html{
+    font-family: $font-family;
+    text-rendering: optimizeLegibility!important;
+    -webkit-font-smoothing: antialiased!important;
+    line-height: $base-line-height;
+    font-size: $base-font-size;
+    line-height: $base-line-height;
+}
+
+h1 {
+    margin-top: 0;
+    margin-bottom: $default-margin;
+    font-size: $base-font-size * 3;
+    line-height: $base-line-height;
+    color: $primary-text;
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: $default-margin;
+    font-size: $base-font-size * 2.25;
+    line-height: $base-line-height;
+    color: $primary-text;
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: $default-margin;
+    font-size: $base-font-size * 1.75;
+    line-height: $base-line-height;
+    color: $primary-text;
+}
+
+a, p{
+    color: $primary-text;
+    font-size: $base-font-size;
+}

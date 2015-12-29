@@ -1,0 +1,43 @@
+/* -------------------------TYPOGRAPHY--------------------------------*/
+
+$base-font-size: 16px;
+$base-line-height: 1.375em;
+
+$font-family: 'Lato', 'Arial', sans-serif;
+
+/* -------------------------COLORS-----------------------------*/
+
+// Colors
+$primary-color: #2ECC71;
+$primary-color-hover:#39FC8C;
+
+$secondary-color: #F44647;
+$secondary-color-hover:#FF494A;
+
+// Background
+$background-light: #3B3B3B;
+$background-mid: #202020;
+$background-dark: #1B1B1B;
+
+// Buttons
+$primary-button: #CCCCCC;
+
+// Text
+$primary-text: #CCCCCC;
+
+/* -------------------------SIZE--------------------------------*/
+
+$base-unit: 20px;
+
+// Row Width
+$max-row-width: 960px;
+
+// Margins
+$default-margin: $base-unit;
+
+// Padding
+$default-padding: $base-unit / 2;
+
+
+
+

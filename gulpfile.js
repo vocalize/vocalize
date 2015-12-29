@@ -49,7 +49,7 @@ var path = {
 };
 
 var cssPath = {
-  src: 'public/style/*.scss',
+  src: 'public/style/**/*.scss',
   dest: 'dist/styles',
   min: 'style.css'
 };
