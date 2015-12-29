@@ -46,6 +46,7 @@ var RecordAudioBtn = React.createClass({
           this.setState({
             loading: false
           });
+          debugger;
 
           this.props.handleScore(data);
         }.bind(this));

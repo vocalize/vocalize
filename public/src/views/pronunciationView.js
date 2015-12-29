@@ -35,7 +35,8 @@ var PronunciationView = React.createClass({
     
     this.setState({
       showScore: true,
-      percentCorrect: Math.random()
+      percentCorrect: data.score,
+      peaks: data.peaks
     });
 
     console.log(data);
