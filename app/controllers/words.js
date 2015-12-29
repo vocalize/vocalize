@@ -35,7 +35,7 @@ exports.compareAudio = function(req, res) {
       bufferStream.pipe(wavWriter);
 
       word.downloadAudioFile('processing/control.wav').then(function() {
-        child_process.exec('bash compareuser.sh user.wav control.wav', {
+        child_process.exec('python process.py user.wav control.wav', {
           cwd: 'processing'
         }, function(error, stdout, stderr) {
           console.log('stdout: ' + stdout);
@@ -55,15 +55,30 @@ exports.compareAudio = function(req, res) {
             distance = score - mean;
             stdDeviationCount = distance / stdDeviation;
           }
-          var results = {
-            score: score,
-            mean: mean,
-            stdDeviation: stdDeviation,
-            distance: distance,
-            stdDeviationCount: stdDeviationCount
-          }
-          console.log(results);
-          res.status(200).send(results);
+
+          child_process.exec('python peaks.py user.wav control.wav', {
+            cwd: 'processing'
+          }, function(error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            if (error !== null) {
+              winston.error('stderr: ', stderr);
+            }
+            winston.log('stdout: ', stdout);
+
+            var peaks = JSON.parse(stdout);
+            var results = {
+              score: score,
+              mean: mean,
+              stdDeviation: stdDeviation,
+              distance: distance,
+              stdDeviationCount: stdDeviationCount,
+              peaks: peaks
+            }
+
+            console.log(results);
+            res.status(200).send(results);
+          });
+          
         });
       });
     });
@@ -149,6 +164,34 @@ exports.getWordByNextIndex = function(req, res) {
 
 };
 
+exports.getWordByPrevIndex = function(req, res) {
+  
+  var word_index = _decWordIndexCookie(res, req.cookies.word_index);
+
+  if (word_index) {
+    req.query.word_index = {
+      $lt: word_index
+    };
+    Word.find(req.query).sort({
+        word_index: -1
+      })
+      .limit(1)
+      .then(function(word) {
+        console.log(word);
+        if (!word.length) {
+          _findRootWord(req, res);
+        } else {
+          res.cookie("word" , word[0].word);
+          res.status(200).send(word[0]);
+        }
+      })
+      .catch(function(err) {
+        res.status(500).send('Error finding word');
+      });
+  } else {
+    res.status(400).send('Word Index Not Included');
+  }
+};
 /**
  * Runs a query to find a word based on its word_index value
  * If no words are found, calls itself once to find word_index: 0 
@@ -211,4 +254,30 @@ var _setCookie = function(res, word) {
 
 
 
+var _incWordIndexCookie = function(res, cookie) {
+  var word_index;
 
+  if ( !cookie ) {
+    word_index = 0;
+    res.cookie("word_index" , word_index);
+    return word_index.toString();
+  } else {
+    word_index = parseInt(cookie);
+    res.cookie("word_index", word_index + 1);
+    return word_index.toString();
+  }
+};
+
+var _decWordIndexCookie = function(res, cookie) {
+  var word_index;
+
+  if ( !cookie ) {
+    word_index = 0;
+    res.cookie("word_index" , word_index);
+    return word_index.toString();
+  } else {
+    word_index = parseInt(cookie);
+    res.cookie("word_index", word_index - 1);
+    return word_index.toString();
+  }
+};

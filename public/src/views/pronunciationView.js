@@ -27,6 +27,7 @@ var PronunciationView = React.createClass({
       accent: 'general',
       targetWord: null,
       percentCorrect: null,
+      peaks: null,
       showScore: false
     };
   },
@@ -35,7 +36,8 @@ var PronunciationView = React.createClass({
     
     this.setState({
       showScore: true,
-      percentCorrect: Math.random()
+      percentCorrect: data.score,
+      peaks: data.peaks
     });
 
     console.log(data);
@@ -92,7 +94,7 @@ var PronunciationView = React.createClass({
               <div className="small-bucket">
               <ReactCSSTransitionGroup transitionName="fade" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
                 {this.state.showScore ? 
-                  <Score key="1" /> :
+                  <Score percentCorrect={this.state.percentCorrect} peaks={this.state.peaks} /> :
                   <RecordAudioBtn key="2" handleScore={this.handleScore} />
                 }
               </ReactCSSTransitionGroup>

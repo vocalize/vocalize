@@ -715,9 +715,11 @@ def usage():
   sys.exit(0)
 
 if __name__ == "__main__":
+    import sys
+    if len(sys.argv) < 2:
+        usage() 
     from math import pi
     import pylab
-    import sys
     import imp
     processing = imp.load_source('processing', '../../speechprocessing/speechprocessing/processing.py')
 
