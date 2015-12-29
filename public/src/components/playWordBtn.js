@@ -1,5 +1,7 @@
 var React = require('react');
 
+var Button = require('../bootstrap-components/button');
+
 var PlayWordBtn = React.createClass({
 
   audioPlayer: null,
@@ -14,19 +16,15 @@ var PlayWordBtn = React.createClass({
 
   render: function() {
 
-    var streamUrl = 'http://d2oh9tgz5bro4i.cloudfront.net/public/apple.wav';
+    //var streamUrl = 'http://d2oh9tgz5bro4i.cloudfront.net/public/apple.wav';
+    var streamUrl = 'http://d2oh9tgz5bro4i.cloudfront.net/public/' + this.props.s3Key;
 
     return ( 
       
-      <div className = "usr-options" >
-        {/* Change streamUrl to s3key for production */}
+      <span>
         <audio id='audio-player' src={streamUrl}/>
-        <button type = "button"
-          className = "sound"
-          onClick = {this.playWord}>
-          <i className="icon ion-volume-high"></i>
-        </button> 
-      </div>
+        <Button text={<i className="icon ion-volume-high"></i>} onClick = {this.playWord} style="btn-primary"/>
+      </span>
     );
   }
 });

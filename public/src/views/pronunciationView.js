@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactCSSTransitionGroup = require('react-addons-css-transition-group'); 
 
 // Components
 var Title = require('../components/title');
@@ -7,6 +8,7 @@ var TargetWord = require('../components/targetWord');
 var PlayWordBtn = require('../components/playWordBtn');
 var RecordAudioBtn = require('../components/recordAudioBtn');
 var WordControls = require('../components/wordControls');
+var Score = require('../components/score');
 
 // Services
 var WordService = require('../actions/wordService');
@@ -25,18 +27,32 @@ var PronunciationView = React.createClass({
       accent: 'general',
       targetWord: null,
       percentCorrect: null,
+      showScore: false
     };
   },
 
-  handleChange: function(e){
+  handleScore: function(data) {
+    
+    this.setState({
+      showScore: true,
+      percentCorrect: Math.random()
+    });
+
+    console.log(data);
+  },
+
+  handleUserSettingsChange: function(e){
     var newState = {};
-
     newState[e.currentTarget.name] = e.currentTarget.value;
-
     this.setState(newState);
   },
 
   setTargetWord: function(previous) {
+    
+    this.setState({
+      showScore: false
+    });
+
     WordService.loadWordFromServer.call(this, previous)
       .then(function(data) {
         this.setState({
@@ -52,33 +68,42 @@ var PronunciationView = React.createClass({
 
   render: function() {
 
+    var TitleProps = {
+      handleChange: this.handleUserSettingsChange,
+      language: this.state.language,
+      gender: this.state.gender,
+      accent: this.state.accent
+    };
+
+    var WordControlsProps = {
+      s3Key: this.state.s3Key,
+      nextWord: this.setTargetWord.bind(this, false),
+      previousWord: this.setTargetWord.bind(this, true)
+    };
+
     return (
       <div className="root max-height">
-        <Title 
-          handleChange={this.handleChange}
-          language={this.state.language} 
-          gender={this.state.gender} 
-          accent={this.state.accent}/>
-
+        <Title {...TitleProps}/>
 
         <div className="container-fluid max-height">
           <div className="row max-height">
             <div className="col-md-12 content-container max-height">
               <TargetWord targetWord = {this.state.targetWord } />
-              <RecordAudioBtn handleUserSample={this.handleUserSample} />
-              <PlayWordBtn s3Key={this.state.s3Key}/>
-              <WordControls nextWord={this.setTargetWord.bind(this, false)} previousWord={this.setTargetWord.bind(this, true)}/>
+              <div className="small-bucket">
+              <ReactCSSTransitionGroup transitionName="fade" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
+                {this.state.showScore ? 
+                  <Score key="1" /> :
+                  <RecordAudioBtn key="2" handleScore={this.handleScore} />
+                }
+              </ReactCSSTransitionGroup>
+              </div>
+              <WordControls {...WordControlsProps}/>
               <Instructions />
             </div>
           </div>
         </div>    
       </div>
     );
-  },
-
-  handleUserSample: function(blob) {
-    WordService.postAudioFile(blob);
-    //WordService.postAudioFile.call(this, blob);
   }
 });
 

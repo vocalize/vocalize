@@ -24,6 +24,7 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var minifyCss = require('gulp-minify-css');
+var sass = require('gulp-sass');
 var htmlreplace = require('gulp-html-replace');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
@@ -48,15 +49,15 @@ var path = {
 };
 
 var cssPath = {
-  src: 'public/style/*.css',
+  src: 'public/style/*.scss',
   dest: 'dist/styles',
-  min: 'style.min.css'
+  min: 'style.css'
 };
 
 // Default
-gulp.task('default', ['watch', 'replaceHtml-dev']);
+gulp.task('default', ['watch', 'sass', 'replaceHtml-dev']);
 // Production
-gulp.task('production', ['test', 'replaceHtml-prod', 'css', 'build']);
+gulp.task('production', ['test', 'replaceHtml-prod', 'sass', 'build']);
 
 // Copies index.html to the dist folder
 gulp.task('copy', function() {
@@ -71,7 +72,7 @@ gulp.task('watch', function() {
   // Watch all .js files for linting
   gulp.watch(path.js, ['lint']);
   // Watch for css changes
-  gulp.watch(cssPath.src, ['css']);
+  gulp.watch(cssPath.src, ['sass']);
 
   // Browserify
   // Changes jsx --> js
@@ -92,7 +93,7 @@ gulp.task('watch', function() {
         .pipe(gulp.dest(path.dest_src));
       console.log('updated');
     })
-    .on('log', function(msg){
+    .on('log', function(msg) {
       console.log(msg);
     })
     .bundle()
@@ -115,10 +116,17 @@ gulp.task('build', function() {
 });
 
 // Minifies and concats css files
-gulp.task('css', function() {
-  return gulp.src(cssPath.src)
-    .pipe(minifyCss())
-    .pipe(concat(cssPath.min))
+gulp.task('sass', function() {
+
+  var sassOptions = {
+    errLogToConsole: true,
+    outputStyle: 'expanded'
+  };
+
+  return gulp
+    .src(cssPath.src)
+    .pipe(sass(sassOptions))
+    .on('error', sass.logError)
     .pipe(gulp.dest(cssPath.dest));
 });
 

@@ -14,8 +14,6 @@ exports.compareAudio = function(req, res) {
   var sound = req.body;
   var word = req.cookies.word;
 
-  console.log(word, sound);
-
   // Create a new stream
   var bufferStream = new stream.PassThrough();
 

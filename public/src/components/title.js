@@ -7,6 +7,14 @@ var CollapseContainer = require('../bootstrap-components/collapseContainer');
 
 var Title = React.createClass({
   render: function(){
+
+    var languageRadioProps = {
+      handleChange: this.props.handleChange,
+      language: this.props.language,
+      gender: this.props.gender,
+      accent: this.props.accent
+    };
+
     return (
       <div>
       	<NavBar title="Vocalize">
@@ -15,11 +23,7 @@ var Title = React.createClass({
       	  </CollapseButton>
       	</NavBar>
       	<CollapseContainer collapseId="radio">
-      		<LanguageRadio 
-            handleChange={this.props.handleChange}
-            language={this.props.language} 
-            gender={this.props.gender} 
-            accent={this.props.accent}/>
+      		<LanguageRadio {...languageRadioProps} />
       	</CollapseContainer>
       </div>
     );
