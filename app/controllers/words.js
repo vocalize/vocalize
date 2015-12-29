@@ -55,15 +55,30 @@ exports.compareAudio = function(req, res) {
             distance = score - mean;
             stdDeviationCount = distance / stdDeviation;
           }
-          var results = {
-            score: score,
-            mean: mean,
-            stdDeviation: stdDeviation,
-            distance: distance,
-            stdDeviationCount: stdDeviationCount
-          }
-          console.log(results);
-          res.status(200).send(results);
+
+          child_process.exec('python peaks.py user.wav control.wav', {
+            cwd: 'processing'
+          }, function(error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            if (error !== null) {
+              winston.error('stderr: ', stderr);
+            }
+            winston.log('stdout: ', stdout);
+
+            var peaks = JSON.parse(stdout);
+            var results = {
+              score: score,
+              mean: mean,
+              stdDeviation: stdDeviation,
+              distance: distance,
+              stdDeviationCount: stdDeviationCount,
+              peaks: peaks
+            }
+
+            console.log(results);
+            res.status(200).send(results);
+          });
+          
         });
       });
     });
