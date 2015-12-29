@@ -62,7 +62,7 @@ var RecordAudioBtn = React.createClass({
       <i className="icon ion-mic-a"></i>
       </button>;
     return (
-      <div className="record-btn-container center-content">
+      <div className="small-bucket center-content">
         <ReactCSSTransitionGroup transitionName="fade" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
             {display}
         </ReactCSSTransitionGroup>

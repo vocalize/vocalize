@@ -16,7 +16,7 @@ var Title = React.createClass({
     };
 
     return (
-      <div>
+      <div id="title-bar">
       	<NavBar title="Vocalize">
       	  <CollapseButton collapseTargetId="radio">
       	  	<span className="user-settings icon ion-gear-a"></span>

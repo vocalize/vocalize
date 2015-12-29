@@ -1,0 +1,24 @@
+/* --------------------------UTILITY CLASSES--------------------*/
+
+.hide{
+    display: none;
+}
+
+.center-content {
+    text-align: center;
+}
+
+.max-height{
+    height:100%;
+}
+
+.small-bucket{
+    height: $base-unit * 5;
+}
+
+.separator{
+	border: 0;
+	width: $max-row-width * 0.4;
+	border-top: 2px solid $primary-color;
+	margin: 0 auto;
+}

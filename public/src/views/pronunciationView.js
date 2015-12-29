@@ -91,13 +91,15 @@ var PronunciationView = React.createClass({
           <div className="row max-height">
             <div className="col-md-12 content-container max-height">
               <TargetWord targetWord = {this.state.targetWord } />
-              <div className="small-bucket">
-              <ReactCSSTransitionGroup transitionName="fade" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
-                {this.state.showScore ? 
-                  <Score percentCorrect={this.state.percentCorrect} peaks={this.state.peaks} /> :
-                  <RecordAudioBtn key="2" handleScore={this.handleScore} />
-                }
-              </ReactCSSTransitionGroup>
+
+              <div className="mic-controls-container">
+                <ReactCSSTransitionGroup transitionName="fade" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
+                  {this.state.showScore ? 
+                    <Score percentCorrect={this.state.percentCorrect} peaks={this.state.peaks} key="1" /> :
+                    <RecordAudioBtn key="2" handleScore={this.handleScore} />
+                  }
+                </ReactCSSTransitionGroup>
+
               </div>
               <WordControls {...WordControlsProps}/>
               <Instructions />

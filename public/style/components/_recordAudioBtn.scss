@@ -1,0 +1,16 @@
+/* -------------------------USER AUDIO-----------------------------*/
+
+.microphone {
+	@include circle-border(5 * $base-unit, $primary-color);
+  position: relative;
+  font-size: $base-font-size * 4;
+  color: $primary-color;
+  -webkit-transition: color 0.5s;
+  -o-transition: color 0.5s;
+  transition: color 0.5s;
+}
+
+.live-mic {
+  color: $secondary-color;
+  border: 4px solid $secondary-color;
+}

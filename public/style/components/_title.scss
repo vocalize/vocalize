@@ -1,0 +1,44 @@
+/* ------------------------USER FORM----------------------------*/
+
+.radio {
+    position: relative;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.radio label {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.user-settings{
+    font-size: 28px;
+}
+
+/* --------------------------TITLE------------------------------*/
+
+.navbar{
+    margin-bottom: 0px !important;
+    background-color: $background-dark;
+    border-bottom: 2px solid $primary-color;
+}
+
+.navbar-brand{
+    @include transition(0.25s);
+    color: $primary-text;
+    font-size: $base-font-size * 2;
+}
+
+.navbar-brand:hover{
+    color: $primary-color;
+}
+
+.title {
+    padding-top: 30px;
+    text-align: center;
+    margin-left: 10px;
+}

@@ -8,7 +8,7 @@ var NavBar = React.createClass({
     });
 
     return (
-      <nav className="navbar navbar-default">
+      <nav className="navbar">
         <div className="container-fluid">
           <div className="navbar-header">
             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">

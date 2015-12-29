@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    background: 0 0;
+}
+
+body {
+    height: 100%;
+    background-color: $background-mid;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+html {
+    position: static;
+    width: 100%;
+    height: 100%;
+}
+
+.content-container{
+    background-color: $background-light;
+    height: 100%;
+    border-left: 2px solid $background-dark;
+    border-right: 2px solid $background-dark;
+}
+
+.app{
+    height: 100%;
+}
+
+#vocalizeApp{
+    height: 100%;
+}
+
+.clearfix {
+    zoom: 1
+}
+
+.clearfix:after {
+    content: '.';
+    clear: both;
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+.row {
+    max-width: $max-row-width;
+    margin: 0 auto;
+}
+
+a:visited{
+    color: $primary-text;
+}

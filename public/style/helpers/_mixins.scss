@@ -1,0 +1,11 @@
+
+@mixin transition($time){
+	transition: all $time ease;
+}
+
+@mixin circle-border($size, $color){
+	border-radius: 100%;
+	width: $size;
+	height: $size;
+	border: 4px solid $color;
+}

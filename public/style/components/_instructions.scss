@@ -1,0 +1,11 @@
+
+.instructions-btn{
+	@include circle-border(2.5 * $base-unit, $secondary-color);
+	@include transition(0.25s);
+	font-size: 2 * $base-font-size;
+	color: $secondary-color;
+}
+
+.instructions-btn:hover{
+	color: $secondary-color-hover;
+}
