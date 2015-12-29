@@ -1,3 +1,8 @@
+
+// Vendor Sheets
+@import "vendor/bootstrap";
+@import "vendor/bootstrap-theme";
+
 /* ------------------------BASIC SETUP----------------------------*/
 
 * {
@@ -39,6 +44,10 @@ html {
 }
 
 .app{
+    height: 100%;
+}
+
+#vocalizeApp{
     height: 100%;
 }
 
@@ -99,8 +108,11 @@ h3 {
     cursor: pointer;
 }
 
-
 /* --------------------------UTILITY CLASSES--------------------*/
+
+.hide{
+    display: none;
+}
 
 .center-content {
     text-align: center;
@@ -108,6 +120,10 @@ h3 {
 
 .max-height{
     height:100%;
+}
+
+.small-bucket{
+    height: 65px;
 }
 
 /* --------------------------TITLE------------------------------*/
@@ -130,13 +146,24 @@ h3 {
     font-size: 28px;
 }
 
-/* -------------------------TARGET WORD--------------------------*/
+/* -------------------------TARGET WORD---------------------------*/
 
 .target-word {
     position: relative;
     top: 20px;
 }
 
+/* -------------------------SPINNER-------------------------------*/
+
+.spinner img{
+    height: 65px;
+    transition: display 0.5s ease;
+}
+
+/* --------------------------SCORE------------------------------*/
+.score {
+    color: #E12839;
+}
 
 /* -------------------------INSTRUCTIONS--------------------------*/
 
@@ -160,35 +187,10 @@ h3:after {
     margin-top: 30px;
 }
 
-
-/* --------------------------SCORE------------------------------*/
-
-.score {
-    color: #E12839;
-}
-
-
 /* -------------------------BUTTONS-----------------------------*/
 
-
-/*.btn {
-  display: inline-block;
-  padding: 10px 30px;
-  font-weight: 300;
-  text-decoration: none;
-  border-radius: 200px;
-  transition: background-color 0.2s, border 0.2s, color 0.2s;
-}
-
-.btn-full {
-  background-color: #f2b632;
-  border: 1px solid #f2b632;
-  color: #E12839;
-  margin-right: 15px;
-}*/
-
-.usr-options {
-    text-align: center;
+.record-btn-container{
+    height: 65px;
 }
 
 .next {
@@ -206,4 +208,25 @@ h3:after {
     position: relative;
     font-size: 325%;
     color: #E12839;
+    -webkit-transition: color 0.5s;
+    -o-transition: color 0.5s;
+    transition: color 0.5s;
+}
+
+.live-mic{
+    color: blue;
+}
+
+/* -------------------------REACT TRANSITION GROUPS-----------------------------*/
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.fade-leave {
+  opacity: 0;
 }

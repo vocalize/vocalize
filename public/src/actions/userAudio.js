@@ -1,3 +1,5 @@
+var Promise = require('bluebird');
+
 module.exports = {
 
   /**
@@ -28,22 +30,23 @@ module.exports = {
   },
 
   postAudioFile: function(formData) {
-    console.log(formData);
-    jQuery.ajax({
-      type: 'POST',
-      url: '/api/audio/',
-      data: formData,
-      contentType: false,
-      cache: false,
-      processData: false,
-      contentType: 'audio/wav',
-      success: function(data) {
-        this.recordRTC.clearRecordedData();
-        console.log(data);
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/api/audio', status, err.toString());
-      }.bind(this)
-    });
+    return new Promise(function(resolve, reject){
+      jQuery.ajax({
+        type: 'POST',
+        url: '/api/audio/',
+        data: formData,
+        contentType: false,
+        cache: false,
+        processData: false,
+        contentType: 'audio/wav',
+        success: function(data) {
+          resolve(data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error('/api/audio', status, err.toString());
+          reject(err);
+        }.bind(this)
+      });
+    }.bind(this));
   }
 };

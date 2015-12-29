@@ -68,55 +68,6 @@ module.exports = {
     }.bind(this));
   },
 
-  postAudioFile: function(soundBlob) {
-    console.log(soundBlob);
-    var formData = new FormData();
-    formData.append('userAudio', soundBlob);
-
-    jQuery.ajax({
-      type: 'POST',
-      url: '/api/audio/',
-      data: formData,
-      processData: false,
-      contentType: 'audio/wav',
-      success: function(data) {
-        console.log(data);
-        // this.recordRTC.clearRecordedData();
-        // console.log('data', data);
-        // var percentCorrect = Math.floor(data.score);
-        // this.setState({
-        //   percentCorrect: percentCorrect
-        // });
-      },
-      error: function(xhr, status, err) {
-        console.error('/api/audio', status, err.toString());
-      }
-    });
-    // return new Promise(function(resolve, reject) {
-
-    //   console.log(soundBlob);
-
-    //   var formData = new FormData();
-    //   formData.append('userAudio', soundBlob);
-    //   console.log(formData);
-    //   console.log(formData.get('userAudio'));
-
-    //   jQuery.ajax({
-    //     type: 'POST',
-    //     url: '/api/audio/',
-    //     data: formData,
-    //     processData: false,
-    //     contentType: 'audio/wav',
-    //     success: function(data) {
-    //       resolve(data);
-    //     },
-    //     error: function(xhr, status, err) {
-    //       reject('/api/audio', status, err.toString());
-    //     }
-    //   });
-    // });
-  },
-
   postTargetWord: function() {
     jQuery.ajax({
       type: 'POST',
