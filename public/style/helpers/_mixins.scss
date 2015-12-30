@@ -4,7 +4,7 @@
 }
 
 @mixin circle-border($size, $color){
-	$border-width: $size / 16;
+	$border-width: $size / 20;
 
 	border-radius: 100%;
 	width: $size;

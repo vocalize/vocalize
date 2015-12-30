@@ -1,7 +1,7 @@
 /* -------------------------USER AUDIO-----------------------------*/
 
 $container-height: 16 * $base-unit;
-$mic-height: 8 * $base-unit;
+$mic-height: 6 * $base-unit;
 $spinner-height: 4 * $base-unit;
 
 .mic-controls-container{
@@ -16,7 +16,7 @@ $spinner-height: 4 * $base-unit;
 	margin-top: ($container-height / 2) - ($mic-height / 2);
 
   position: relative;
-  font-size: $base-font-size * 6;
+  font-size: $base-font-size * 4;
   color: $secondary-color;
 }
 
