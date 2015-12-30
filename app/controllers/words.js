@@ -165,7 +165,6 @@ exports.getWordByNextIndex = function(req, res) {
 };
 
 exports.getWordByPrevIndex = function(req, res) {
-  
   var word_index = _decWordIndexCookie(res, req.cookies.word_index);
 
   if (word_index) {
@@ -177,7 +176,6 @@ exports.getWordByPrevIndex = function(req, res) {
       })
       .limit(1)
       .then(function(word) {
-        console.log(word);
         if (!word.length) {
           _findRootWord(req, res);
         } else {
@@ -277,7 +275,11 @@ var _decWordIndexCookie = function(res, cookie) {
     return word_index.toString();
   } else {
     word_index = parseInt(cookie);
-    res.cookie("word_index", word_index - 1);
+    if (word_index > 0) {
+      res.cookie("word_index", word_index - 1);
+    } else {
+      res.cookie("word_index", word_index);
+    }
     return word_index.toString();
   }
 };
