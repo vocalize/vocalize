@@ -1,0 +1,14 @@
+
+.word-btn{
+	@include circle-border(2.5 * $base-unit, $primary-color);
+	@include transition(0.5s);
+	
+	font-size: 1.25 * $base-font-size;
+	margin: $default-margin;
+	color: $primary-color;
+}
+
+.word-btn:hover{
+	@include circle-border(2.5 * $base-unit, $primary-color-hover);
+	color: $primary-color-hover;
+}

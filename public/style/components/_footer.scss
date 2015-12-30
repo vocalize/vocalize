@@ -1,0 +1,9 @@
+
+footer{
+	margin-left: -15px;
+	margin-right: -15px;
+	padding: $default-padding;
+	background-color: $background-dark;
+	border-top: 2px solid $primary-color;
+	min-height: 6 * $base-unit;
+}
