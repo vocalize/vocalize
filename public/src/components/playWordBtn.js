@@ -17,7 +17,7 @@ var PlayWordBtn = React.createClass({
   render: function() {
 
     //var streamUrl = 'http://d2oh9tgz5bro4i.cloudfront.net/public/apple.wav';
-    var streamUrl = 'http://dix3awiyfhxbk.cloudfront.net/public' + this.props.s3Key;
+    var streamUrl = 'https://dix3awiyfhxbk.cloudfront.net/' + this.props.s3Key;
 
     return ( 
       

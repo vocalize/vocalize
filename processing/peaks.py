@@ -721,7 +721,8 @@ if __name__ == "__main__":
     from math import pi
     import pylab
     import imp
-    processing = imp.load_source('processing', '../../speechprocessing/speechprocessing/processing.py')
+    # processing = imp.load_source('processing', '../../speechprocessing/speechprocessing/processing.py')
+    import speechprocessing as processing
 
     user = sys.argv[1]
     native = sys.argv[2]

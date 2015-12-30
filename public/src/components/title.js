@@ -1,6 +1,6 @@
 var React = require('react');
 var NavBar = require('../bootstrap-components/navBar');
-var LanguageRadio = require('../components/LanguageRadio');
+var LanguageRadio = require('../components/languageRadio');
 var CollapseButton = require('../bootstrap-components/collapseBtn');
 var CollapseContainer = require('../bootstrap-components/collapseContainer');
 
