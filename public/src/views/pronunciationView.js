@@ -9,6 +9,7 @@ var PlayWordBtn = require('../components/playWordBtn');
 var RecordAudioBtn = require('../components/recordAudioBtn');
 var WordControls = require('../components/wordControls');
 var Score = require('../components/score');
+var Footer = require('../components/footer');
 
 // Services
 var WordService = require('../actions/wordService');
@@ -84,12 +85,12 @@ var PronunciationView = React.createClass({
     };
 
     return (
-      <div className="root max-height">
+      <div className="root">
         <Title {...TitleProps}/>
 
-        <div className="container-fluid max-height">
+        <div className="container-fluid">
           <div className="row max-height">
-            <div className="col-md-12 content-container max-height">
+            <div className="col-md-12 content-container">
               <TargetWord targetWord = {this.state.targetWord } />
 
               <div className="mic-controls-container">
@@ -103,6 +104,11 @@ var PronunciationView = React.createClass({
               </div>
               <WordControls {...WordControlsProps}/>
               <Instructions />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-12">
+              <Footer />
             </div>
           </div>
         </div>    

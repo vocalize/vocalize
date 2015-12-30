@@ -7,8 +7,7 @@ var Score = React.createClass({
 
 	render: function(){
 		return(
-			<div className="small-bucket center-content">
-				<h2>Score</h2>
+			<div className="max-height center-content">
         <div id="graph" className="aGraph"></div>
 				<span id="scoreDisplay">{this.props.percentCorrect}</span> 
 			</div>

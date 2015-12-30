@@ -23,7 +23,7 @@ var PlayWordBtn = React.createClass({
       
       <span>
         <audio id='audio-player' src={streamUrl}/>
-        <Button text={<i className="icon ion-volume-high"></i>} onClick = {this.playWord} style="btn btn-primary"/>
+        <Button text={<i className="icon ion-volume-high"></i>} onClick = {this.playWord} style="word-btn"/>
       </span>
     );
   }

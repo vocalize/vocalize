@@ -1,16 +1,37 @@
 /* -------------------------USER AUDIO-----------------------------*/
 
+$container-height: 16 * $base-unit;
+$mic-height: 6 * $base-unit;
+$spinner-height: 4 * $base-unit;
+
+.mic-controls-container{
+	height: $container-height;
+	margin: $default-margin;
+}
+
 .microphone {
-	@include circle-border(5 * $base-unit, $primary-color);
+	@include circle-border($mic-height, $secondary-color);
+	@include transition(0.5s);
+
+	margin-top: ($container-height / 2) - ($mic-height / 2);
+
   position: relative;
   font-size: $base-font-size * 4;
-  color: $primary-color;
-  -webkit-transition: color 0.5s;
-  -o-transition: color 0.5s;
-  transition: color 0.5s;
+  color: $secondary-color;
+}
+
+.microphone:hover{
+  @include circle-border($mic-height, $secondary-color-hover);
+	color: $secondary-color-hover;
 }
 
 .live-mic {
-  color: $secondary-color;
-  border: 4px solid $secondary-color;
+  color: $primary-color !important;
+  border: 6px solid $primary-color !important;
+}
+
+.spinner img{
+  @include transition(0.5s);
+	margin-top: ($container-height / 2) - ($spinner-height / 2);
+  height: $spinner-height;  
 }
