@@ -6,4 +6,8 @@ footer{
 	background-color: $background-dark;
 	border-top: 2px solid $primary-color;
 	min-height: 6 * $base-unit;
+
+	.navbar{
+		border: 0;
+	}
 }

@@ -1,11 +1,14 @@
 var React = require('react');
+var NavBar = require('../bootstrap-components/navBar');
 
 var Footer = React.createClass({
 
 	render: function(){
 		return(
 			<footer>
-				<h3>Vocalize</h3>
+				<NavBar>
+          <a href="#">About</a>
+        </NavBar>
 			</footer>
 		)
 	}
