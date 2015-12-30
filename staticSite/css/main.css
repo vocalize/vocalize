@@ -266,11 +266,14 @@ header {
     font-family: 'Cardo';
     font-size: 140%;
     text-align: center;
+    font-weight: bold;
     margin-bottom: 30px;
 }
 
 .section-steps p {
     font-family: 'Crimson Text';
+    font-size: 125%;
+    text-align: center;
 }
 
 .section-steps .long-copy {
@@ -281,45 +284,24 @@ header {
     font-style: italic;
 }
 
-.data-scraping p {
-    font-size: 115%;
-    font-family: 'Crimson Text';
-    text-align: center;
-}
-
-.scraping-img {
-    background-image: url(img/scraping.png);
-    background-size: cover;
-    background-position: center;
-    height: 340px;
+.data-scraping {
+    margin-bottom: 50px;
 }
 
 
 
-.averaging p {
-    font-size: 115%;
-    font-family: 'Crimson Text';
-    text-align: center;
-}
-.averaging-img {
-    background-image: url(img/avg.png);
-    background-size: cover;
-    background-position: center;
-    height: 300px;
+.averaging {
+    margin-bottom: 50px;
 }
 
-.comparing p {
-    font-size: 115%;
-    font-family: 'Crimson Text';
-    text-align: center;
-}
-.comparing-img {
-    background-image: url(img/compare.png);
-    background-size: cover;
-    background-position: center;
-    height: 300px;
+
+.icons {
+    margin-top: 30px;
 }
 
+.middle {
+    margin-top: 30px;
+}
 /* -------------------------------------------- */
 /* Submit */
 /* -------------------------------------------- */
