@@ -262,41 +262,46 @@ header {
     margin: 0 auto;
     margin-top: 30px;
 }
+.section-steps h3 {
+    font-family: 'Cardo';
+    font-size: 140%;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
 
-.works-step {
+.section-steps p {
+    font-family: 'Crimson Text';
+    font-size: 125%;
+    text-align: center;
+}
+
+.section-steps .long-copy {
+    margin-bottom: 30px;
+    font-size: 170%;
+    text-align: center;
+    font-family: 'Cardo';
+    font-style: italic;
+}
+
+.data-scraping {
     margin-bottom: 50px;
 }
 
-.works-step div {
-    font-family: 'Lato';
-    font-size: 190%;
-}
 
-.works-step p {
-    font-size: 150%;
-    font-family: 'Crimson Text';
-}
 
-.works-step:last-of-type {
-    margin-bottom: 80px;
-}
-
- 
-.works-step div {
-    color: black;
-    border: 2px solid black;
-    display: inline-block;
-    border-radius: 50%;
-    height: 55px;
-    width: 55px;
-    text-align: center;
-    padding: 5px;
-    float: left;
-    font-size: 150%;
-    margin-right: 25px;
+.averaging {
+    margin-bottom: 50px;
 }
 
 
+.icons {
+    margin-top: 30px;
+}
+
+.middle {
+    margin-top: 30px;
+}
 /* -------------------------------------------- */
 /* Submit */
 /* -------------------------------------------- */
