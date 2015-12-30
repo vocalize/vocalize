@@ -7,10 +7,17 @@
 #scoreDisplay {
     color: #E12839;
     text-align: center;
+    font-size: 3em;
+}
+
+.tooltip {
+  font-weight: bold;
+  color: $graph-tooltip-text;
+  // font-size: 1.8em;
 }
 
 #graph {
-    background: #ccc;
+    // background-color: lighten($background-light, 50%);
     height: 100%;
     width: 800px;
     margin: 0 auto;
@@ -35,21 +42,24 @@
     }
     .native {
       top: 250px;
-      stroke: blue;
+      stroke: $graph-native;
       stroke-width: 3;
       fill: none;
     }
     .user {
-      stroke: red;
+      stroke: $graph-user;
       stroke-width: 2;
       fill: none;
     }
     .axis {
       shape-rendering: crispEdges;
+      text {
+        display: none;
+      }
     }
 
     .x.axis line {
-      stroke: lightgrey;
+      stroke: $graph-axis;
     }
 
     .x.axis .minor {
@@ -62,6 +72,6 @@
 
     .y.axis line, .y.axis path {
       fill: none;
-      stroke: #000;
+      stroke: $graph-axis;
     }
 }

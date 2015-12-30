@@ -8,8 +8,8 @@ var Score = React.createClass({
 	render: function(){
 		return(
 			<div className="max-height center-content">
+        <span id="scoreDisplay">{this.props.percentCorrect}</span> 
         <div id="graph" className="aGraph"></div>
-				<span id="scoreDisplay">{this.props.percentCorrect}</span> 
 			</div>
 		);
 	}
@@ -36,7 +36,7 @@ var drawGraph = function(data) {
   if (!data) return;
 
 
-  var m = [80, 80, 80, 80];
+  var m = [80, 0, 80, 20];
   var w = 800 - m[1] - m[3];
   var h = 400 - m[0] - m[2];
 
@@ -65,7 +65,7 @@ var drawGraph = function(data) {
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m[3] + "," + 40 + ")");
 
 
   var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
@@ -96,7 +96,7 @@ var drawGraph = function(data) {
           div.transition()
               .duration(200)
               .style("opacity", 0.9);
-          div.html('Native Sample')
+          div.html('Average Pronunciation')
               .style("left", (d3.event.pageX) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
       })
@@ -113,7 +113,7 @@ var drawGraph = function(data) {
           div.transition()
               .duration(200)
               .style("opacity", 0.9);
-          div.html('Your Sample')
+          div.html('Your Pronunciation')
               .style("left", (d3.event.pageX) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
       })

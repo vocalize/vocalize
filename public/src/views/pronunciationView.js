@@ -34,10 +34,10 @@ var PronunciationView = React.createClass({
   },
 
   handleScore: function(data) {
-    
+    var roundedScore = Math.floor(data.score - 50);
     this.setState({
       showScore: true,
-      percentCorrect: data.score,
+      percentCorrect: roundedScore,
       peaks: data.peaks
     });
 
