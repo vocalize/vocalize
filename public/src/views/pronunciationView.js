@@ -50,6 +50,12 @@ var PronunciationView = React.createClass({
     this.setState(newState);
   },
 
+  handleRetry: function(){
+    this.setState({
+      showScore: false
+    });
+  },
+
   setTargetWord: function(previous) {
     
     this.setState({
@@ -81,7 +87,9 @@ var PronunciationView = React.createClass({
     var WordControlsProps = {
       s3Key: this.state.s3Key,
       nextWord: this.setTargetWord.bind(this, false),
-      previousWord: this.setTargetWord.bind(this, true)
+      previousWord: this.setTargetWord.bind(this, true),
+      retry: this.state.showScore,
+      onRetry: this.handleRetry
     };
 
     return (
