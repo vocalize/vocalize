@@ -14,9 +14,6 @@ exports.compareAudio = function(req, res) {
   var sound = req.body;
   var word = req.cookies.word;
 
-  console.log('!!!!!!!!');
-  console.log(req.cookies);
-
   // Create a new stream
   var bufferStream = new stream.PassThrough();
 
@@ -179,7 +176,6 @@ exports.getWordByPrevIndex = function(req, res) {
       })
       .limit(1)
       .then(function(word) {
-        console.log(word);
         if (!word.length) {
           _findRootWord(req, res);
         } else {

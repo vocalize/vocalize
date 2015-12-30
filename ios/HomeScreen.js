@@ -50,7 +50,7 @@ var RecordAudioBtn = React.createClass({
 
   _postUserAudio: function(userAudioPath) {
     var params = {
-        uploadUrl: 'http://127.0.0.1:3000/api/audio',
+        uploadUrl: 'https://vocalizeapp.com/api/audio',
         method: 'POST',
         fields: {
             'required': 'required',
@@ -86,7 +86,7 @@ var RecordAudioBtn = React.createClass({
           onPressIn={this._startRecording}
           onPressOut={this._stopRecording}
         >
-          <Icon name="mic" size={100} color="#007AFF" />
+          <Icon name="mic" size={125} color="#007AFF" />
         </Button>
       </View>
     );
@@ -120,9 +120,9 @@ var PrevWordBtn = React.createClass({
 
   render: function() {
     return (
-      <View style={styles.nextWordContainer}>
+      <View style={styles.prevWordContainer}>
         <Button
-          style={styles.nextWordBtn}
+          style={styles.prevWordBtn}
           styleDisabled={{color: 'red'}}
           onPress={this._handleButtonPress}
           >
@@ -150,7 +150,7 @@ var ComparisonResults = React.createClass({
   render: function() {
     return (
       <View style={styles.resultsContainer}>
-        <Text style={styles.resultsText}>87%</Text>
+        <Text style={styles.resultsText}>87</Text>
       </View>
     );
   }
@@ -195,7 +195,7 @@ var PronunciationTest = React.createClass({
 
   _loadPrevWord: function() {
     var url = this._generatePrevWordUrl();
-    // curl -X GET http://localhost:3000/api/words/index/?language=english&gender=male
+    // curl -X GET http:/https://vocalizeapp.com/api/words/index/?language=english&gender=male
 
     fetch(url)
       .then((response) => response.json())
@@ -212,7 +212,7 @@ var PronunciationTest = React.createClass({
 
   _loadNextWord: function() {
     var url = this._generateNextWordUrl();
-    // curl -X GET http://localhost:3000/api/words/index/?language=english&gender=male
+    // curl -X GET https://vocalizeapp.com/api/words/previndex/?language=english&gender=male
 
     fetch(url)
       .then((response) => response.json())
@@ -231,7 +231,7 @@ var PronunciationTest = React.createClass({
   _generateNextWordUrl: function() {
     var language = 'language=' + this.state.language;
     var gender = 'gender=' + this.state.gender;
-    var ip = 'http://localhost:3000';
+    var ip = 'https://vocalizeapp.com';
     var url = ip + '/api/words/index/?' + language + '&' + gender;
     return url;
   },
@@ -239,7 +239,7 @@ var PronunciationTest = React.createClass({
   _generatePrevWordUrl: function() {
     var language = 'language=' + this.state.language;
     var gender = 'gender=' + this.state.gender;
-    var ip = 'http://localhost:3000';
+    var ip = 'https://vocalizeapp.com/';
     var url = ip + '/api/words/previndex/?' + language + '&' + gender;
     return url;
   },
@@ -428,12 +428,20 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   recordAudioContainer: {
-
   },
   nextWordContainer: {
+    width: 85,
+    marginTop: 20,
+  },
+  prevWordContainer: {
+    width: 85,
     marginTop: 20,
   },
   nextWordBtn: {
+    fontSize: 20, 
+    color: '#007AFF',
+  },
+  prevWordBtn: {
     fontSize: 20, 
     color: '#007AFF',
   },
