@@ -19,69 +19,7 @@ var {
 } = React;
 
 
-var PlayWordBtn = React.createClass({
-  playWord: function() {
-    var url = 'http://d2oh9tgz5bro4i.cloudfront.net/public/' + this.props.s3key;
-    AudioPlayer.playWithUrl('http://d2oh9tgz5bro4i.cloudfront.net/apple.wav');
-  },
-
-  render: function() {
-    return (
-      <View style={styles.playWordContainer}>
-        <Button
-          style={styles.PlayWordBtn}
-          styleDisabled={{color: 'red'}}
-          onPress={this.playWord}
-        >
-          <Icon name="play-circle-outline" size={50} color="#007AFF" />
-        </Button>
-      </View>
-    );
-  }
-});
-
 var RecordAudioBtn = React.createClass({
-  componentDidMount: function() {
-    AudioRecorder.prepareRecordingAtPath('/userAudio.wav')
-    AudioRecorder.onFinished = (data) => {
-      AudioRecorder.playRecording();
-      this._getUserAudioPath();
-    };
-    this._updateCurrentWordCookie();
-  },
-
-  _updateCurrentWordCookie: function() {
-    // set cookie that expires in 30 days
-    var date = new Date();
-    var year = date.getFullYear();
-    var month = date.getMonth();
-    if (month === 11) {
-      month = 1;
-      year += 1;
-    } else {
-      month += 1;
-    }
-    var day = date.getDate();
-    var time = 'T12:30:00.00-05:00'
-    var expiration = '' + year + '-' + month + '-' + day + time;
-    var currentWord = this.props.currentWord;
-
-    var currentWordCookie = {
-      name: 'word',
-      value: currentWord,
-      domain: '127.0.0.1',
-      origin: '/',
-      path: '/',
-      version: '1',
-      expiration: expiration,
-    };
-    
-    CookieManager.set(currentWordCookie, (err, res) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-  },
 
   _stopRecording: function() {
     AudioRecorder.stopRecording();
@@ -131,6 +69,14 @@ var RecordAudioBtn = React.createClass({
     });
   },
 
+  componentDidMount: function() {
+    AudioRecorder.prepareRecordingAtPath('/userAudio.wav')
+    AudioRecorder.onFinished = (data) => {
+      AudioRecorder.playRecording();
+      this._getUserAudioPath();
+    };
+  },
+
   render: function() {
     return (
       <View style={styles.recordAudioContainer}>
@@ -167,11 +113,34 @@ var NextWordBtn = React.createClass({
   }
 });
 
-var CurrentWord = React.createClass({
+var PrevWordBtn = React.createClass({
+  _handleButtonPress: function() {
+    this.props.loadPrevWord();
+  },
+
   render: function() {
     return (
-      <View style={styles.currentWordContainer}>
-        <Text style={styles.currentWordText}>{this.props.currentWord}</Text>
+      <View style={styles.nextWordContainer}>
+        <Button
+          style={styles.nextWordBtn}
+          styleDisabled={{color: 'red'}}
+          onPress={this._handleButtonPress}
+          >
+          Previous
+        </Button>
+      </View>
+    );
+  }
+});
+
+var OptionBtns = React.createClass({
+
+  render: function() {
+    return (
+      <View style={styles.optionBtnsContainer}>
+        <PrevWordBtn loadPrevWord={this.props.loadPrevWord} />
+        <RecordAudioBtn />
+        <NextWordBtn loadNextWord={this.props.loadNextWord} />
       </View>
     );
   }
@@ -187,24 +156,45 @@ var ComparisonResults = React.createClass({
   }
 });
 
-var OptionBtns = React.createClass({
+var PlayWordBtn = React.createClass({
+  playWord: function() {
+    var url = 'http://d2oh9tgz5bro4i.cloudfront.net/public/' + this.props.s3key;
+    AudioPlayer.playWithUrl('http://d2oh9tgz5bro4i.cloudfront.net/apple.wav');
+  },
 
   render: function() {
     return (
-      <View style={styles.optionBtnsContainer}>
+      <View style={styles.playWordContainer}>
+        <Button
+          style={styles.PlayWordBtn}
+          styleDisabled={{color: 'red'}}
+          onPress={this.playWord}
+        >
+          <Icon name="play-circle-outline" size={30} color="#007AFF" />
+        </Button>
+      </View>
+    );
+  }
+});
+
+var CurrentWord = React.createClass({
+  render: function() {
+    return (
+      <View style={styles.currentWordContainer}>
+        <View style={styles.dummyContainer}></View>
+        <View style={styles.currentWordTextContainer}>
+          <Text style={styles.currentWordText}>{this.props.currentWord}</Text>
+        </View>
         <PlayWordBtn s3key={this.props.s3key} />
-        <RecordAudioBtn currentWord={this.props.currentWord} />
-        <NextWordBtn 
-          loadNextWord={this.props.loadNextWord} 
-        />
       </View>
     );
   }
 });
 
 var PronunciationTest = React.createClass({
-  _loadNextWord: function() {
-    var url = this._generateNextWordUrl();
+
+  _loadPrevWord: function() {
+    var url = this._generatePrevWordUrl();
     // curl -X GET http://localhost:3000/api/words/index/?language=english&gender=male
 
     fetch(url)
@@ -220,12 +210,71 @@ var PronunciationTest = React.createClass({
       });
   },
 
+  _loadNextWord: function() {
+    var url = this._generateNextWordUrl();
+    // curl -X GET http://localhost:3000/api/words/index/?language=english&gender=male
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          currentWord: data.word, 
+          s3key: data.s3.Key
+        });
+        this._updateCurrentWordCookie();
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  },
+
   _generateNextWordUrl: function() {
     var language = 'language=' + this.state.language;
     var gender = 'gender=' + this.state.gender;
     var ip = 'http://localhost:3000';
     var url = ip + '/api/words/index/?' + language + '&' + gender;
     return url;
+  },
+  
+  _generatePrevWordUrl: function() {
+    var language = 'language=' + this.state.language;
+    var gender = 'gender=' + this.state.gender;
+    var ip = 'http://localhost:3000';
+    var url = ip + '/api/words/previndex/?' + language + '&' + gender;
+    return url;
+  },
+
+  _updateCurrentWordCookie: function() {
+    // set cookie that expires in 30 days
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    if (month === 11) {
+      month = 1;
+      year += 1;
+    } else {
+      month += 1;
+    }
+    var day = date.getDate();
+    var time = 'T12:30:00.00-05:00'
+    var expiration = '' + year + '-' + month + '-' + day + time;
+    var currentWord = this.state.currentWord;
+
+    var currentWordCookie = {
+      name: 'word',
+      value: currentWord,
+      domain: '127.0.0.1',
+      origin: '/',
+      path: '/',
+      version: '1',
+      expiration: expiration,
+    };
+    
+    CookieManager.set(currentWordCookie, (err, res) => {
+      if (err) {
+        console.log(err);
+      }
+    });
   },
 
   _updateWordIndexCookie: function(wordIndex) {
@@ -285,26 +334,15 @@ var PronunciationTest = React.createClass({
   render: function() {
     return (
       <View style={styles.pronunciationTest}>
-        <CurrentWord currentWord={this.state.currentWord} />
+        <CurrentWord 
+          currentWord={this.state.currentWord} 
+          s3key={this.state.s3key}
+        />
         <ComparisonResults />
         <OptionBtns 
           loadNextWord={this._loadNextWord}
-          currentWord={this.state.currentWord}
-          s3key={this.state.s3key}
+          loadPrevWord={this._loadPrevWord}
         />
-      </View>
-    );
-  }
-});
-
-
-var Instructions = React.createClass({
-  render: function() {
-    return (
-      <View style={styles.instructionsContainer}>
-        <Text style={styles.instructionsText}>
-          Hold down the microphone button and pronounce the word shown below.
-        </Text>
       </View>
     );
   }
@@ -315,7 +353,6 @@ var HomeScreen = React.createClass({
   render: function() {
     return (
       <View style={styles.homeScreenContainer}>
-        <Instructions />
         <PronunciationTest navigator={this.props.navigator}/>
       </View>
     );
@@ -344,35 +381,37 @@ var styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  instructionsContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 65,
-  },
   pronunciationTest: {
     flex: 5,
     flexDirection: 'column',
+    marginTop: 65,
+    marginBottom: 50,
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginBottom: 50,
-  },
-  instructionsText: {
-    textAlign: 'center',
-    paddingBottom: 10,
-    fontFamily: 'Helvetica Neue',
-    fontSize: 20,
-    fontWeight: '300',
-    color: '#898C90',
   },
   currentWordContainer: {
-
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dummyContainer: {
+    width: 40,
+  },
+  currentWordTextContainer: {
+    borderStyle: 'solid',
+    borderBottomWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.5)',
   },
   currentWordText: {
     fontFamily: 'Helvetica Neue',
     fontSize: 50,
     fontWeight: '200',
+  },
+  playWordContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+    paddingLeft: 10,
   },
   resultsContainer: {
 
@@ -383,16 +422,13 @@ var styles = StyleSheet.create({
     fontWeight: '300',
   },
   optionBtnsContainer: {
+    alignSelf: 'stretch',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
-  playWordContainer: {
-
-  },
   recordAudioContainer: {
-    marginRight: 50,
-    marginLeft: 50,
+
   },
   nextWordContainer: {
     marginTop: 20,

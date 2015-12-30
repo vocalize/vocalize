@@ -14,6 +14,9 @@ exports.compareAudio = function(req, res) {
   var sound = req.body;
   var word = req.cookies.word;
 
+  console.log('!!!!!!!!');
+  console.log(req.cookies);
+
   // Create a new stream
   var bufferStream = new stream.PassThrough();
 
@@ -165,7 +168,6 @@ exports.getWordByNextIndex = function(req, res) {
 };
 
 exports.getWordByPrevIndex = function(req, res) {
-  
   var word_index = _decWordIndexCookie(res, req.cookies.word_index);
 
   if (word_index) {
@@ -277,7 +279,11 @@ var _decWordIndexCookie = function(res, cookie) {
     return word_index.toString();
   } else {
     word_index = parseInt(cookie);
-    res.cookie("word_index", word_index - 1);
+    if (word_index > 0) {
+      res.cookie("word_index", word_index - 1);
+    } else {
+      res.cookie("word_index", word_index);
+    }
     return word_index.toString();
   }
 };
