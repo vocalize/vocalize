@@ -12,10 +12,12 @@ var Instructions = React.createClass({
       dataTarget: 'instructionsModal'
     };
 
+    var instructions = <div><p>To compare your pronunciation to that of a native speaker, click and hold the microphone button and say the word.</p><p>The lower the score the closer you are to a native speaker. To hear the word, click the speaker button.</p><p>The graph can help you change your pronunciation to be closer to the native speaker.</p></div>
+
     var modalProps = {
       targetId: 'instructionsModal',
       title: 'How to Vocalize',
-      text: 'This is how we do it.'
+      text: instructions
     };
 
     return (

@@ -13,3 +13,42 @@
 	@include circle-border(3 * $base-unit, $secondary-color-hover);
 	color: $secondary-color-hover;
 }
+
+#instructionsModal {
+  .modal-body p {
+    color: #CCCCCC;
+    text-align: left;
+  }
+}
+
+#instructionsModal {
+  .modal-header {
+    color: $primary-color;
+    background-color: $background-mid;
+  }
+
+  .modal-body {
+    background-color: $background-light;
+    color: #ccc;
+  }
+
+  .modal-footer {
+    background-color: $background-mid;
+    color: #ccc;
+
+    button {
+      color: $primary-color;
+      background-color: $background-light;
+      border: 0;
+    }
+
+    button:hover {
+      @include transition(0.5s);
+      background-color: lighten($background-light, 5%);
+    }
+  }
+
+  .modal-footer, .modal-header {
+    border-color: $primary-color;
+  }
+}

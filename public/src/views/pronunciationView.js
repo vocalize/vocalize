@@ -104,7 +104,7 @@ var PronunciationView = React.createClass({
               <div className="mic-controls-container">
                 <ReactCSSTransitionGroup transitionName="fade" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
                   {this.state.showScore ? 
-                    <Score percentCorrect={this.state.percentCorrect} peaks={this.state.peaks} key="1" /> :
+                    <Score percentCorrect={this.state.percentCorrect} peaks={this.state.peaks} language={this.state.language} key="1" /> :
                     <RecordAudioBtn key="2" handleScore={this.handleScore} />
                   }
                 </ReactCSSTransitionGroup>

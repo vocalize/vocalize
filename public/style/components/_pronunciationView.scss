@@ -3,3 +3,7 @@
 	@extend .small-bucket;
 	margin: 2 * $default-margin;
 }
+
+.content-container {
+  box-shadow: 0 8px 6px 1px black;
+}

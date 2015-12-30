@@ -12,7 +12,7 @@ var Modal = React.createClass({
 			        <h4 className="modal-title">{this.props.title}</h4>
 			      </div>
 			      <div className="modal-body">
-			        <p>{this.props.text}</p>
+			        {this.props.text}
 			      </div>
 			      <div className="modal-footer">
 			        <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>

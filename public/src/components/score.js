@@ -2,7 +2,8 @@ var React = require('react');
 
 var Score = React.createClass({
   componentDidMount: function() {
-    drawGraph(this.props.peaks);
+    // if spanish set scalar === 1
+    drawGraph(this.props.peaks, 10);
   },
 
 	render: function(){
@@ -27,12 +28,13 @@ var calculateXMax = function(data) {
 
 var calculateYMax = function(data) {
   var max = data.reduce(function(prev, curr, index, array) {
-    return Math.max(prev, Math.max(curr[1], curr[3]));
+    // return Math.max(prev, Math.max(curr[1], curr[3]));
+    return Math.max(prev, curr[1]);
   }, 0);
   return max * 1.1;  // extra room
 }
 
-var drawGraph = function(data) {
+var drawGraph = function(data, yScalar) {
   if (!data) return;
 
 
@@ -58,7 +60,7 @@ var drawGraph = function(data) {
           return x(data[2]);
       })
       .y(function(data) {
-          return y(data[3]);
+          return y(data[3]*yScalar);
       });
 
   var graph = d3.select("#graph").append("svg:svg")
