@@ -51,7 +51,9 @@ var path = {
 var cssPath = {
   src: 'public/style/**/*.scss',
   dest: 'dist/styles',
-  min: 'style.css'
+  min: 'style.css',
+  assetsSrc: 'public/assets/*',
+  assetsDist: 'dist/assets'
 };
 
 // Default
@@ -63,6 +65,11 @@ gulp.task('production', ['test', 'replaceHtml-prod', 'sass', 'build']);
 gulp.task('copy', function() {
   gulp.src(path.html)
     .pipe(gulp.dest(path.dest));
+});
+
+gulp.task('copy-assets', function() {
+  gulp.src(cssPath.assetsSrc)
+    .pipe(gulp.dest(cssPath.assetsDist));
 });
 
 // Watches
@@ -116,7 +123,7 @@ gulp.task('build', function() {
 });
 
 // Minifies and concats css files
-gulp.task('sass', function() {
+gulp.task('sass', ['copy-assets'], function() {
 
   var sassOptions = {
     errLogToConsole: true,
