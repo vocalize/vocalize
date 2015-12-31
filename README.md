@@ -1,7 +1,6 @@
 # vocalize
 
-![Stories in Ready](https://badge.waffle.io/vocalize/vocalize.png?label=Ready)]
-
+[![Stories in Ready](https://badge.waffle.io/vocalize/vocalize.svg?label=ready&title=Ready)](http://waffle.io/vocalize/vocalize)
 
 ## Table of Contents
 
