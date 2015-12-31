@@ -347,20 +347,20 @@ header {
 /* -------------------------------------------- */
 
 .section-video {
-    background-color: black;
+    background-color: #f4f4f4;
 }
 
 .section-video h2 {
     font-size: 230%;
     font-family: 'Cardo';
     margin-bottom: 40px;
-    color: white;
+    color: black;
 }
 
 .section-video h2:after {
     display: block;
     height: 2px;
-    background-color: white;
+    background-color: black;
     content: " ";
     width: 150px;
     margin: 0 auto;
@@ -368,7 +368,7 @@ header {
 }
 
 .video-center {
-    width: 500px;
+    width: 840px;
     height: 500px;
     top: 0; right: 0;
     bottom: 0; left: 0;
