@@ -302,6 +302,82 @@ header {
 .middle {
     margin-top: 30px;
 }
+
+
+/* -------------------------------------------- */
+/* Tech Stack */
+/* -------------------------------------------- */
+
+.section-stack h2 {
+    font-size: 230%;
+    font-family: 'Cardo';
+    margin-bottom: 40px;
+}
+
+.section-stack h2:after {
+    display: block;
+    height: 2px;
+    background-color: black;
+    content: " ";
+    width: 150px;
+    margin: 0 auto;
+    margin-top: 30px;
+}
+.section-stack h3 {
+    font-family: 'Cardo';
+    font-size: 140%;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 50px;
+    margin-top: 25px;
+}
+
+.tech-stack-img img {
+    display:block;
+    margin:auto;
+}
+.tech-stack-img {
+    width: 300px;
+    text-align: center;
+}
+
+
+/* -------------------------------------------- */
+/* Video */
+/* -------------------------------------------- */
+
+.section-video {
+    background-color: black;
+}
+
+.section-video h2 {
+    font-size: 230%;
+    font-family: 'Cardo';
+    margin-bottom: 40px;
+    color: white;
+}
+
+.section-video h2:after {
+    display: block;
+    height: 2px;
+    background-color: white;
+    content: " ";
+    width: 150px;
+    margin: 0 auto;
+    margin-top: 30px;
+}
+
+.video-center {
+    width: 500px;
+    height: 500px;
+    top: 0; right: 0;
+    bottom: 0; left: 0;
+    margin: auto;
+}
+
+
+
+
 /* -------------------------------------------- */
 /* Submit */
 /* -------------------------------------------- */
