@@ -7,8 +7,8 @@ var Footer = React.createClass({
     return(
       <footer>
         <NavBar>
-          <a href="/info">About</a>
-          <a href="/info#how">How It Works</a>
+          <a href="/info" target="_blank">About</a>
+          <a href="/info#how" target="_blank">How It Works</a>
           <a href="#">App Store</a>
         </NavBar>
       </footer>

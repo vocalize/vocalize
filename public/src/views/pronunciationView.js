@@ -96,6 +96,8 @@ var PronunciationView = React.createClass({
       <div className="root">
         <Title {...TitleProps}/>
 
+        <div id="betaBanner">Beta</div>
+
         <div className="container-fluid">
           <div className="row max-height">
             <div className="col-md-12 content-container">
