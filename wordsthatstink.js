@@ -14,3 +14,9 @@ db.words.remove({word: "short"});
 db.words.remove({word: "simple"});
 db.words.remove({word: "single"});
 
+
+// among
+// answer
+// appear
+// beauty
+// brother

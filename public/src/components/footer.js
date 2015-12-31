@@ -3,15 +3,17 @@ var NavBar = require('../bootstrap-components/navBar');
 
 var Footer = React.createClass({
 
-	render: function(){
-		return(
-			<footer>
-				<NavBar>
-          <a href="#">About</a>
+  render: function(){
+    return(
+      <footer>
+        <NavBar>
+          <a href="/info">About</a>
+          <a href="/info#how">How It Works</a>
+          <a href="#">App Store</a>
         </NavBar>
-			</footer>
-		)
-	}
+      </footer>
+    );
+  }
 });
 
 module.exports = Footer;
