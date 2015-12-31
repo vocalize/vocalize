@@ -1,9 +1,17 @@
 var React = require('react');
 
+
+// scalars for data for the yAxis of the graph per language
+// this gets set depending on the sample size for the language
+var scalars = {
+  'english': 10,
+  'spanish': 1
+}
+
 var Score = React.createClass({
   componentDidMount: function() {
     // if spanish set scalar === 1
-    drawGraph(this.props.peaks, 10);
+    drawGraph(this.props.peaks, scalars[this.props.language]);
   },
 
 	render: function(){
