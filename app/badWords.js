@@ -29,3 +29,8 @@ var badWords = [
 ];
 
 module.exports = badWords;
+
+// for (var i = 0; i < badWords.length; i++) {
+//   var word = badWords[i];
+//   db.words.remove({word: word});
+// }
