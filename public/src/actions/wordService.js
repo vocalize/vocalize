@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 
+
 /**
  * Get Request base URL
  * @type {String}
