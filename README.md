@@ -15,9 +15,9 @@
 
 Vocalize is a pronunciation trainer made for language learners.
 
-![http://i.imgur.com/eByRmTel.png](http://i.imgur.com/eByRmTel.png)
+![http://i.imgur.com/gJ79emN.png](http://i.imgur.com/gJ79emN.png)
 
-![http://i.imgur.com/kzfC8iwl.png](http://i.imgur.com/kzfC8iwl.png)
+![http://i.imgur.com/eZx8grF.png](http://i.imgur.com/eZx8grF.png)
 
 ## Team
 
