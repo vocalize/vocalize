@@ -35,3 +35,17 @@ a, p{
     color: $primary-text;
     font-size: $base-font-size;
 }
+
+.navbar {
+    a{
+        @include transition(0.5s);
+    }
+    a:hover {
+        color: $primary-color;
+        background-color: transparent !important;
+    }
+    a:focus{
+        background-color: transparent !important;
+    }
+}
+
