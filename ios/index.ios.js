@@ -4,9 +4,8 @@ var React = require('react-native');
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var OctIcon = require('react-native-vector-icons/Octicons');
 
-var HomeScreen = require('./HomeScreen');
-var SettingsScreen = require('./SettingsScreen');
-var InstructionsScreen = require('./InstructionsScreen');
+var HomeScreen = require('./containers/HomeScreen');
+var SettingsScreen = require('./containers/SettingsScreen');
 
 var {
   AppRegistry,
@@ -19,28 +18,46 @@ var {
 
 
 var vocalize = React.createClass({
+
   
   _renderHomeScreen: function() {
     return (
-      <HomeScreen />
+      <HomeScreen 
+        gender={this.state.gender}
+        language={this.state.language}
+      />
     );
   },
 
   _renderSettingsScreen: function() {
     return (
-      <SettingsScreen />
-    );
-  },
-  
-  _renderInstructionsScreen: function() {
-    return (
-      <InstructionsScreen />
+      <SettingsScreen 
+        gender={this.state.gender}
+        language={this.state.language}
+        onGenderChange={this.onGenderChange}
+        onLanguageChange={this.onLanguageChange}
+      />
     );
   },
 
+  onGenderChange: function(gender) {
+    this.setState({
+      gender: gender
+    });
+  },
+
+  onLanguageChange: function(language) {
+    this.setState({
+      language: language
+    });
+  },
+
+
   getInitialState: function() {
     return {
-      selectedTab: 'home'
+      selectedTab: 'home',
+      gender: 'Male',
+      language: 'English',
     };
   },
 
@@ -75,18 +92,6 @@ var vocalize = React.createClass({
         >
           {this._renderSettingsScreen()}
         </OctIcon.TabBarItem>
-        <Icon.TabBarItem
-          title="Instructions"
-          iconName="help-outline"
-          selected={this.state.selectedTab === 'instructions'}
-          onPress={() => {
-            this.setState({
-              selectedTab: 'instructions'
-            });
-          }}
-        >
-          {this._renderInstructionsScreen()}
-        </Icon.TabBarItem>
       </TabBarIOS>
     );
   }

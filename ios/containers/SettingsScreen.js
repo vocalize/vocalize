@@ -19,10 +19,12 @@ var screenWidth = Dimensions.get('window').width;
 
 var SettingsScreen = React.createClass({
   onSelectGender: function(gender) {
+    this.props.onGenderChange(gender);
     this.setState({gender: gender});
   },
 
   onSelectLanguage: function(language) {
+    this.props.onLanguageChange(language);
     this.setState({language: language});
   },
 
@@ -50,14 +52,12 @@ var SettingsScreen = React.createClass({
 
   getInitialState: function() {
     return {
-      gender: 'Male',
-      language: 'English',
+      gender: this.props.gender,
+      language: this.props.language,
     };
   },
 
   componentDidMount: function() {
-    console.log(this.state.gender);
-    console.log(this.state.language);
   },
 
   render: function() {
@@ -114,6 +114,12 @@ var SettingsScreenNavigator = React.createClass({
         initialRoute={{
           component: SettingsScreen,
           title: 'Settings',
+          passProps: {
+            gender: this.props.gender,
+            language: this.props.language,
+            onGenderChange: this.props.onGenderChange,
+            onLanguageChange: this.props.onLanguageChange 
+          }
         }}
         barTintColor={'#4CD964'}
         tintColor={'black'}
