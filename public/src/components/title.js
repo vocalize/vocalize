@@ -16,10 +16,12 @@ var Title = React.createClass({
     };
 
     return (
+
       <div id="title-bar">
+
       	<NavBar title="Vocalize">
-          <a href="/info">About</a>
-          <a href="/info#how">How It Works</a>
+          <a href="/info" target="_blank">About</a>
+          <a href="/info#how" target="_blank">How It Works</a>
           <a href="#">App Store</a>
       	  <CollapseButton collapseTargetId="radio">
       	  	<span className="user-settings icon ion-gear-a"></span>
