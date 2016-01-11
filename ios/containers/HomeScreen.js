@@ -8,6 +8,7 @@ var OptionBtns = require('../components/OptionBtns');
 var ComparisonResults = require('../components/ComparisonResults');
 var SettingsScreen = require('./SettingsScreen');
 
+
 var {
   AppRegistry,
   StyleSheet,
