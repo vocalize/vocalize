@@ -223,25 +223,7 @@ var _getWordByIndexQuery = function(query, sort, _root) {
         // Run function again to return first word
         return _getWordByIndexQuery(query, 1, true);
       } else {
-        // if (_checkWord(word[0].word)) {
-        //   if (query.word_index['$gte'] !== undefined) {
-        //     // skip next
-        //     query.word_index['$gte'] += 1;
-        //   } else if (query.word_index['$lt'] !== undefined) {
-        //     // skip previous
-        //     query.word_index['$lt'] -= 1;
-        //     if (query.word_index['$lt'] === 0) {
-        //       // for looping around
-        //       delete query.word_index['$lt'];
-        //       query.word_index['$gte'] = 1;
-        //       return _getWordByIndexQuery(query, -1, _root);
-        //     }
-        //   }
-          // return _getWordByIndexQuery(query, 1);
-        // } else {
-          // Return found word
-          return word[0];
-        // }
+        return word[0];
       }
     })
     .catch(function(err) {
