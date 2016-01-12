@@ -26,6 +26,7 @@ var Score = React.createClass({
 
 module.exports = Score;
 
+// Calculates the max for the x axis based on data for word=
 var calculateXMax = function(data) {
   var max = data.reduce(function(prev, curr, index, array) {
     return Math.max(prev, Math.max(curr[0], curr[2]));
@@ -34,6 +35,7 @@ var calculateXMax = function(data) {
   return max * 1.1;  // extra room
 }
 
+// Calculates the max for the y axis based on data for word
 var calculateYMax = function(data) {
   var max = data.reduce(function(prev, curr, index, array) {
     // return Math.max(prev, Math.max(curr[1], curr[3]));
@@ -42,6 +44,7 @@ var calculateYMax = function(data) {
   return max * 1.1;  // extra room
 }
 
+// Draws or redraws the graph
 var drawGraph = function(data, yScalar) {
   if (!data) return;
 
@@ -98,7 +101,7 @@ var drawGraph = function(data, yScalar) {
       .attr("class", "tooltip")
       .style("opacity", 0);
 
-
+  // Native line
   graph.append("svg:path")
   .attr("d", nativeLine(data))
   .attr("class", "native")
@@ -116,7 +119,7 @@ var drawGraph = function(data, yScalar) {
               .style("opacity", 0);
       });
 
-
+  // User line
   graph.append("svg:path").attr("d", userLine(data))
   .attr("class", "user")
       .on("mouseover", function(d) {

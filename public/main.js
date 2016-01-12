@@ -1,16 +1,3 @@
- /*
-React Component Hierarchy
-  -VocalizeApp
-    -Title
-    -Instructions
-    -PronunciationTest
-      -TargetWord
-      -PlayWordBtn
-      -RecordAudioBtn
-      -PercentCorrect
-      -NextWordBtn
-*/
-
 var React = require('react');
 window.jQuery = require('jquery');
 var ReactDOM = require('react-dom');
