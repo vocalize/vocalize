@@ -22,11 +22,11 @@
       return Object.assign({}, state, {
       currentWord: action.word
     });
-    case types. :
+    case types.GET_S3_KEY :
       return Object.assign({}, state, {
-      loading: action.word
+      s3key: action.key
     });
     default: 
      return state;
   }
- }
+ } 
