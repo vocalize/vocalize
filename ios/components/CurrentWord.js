@@ -10,7 +10,7 @@ var {
   StyleSheet,
   Text,
   View,
-} = React;
+} = React; 
 
 var PlayWordBtn = React.createClass({
   playWord: function() {
