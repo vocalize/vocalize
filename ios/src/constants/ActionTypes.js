@@ -13,3 +13,5 @@ export const CHOOSE_MALE = 'CHOOSE_MALE';
 export const CHOOSE_FEMALE = 'CHOOSE_FEMALE';
 export const CHOOSE_ENGLISH = 'CHOOSE_ENGLISH';
 export const CHOOSE_SPANISH = 'CHOOSE_SPANISH';
+export const LOADING = 'LOADING';
+export const INSTRUCTIONS = 'INSTRUCTIONS';

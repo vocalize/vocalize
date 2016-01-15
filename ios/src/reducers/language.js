@@ -3,7 +3,7 @@
   showRowIconSpanish: false
  }
 
- export default function reducer(state = initalState, action){
+ export default function language(state = initalState, action){
   switch(action.types){
     case types.CHOOSE_ENGLISH:
       return Object.assign({}, state, {

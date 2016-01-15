@@ -5,7 +5,7 @@ export function setState(state){
   return {
     type: types.SET_STATE,
     data: state
-  }
+  } 
 }
 
 export function receiveNewWord(json) {
@@ -41,7 +41,19 @@ export function getS3Key(key){
     data: key,
   }
 }
+export function loading(loading){
+  return {
+    type: types.LOADING,
+    laoding,
+  }
+}
 
+export function instrctions(instrctions){
+  return {
+    type: types.INSTRUCTIONS,
+    instrctions,
+  }
+}
 
 
 
@@ -195,6 +207,7 @@ export function loadPrevWord() {
       loading: !this.state.loading,
       instructionsDisplayed: false
     });
+    dispatch()
   }
 
 export function onComparisonResults(score) {

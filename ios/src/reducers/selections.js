@@ -14,7 +14,7 @@ const initalState = {
   }
 }
 
-export default function selectionReducer(state = initalState, action){
+export default function selection(state = initalState, action){
   switch(action.types){
     case types.CHOOSE_MALE:
       return Object.assign({}, state, {
