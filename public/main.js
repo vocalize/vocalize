@@ -4,7 +4,6 @@ var ReactDOM = require('react-dom');
 require('bootstrap');
 
 
-<<<<<<< 1e219c81ce57901043bd7f2d162908ca91bb344d
 var PronunciationView = require('./src/views/pronunciationView.js');
 =======
 var PercentCorrect = React.createClass({
@@ -255,7 +254,6 @@ var VocalizeApp = React.createClass({
     );
   }
 });
->>>>>>> added some things
 
 ReactDOM.render(
   <PronunciationView/>, 
