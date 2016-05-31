@@ -5,7 +5,7 @@ require('bootstrap');
 
 
 var PronunciationView = require('./src/views/pronunciationView.js');
-=======
+
 var PercentCorrect = React.createClass({
   render: function(){
     return (
